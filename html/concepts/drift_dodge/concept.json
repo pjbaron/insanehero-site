@@ -1,0 +1,23 @@
+{
+  "name": "Drift Dodge",
+  "slug": "drift_dodge",
+  "description": "Steer a drifting car through oncoming traffic by holding to curve left or right, building up a near-miss combo multiplier that boosts your score but also increases your speed.",
+  "perspective": "top-down",
+  "core_loop": "Your car constantly accelerates forward on an endless highway. Hold left side of screen to drift left, hold right to drift right, release to glide straight. Weave between oncoming vehicles \u00e2\u20ac\u201d each near-miss adds to a combo multiplier that multiplies your score but also nudges your speed higher. Clip a vehicle and you spin out, losing your combo and slowing down. Three crashes and you're done. Coins appear in dangerous gaps between cars for bonus points. Every 30 seconds traffic density and patterns shift \u00e2\u20ac\u201d convoys, staggered waves, speed demons that swerve.",
+  "retention_hooks": [
+    "Near-miss combo multiplier creates an addictive risk-reward tension \u00e2\u20ac\u201d push for higher combos or play safe",
+    "Speed escalation from combos makes each run feel increasingly intense and thrilling before the inevitable crash",
+    "Unlockable car skins at score milestones give cosmetic progression and bragging rights"
+  ],
+  "controls": "Hold left half of screen to curve left, hold right half to curve right, release to drift straight. On desktop: hold A/left arrow to curve left, D/right arrow to curve right. One-finger mobile friendly.",
+  "tags": [
+    "traffic-dodge",
+    "near-miss",
+    "combo-multiplier",
+    "endless",
+    "drift",
+    "arcade",
+    "one-finger",
+    "risk-reward"
+  ]
+}

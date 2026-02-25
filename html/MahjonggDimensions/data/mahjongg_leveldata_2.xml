@@ -1,0 +1,114 @@
+<?xml version="1.0" ?>
+<ignoreMeContainer>
+	<levels>
+		<level id="puzzle_2" random="1" levellock="2" x = "320" y = "400">
+			<nScale>1</nScale>
+			<TileStructure x="8" y="8" z="6">
+				<layer id="0">
+					<row>00011000</row>
+					<row>00111100</row>
+					<row>01011010</row>
+					<row>11100111</row>
+					<row>11100111</row>
+					<row>01011010</row>
+					<row>00111100</row>
+					<row>00011000</row>
+				</layer>
+				<layer id="1">
+					<row>00000000</row>
+					<row>00011000</row>
+					<row>00111100</row>
+					<row>01111110</row>
+					<row>01111110</row>
+					<row>00111100</row>
+					<row>00011000</row>
+					<row>00000000</row>
+				</layer>
+				<layer id="2">
+					<row>00011000</row>
+					<row>00111100</row>
+					<row>01011010</row>
+					<row>11100111</row>
+					<row>11100111</row>
+					<row>01011010</row>
+					<row>00111100</row>
+					<row>00011000</row>
+				</layer>
+				<layer id="3">
+					<row>00000000</row>
+					<row>00011000</row>
+					<row>00111100</row>
+					<row>01111110</row>
+					<row>01111110</row>
+					<row>00111100</row>
+					<row>00011000</row>
+					<row>00000000</row>
+				</layer>
+				<layer id="4">
+					<row>00011000</row>
+					<row>00111100</row>
+					<row>01011010</row>
+					<row>11100111</row>
+					<row>11100111</row>
+					<row>01011010</row>
+					<row>00111100</row>
+					<row>00011000</row>
+				</layer>
+				<layer id="5">
+					<row>00000000</row>
+					<row>00011000</row>
+					<row>00111100</row>
+					<row>01111110</row>
+					<row>01111110</row>
+					<row>00111100</row>
+					<row>00011000</row>
+					<row>00000000</row>
+				</layer>
+			</TileStructure>
+			<TileImages>
+				<tile type="0" name="s1" url="s1" value="100" num="4"/>
+				<tile type="0" name="s2" url="s2" value="100" num="4"/>
+				<tile type="0" name="s3" url="s3" value="100" num="4"/>
+				<tile type="0" name="s4" url="s4" value="100" num="4"/>
+				<tile type="0" name="s5" url="s5" value="100" num="4"/>
+				<tile type="0" name="s6" url="s6" value="100" num="4"/>
+				<tile type="0" name="s13" url="s13" value="100" num="4"/>
+				<tile type="0" name="s14" url="s14" value="100" num="4"/>
+				<tile type="0" name="s15" url="s15" value="100" num="4"/>
+				<tile type="0" name="s16" url="s16" value="100" num="4"/>
+				<tile type="0" name="s17" url="s17" value="100" num="4"/>
+				<tile type="0" name="s18" url="s18" value="100" num="4"/>
+				<tile type="0" name="s19" url="s19" value="100" num="4"/>
+				<tile type="0" name="s20" url="s20" value="100" num="4"/>
+				<tile type="0" name="s21" url="s21" value="100" num="4"/>
+				<tile type="0" name="s22" url="s22" value="100" num="4"/>
+				<tile type="0" name="s23" url="s23" value="100" num="4"/>
+				<tile type="0" name="s24" url="s24" value="100" num="4"/>
+				<tile type="0" name="s25" url="s25" value="100" num="4"/>
+				<tile type="0" name="s26" url="s26" value="100" num="4"/>
+				<tile type="0" name="s27" url="s27" value="100" num="4"/>
+				<tile type="0" name="s28" url="s28" value="100" num="4"/>
+				<tile type="0" name="s29" url="s29" value="100" num="4"/>
+				<tile type="0" name="s30" url="s30" value="100" num="4"/>
+				<tile type="0" name="s49" url="s49" value="100" num="4"/>
+				<tile type="0" name="s32" url="s32" value="100" num="4"/>
+				<tile type="0" name="s33" url="s33" value="100" num="4"/>
+				<tile type="0" name="s34" url="s34" value="100" num="4"/>
+				<tile type="0" name="s35" url="s35" value="100" num="4"/>
+				<tile type="0" name="s36" url="s36" value="100" num="4"/>
+				<tile type="0" name="s37" url="s37" value="100" num="4"/>
+				<tile type="0" name="s38" url="s38" value="100" num="4"/>
+				<tile type="0" name="s39" url="s39" value="100" num="4"/> 
+				<tile type="0" name="s40" url="s40" value="100" num="4"/> 
+				<tile type="0" name="s41" url="s41" value="100" num="4"/> 
+				<tile type="0" name="s42" url="s42" value="100" num="4"/> 
+				<tile type="0" name="s43" url="s43" value="100" num="4"/> 
+				<tile type="0" name="s44" url="s44" value="100" num="4"/> 
+				<tile type="0" name="s45" url="s45" value="100" num="4"/> 
+				<tile type="0" name="s46" url="s46" value="100" num="4"/> 
+				<tile type="0" name="s47" url="s47" value="100" num="4"/> 
+				<tile type="0" name="s48" url="s48" value="100" num="4"/> 
+			</TileImages>
+		</level>
+	</levels>
+</ignoreMeContainer>

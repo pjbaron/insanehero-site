@@ -1,0 +1,22 @@
+{
+  "name": "Swarm Split",
+  "slug": "swarm_split",
+  "description": "Drag to slice your swarm of critters into groups, sending squads to overwhelm enemy bases before they regroup \u00e2\u20ac\u201d split too thin and you lose, stay bunched and you're too slow.",
+  "perspective": "top-down",
+  "core_loop": "Your swarm follows your finger as a blob. Swipe through the swarm to cleave it into two groups \u00e2\u20ac\u201d one follows you, the other charges toward the nearest enemy base. Critters auto-fight when they reach a base, and you need numeric superiority to capture it. Captured bases spawn reinforcements. Each 60-second round you must capture all bases on the map. The tension is deciding when to split (send an attack) versus when to keep your numbers together for a tougher base. Swarm pieces left idle slowly wander and can be recollected by dragging through them.",
+  "retention_hooks": [
+    "Escalating maps with more bases, tougher garrisons, and hazard zones that kill stray critters",
+    "Star rating per level (time-based) plus unlockable critter skins that leave colorful trails",
+    "Split-second 'perfect split' bonus when you cleave exactly the right number to barely win a base capture"
+  ],
+  "controls": "Drag to move your swarm. Swipe through the swarm to split it. Tap a detached group to recall it back to you. All one-finger touch-friendly.",
+  "tags": [
+    "swarm-control",
+    "split-mechanic",
+    "strategy",
+    "arcade",
+    "real-time-tactics",
+    "one-finger",
+    "level-progression"
+  ]
+}

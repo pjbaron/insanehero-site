@@ -1,0 +1,50 @@
+{
+  "urls": [
+    "audiosprite\\audiosprite.ogg",
+    "audiosprite\\audiosprite.m4a",
+    "audiosprite\\audiosprite.mp3",
+    "audiosprite\\audiosprite.ac3"
+  ],
+  "sprite": {
+    "children_cheers_01": [
+      0,
+      3320.453514739229
+    ],
+    "children_cheers_02": [
+      5000,
+      3529.4331065759634
+    ],
+    "children_cheers_03": [
+      10000,
+      4133.1519274376415
+    ],
+    "correct_match": [
+      16000,
+      2782.312925170068
+    ],
+    "game_over": [
+      20000,
+      1428.3446712018133
+    ],
+    "game_start": [
+      23000,
+      2191.746031746032
+    ],
+    "incorrect_match": [
+      27000,
+      2295.238095238094
+    ],
+    "level_up": [
+      31000,
+      1216.1451247165544
+    ],
+    "timer_beep": [
+      34000,
+      45.30612244897725
+    ],
+    "ui_button": [
+      36000,
+      1111.6099773242638
+    ]
+  }
+}

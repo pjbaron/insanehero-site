@@ -1,0 +1,23 @@
+{
+  "name": "Snip Snap",
+  "slug": "snip_snap",
+  "description": "Cut ropes, chains, and bridges to send rolling boulders crashing into goblin camps below, using timing and slice angles to chain destruction across multi-layered physics puzzles.",
+  "perspective": "side-view",
+  "core_loop": "Each level presents a Rube Goldberg-style arrangement of boulders suspended by ropes, planks on hinges, and balls in cradles. You swipe to cut one support at a time \u00e2\u20ac\u201d each cut sends objects tumbling, rolling, and colliding downward through seesaws, ramps, and breakable platforms. Your goal is to smash every goblin camp at the bottom using as few cuts as possible. After each cut you watch the cascade play out, then choose your next slice. Levels last 15-60 seconds, escalating from single-cut solutions to intricate 4-5 cut chains where order and angle matter.",
+  "retention_hooks": [
+    "Star rating per level (1-3 stars based on fewest cuts) drives perfectionist replays",
+    "Unlockable boulder types every 10 levels (explosive, splitting, magnetic) that remix earlier puzzle logic",
+    "Daily challenge level with global leaderboard for best cut count"
+  ],
+  "controls": "Swipe/drag across a rope or support to cut it. Tap to zoom/pan on mobile. That's it \u00e2\u20ac\u201d one gesture does everything.",
+  "tags": [
+    "cut-the-rope-like",
+    "physics-puzzle",
+    "destruction",
+    "swipe-to-cut",
+    "level-progression",
+    "chain-reaction",
+    "casual",
+    "one-finger"
+  ]
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:e41d7e0eff2f7159ca3e856d4d409982:c99b8c8be6462e5e462225b02efc8104:9f48b6cd575d5baa48585cfed9817f00$ -->
+<TextureAtlas imagePath="clouds.png">
+    <SubTexture name="cloud01" x="2" y="2" width="128" height="128"/>
+    <SubTexture name="cloud02" x="132" y="2" width="128" height="128"/>
+    <SubTexture name="cloud03" x="262" y="2" width="128" height="128"/>
+    <SubTexture name="cloud04" x="392" y="2" width="128" height="128"/>
+    <SubTexture name="cloud05" x="522" y="2" width="128" height="128"/>
+    <SubTexture name="cloud06" x="652" y="2" width="128" height="128"/>
+    <SubTexture name="cloud07" x="782" y="2" width="128" height="128"/>
+    <SubTexture name="cloud08" x="912" y="2" width="128" height="128"/>
+    <SubTexture name="cloud09" x="1042" y="2" width="128" height="128"/>
+    <SubTexture name="cloud10" x="1172" y="2" width="128" height="128"/>
+</TextureAtlas>

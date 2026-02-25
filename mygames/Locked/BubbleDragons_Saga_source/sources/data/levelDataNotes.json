@@ -1,0 +1,42 @@
+{
+    "levelTypes": [
+        { "name": "level_protect_barrier", "description": "level scrolls down constantly, player must pop all bubbles" },
+        { "name": "level_collect_fish", "description": "player must release all the fish in bubbles" },
+        { "name": "level_hatch_egg", "description": "player must crack the egg at the top" }
+    ],
+
+    "boostTypes": [
+        { "NOTE": "Only one boost type per level, uses one of these 'name' values in a 'boost' item." },
+        { "name": "boost_extra_moves", "description": "automatic when boost is full, adds 5 shots to the counter" },
+        { "name": "boost_convert_dragon", "description": "automatic when boost is full, flies across and turns bubbles into 'special' bubbles" },
+        { "name": "boost_mine", "description": "large bomb must be fired by player instead of a bubble" },
+        { "name": "boost_wild", "description": "wild card matching bubble, fired by player" },
+        { "name": "boost_fireball", "description": "fireball fired by player, pops everything and slows down with distance until it fades" }
+    ],
+
+    "bubbleColours": [ "red_bubble", "green_bubble", "blue_bubble", "yellow_bubble", "purple_bubble",
+                        "NOTE: these are put into 'list' to describe the level bubble colours, fewer colours = easier levels" ],
+
+    "specialBubbles": [
+        { "name": "special_bomb", "description": "explode when hit, cause chain reactions with other bombs or rockets" },
+        { "name": "special_carry_dragon", "description": "when bubble is popped they fly away, if bubble is dropped they carry it back into the grid" },
+        { "name": "special_rocket", "description": "launch when hit, shoot left to right popping bubbles, stop on shell bubbles and detonate bombs" },
+        { "name": "special_frozen_bubble", "description": "ice cracks when hit showing the colour bubble underneath, will stop rockets" },
+        { "name": "special_burst_dragon", "description": "when bubble is popped they fly to another bubble and pop the whole colour group, if bubble is dropped they fly away" },
+        { "NOTE0": "all special bubble types are listed in an array called 'specials'" },
+        { "NOTE1": "'number' is how many in the level at the start" },
+        { "NOTE2": "'min' is the minimum distance in pixels from another one the same (scaled for bubbles with radius 16, diameter 32 pixels)" },
+        { "NOTE3": "'max' is the maximum distance in pixels from another one of the same type" }
+    ],
+	
+	"backgrounds": [
+        { "name": "game_bg1", "description": "forest-stage-bg" },
+        { "name": "game_bg2", "description": "river-stage-bg" },
+        { "name": "game_bg3", "description": "cave-stage-bg" },
+        { "name": "game_bg4", "description": "desert-stage-bg" },
+        { "name": "game_bg5", "description": "lake-stage-bg" },
+        { "name": "game_bg6", "description": "cave-stage-bg2" },
+    ],
+
+    "holesDescription": "'seed' is an optional random seed, you can use it to lock the random to a particular layout",
+}

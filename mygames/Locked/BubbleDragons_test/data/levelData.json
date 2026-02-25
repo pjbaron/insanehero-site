@@ -1,0 +1,325 @@
+{
+	"numShots": 150,
+    
+    "levels": 
+    [
+		{
+			"description": "Intro to hatching, bombs, and mines",
+            "_level": "1",
+            "_id": "level_hatch_egg",
+            "BackgroundImage": "game_bg6",
+			"width": "12",
+            "height": "16",
+			"symmetry": [ {"x": 6, "pcnt": 20 } ],
+            "holes": { "seed": 1, "number": 20, "symmetry": [ {"x": 6, "pcnt": 100 } ] },
+            "list": [ "bubble_red", "bubble_blue", "bubble_green" ],
+			"boost": {
+                "id": "boost_mine",
+                "cost": "120",
+                "gain": "10"
+            },
+            "specials": [
+				{ "special_bomb": { "number": 21, "min": 150, "max": 1000 } } 
+			]
+        },
+		
+		{
+			"description": "Intro to rockets and fireballs",
+            "_level": "2",
+            "_id": "level_hatch_egg",
+            "BackgroundImage": "game_bg3",
+			"width": "12",
+            "height": "24",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 22, "number": 25, "symmetry": [ {"x": 6, "pcnt": 100 } ] },
+            "list": [ "bubble_red", "bubble_blue", "bubble_yellow" ],
+			"boost": {
+                "id": "boost_fireball",
+                "cost": "170",
+                "gain": "35"
+            },
+            "specials": [
+				{ "special_bomb": { "number": 20, "min": 200, "max": 1000 } },
+				{ "special_rocket": { "number": 12, "min": 200 } }
+			]
+        },
+		
+		{
+			"description": "Intro to collecting",
+            "_level": "3",
+            "_id": "level_collect_fish",
+            "BackgroundImage": "game_bg5",
+			"width": "12",
+            "height": "18",
+			"symmetry": [ {"x": 6, "pcnt": 70 } ],
+            "holes": { "seed": 3, "number": 25, "symmetry": [ {"x": 6, "pcnt": 100 } ] },
+            "list": [ "bubble_red", "bubble_green", "bubble_yellow" ],
+            "goal_fish": { "count": 8, "min": 120, "max": 500 },
+			"boost": {
+                "id": "boost_mine",
+                "cost": "120",
+                "gain": "20"
+            },
+            "specials": [
+				{ "special_bomb": { "number": 20, "min": 150, "max": 900 } }
+			]
+        },
+		
+		{
+			"description": "Harder collecting level, but has rockets",
+            "_level": "4",
+            "_id": "level_collect_fish",
+            "BackgroundImage": "game_bg2",
+			"width": "12",
+            "height": "22",
+			"symmetry": [ {"x": 6, "pcnt": 70 } ],
+            "holes": { "seed": 4, "number": 24, "symmetry": [ {"x": 6, "pcnt": 100 } ] },
+            "list": [ "bubble_red", "bubble_blue", "bubble_green", "bubble_yellow" ],
+            "goal_fish": { "count": 10, "min": 120, "max": 800 },
+			"boost": {
+                "id": "boost_fireball",
+                "cost": "150",
+                "gain": "20"
+            },
+            "specials": [
+				{ "special_bomb": { "number": 18, "min": 96, "max": 160 } },
+				{ "special_rocket": { "number": 14, "min": 160 } }
+			]
+        },
+		
+		{
+			"description": "Intro to level_protect_barrier and frozen bubbles, only 2 colors",
+            "_level": "5",
+            "_id": "level_protect_barrier",
+            "BackgroundImage": "game_bg4",
+			"width": "12",
+            "height": "24",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 5, "number": 30, "symmetry": [ {"x": 6, "pcnt": 100 } ] },
+            "list": [ "bubble_red", "bubble_blue" ],
+			"boost": {
+                "id": "boost_mine",
+                "cost": "150",
+                "gain": "15"
+            },
+            "specials": [
+				{ "special_bomb": { "number": 8, "min": 96, "max": 1000 } } ,
+				{ "special_frozen_bubble": { "number": 30, "min": 96, "max": 1000 } } 
+			]
+        },
+		
+		{
+			"description": "Intro to extra moves",
+            "_level": "6",
+            "_id": "level_protect_barrier",
+            "BackgroundImage": "game_bg4",
+			"width": "12",
+            "height": "16",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 6, "number": 15, "symmetry": [ {"x": 6, "pcnt": 100 } ] },
+            "list": [ "bubble_blue", "bubble_green", "bubble_yellow" ],
+			"boost": {
+                "id": "boost_extra_moves",
+                "cost": "90",
+                "gain": "20"
+            },
+            "specials": [
+				{ "special_bomb": { "number": 15, "min": 96, "max": 1000 } } ,
+				{ "special_frozen_bubble": { "number": 10, "min": 96, "max": 1000 } } 
+			]
+        },
+		
+		{
+			"description": "Intro to carrier dragons",
+            "_level": "7",
+            "_id": "level_hatch_egg",
+            "BackgroundImage": "game_bg6",
+			"width": "12",
+            "height": "18",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 7, "number": 15, "symmetry": [ {"x": 6, "pcnt": 100 } ] },
+            "list": [ "bubble_red", "bubble_green", "bubble_yellow" ],
+			"boost": {
+                "id": "boost_mine",
+                "cost": "100",
+                "gain": "10"
+            },
+            "specials": [
+				{ "special_carry_dragon": { "number": 15, "min": 96, "max": 1000 } } ,
+				{ "special_frozen_bubble": { "number": 10, "min": 96, "max": 1000 } } 
+			]
+        },
+		
+		{
+			"description": "Carrier dragons with collecting",
+            "_level": "8",
+            "_id": "level_collect_fish",
+            "BackgroundImage": "game_bg5",
+			"width": "12",
+            "height": "16",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 8, "number": 24, "symmetry": [ {"x": 3, "pcnt": 100 }, {"x": 9, "pcnt": 100 } ] },
+            "list": [ "bubble_blue", "bubble_green", "bubble_yellow" ],
+            "goal_fish": { "count": 7, "min": 120, "max": 600 },
+			"boost": {
+                "id": "boost_fireball",
+                "cost": "135",
+                "gain": "30"
+            },
+            "specials": [
+				{ "special_carry_dragon": { "number": 12, "min": 96, "max": 640 } } ,
+				{ "special_frozen_bubble": { "number": 10, "min": 96, "max": 1000 } }
+			]
+        },
+		
+		{
+			"description": "Carrier dragons in level_protect_barrier, Intro to wilds",
+            "_level": "9",
+            "_id": "level_protect_barrier",
+            "BackgroundImage": "game_bg1",
+			"width": "12",
+            "height": "16",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 9, "number": 24, "symmetry": [ {"x": 3, "pcnt": 100 }, {"x": 9, "pcnt": 100 } ] },
+            "list": [ "bubble_red", "bubble_blue", "bubble_yellow" ],
+			"boost": {
+                "id": "boost_wild",
+                "cost": "100",
+                "gain": "15"
+            },
+            "specials": [
+				{ "special_carry_dragon": { "number": 10, "min": 96, "max": 640 } } ,
+				{ "special_bomb": { "number": 6, "min": 96, "max": 1000 } },
+				{ "special_rocket": { "number": 6, "min": 200, "max": 1000 } }
+			]
+        },
+		
+		{
+			"description": "Chance to gain moves",
+            "_level": "10",
+            "_id": "level_hatch_egg",
+            "BackgroundImage": "game_bg3",
+			"width": "12",
+            "height": "20",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 10, "number": 30, "symmetry": [ {"x": 6, "pcnt": 50 } ] },
+            "list": [ "bubble_red", "bubble_green", "bubble_yellow" ],
+			"boost": {
+                "id": "boost_extra_moves",
+                "cost": "80",
+                "gain": "15"
+            },
+            "specials": [
+				{ "special_bomb": { "number": 14, "min": 96, "max": 1000 } },
+				{ "special_rocket": { "number": 10, "min": 96, "max": 1000 } },
+				{ "special_carry_dragon": { "number": 8, "min": 96, "max": 640 } }
+			]
+        },
+	
+		{
+			"description": "Intro to fire dragons",
+            "_level": "11",
+            "_id": "level_collect_fish",
+            "BackgroundImage": "game_bg2",
+			"width": "12",
+            "height": "15",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 10, "number": 16, "symmetry": [ {"x": 6, "pcnt": 0 } ] },
+            "list": [ "bubble_red", "bubble_blue", "bubble_green" ],
+            "goal_fish": { "count": 7, "min": 120, "max": 300 },
+			"boost": {
+                "id": "boost_wild",
+                "cost": "100",
+                "gain": "15"
+            },
+            "specials": [
+				{ "special_burst_dragon": { "number": 9, "min": 96, "max": 1000 } }
+			]
+        },
+		
+		{
+			"description": "Intro to lightning dragon, no starting special bubbles",
+            "_level": "12",
+            "_id": "level_hatch_egg",
+            "BackgroundImage": "game_bg6",
+			"width": "12",
+            "height": "15",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 12, "number": 22, "symmetry": [ {"x": 6, "pcnt": 50 } ] },
+            "list": [ "bubble_red", "bubble_green", "bubble_yellow" ],
+			"boost": {
+                "id": "boost_convert_dragon",
+                "cost": "70",
+                "gain": "20"
+            },
+            "specials": []
+        },
+		
+		{
+			"description": "Carrier + fire dragons",
+            "_level": "13",
+            "_id": "level_protect_barrier",
+            "BackgroundImage": "game_bg1",
+			"width": "12",
+            "height": "16",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 13, "number": 25, "symmetry": [ {"x": 6, "pcnt": 70 } ] },
+            "list": [ "bubble_blue", "bubble_green", "bubble_yellow" ],
+			"boost": {
+                "id": "boost_extra_moves",
+                "cost": "80",
+                "gain": "15"
+            },
+            "specials": [
+				{ "special_carry_dragon": { "number": 15, "min": 96, "max": 160 } } ,
+				{ "special_burst_dragon": { "number": 15, "min": 96, "max": 640 } } 
+			]
+        },
+		
+		{
+			"description": "More lightning dragons",
+            "_level": "14",
+            "_id": "level_collect_fish",
+            "BackgroundImage": "game_bg5",
+			"width": "12",
+            "height": "16",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 14, "number": 30, "symmetry": [ {"x": 6, "pcnt": 50 } ] },
+            "list": [ "bubble_red", "bubble_blue", "bubble_green" ],
+            "goal_fish": { "count": 5, "min": 120, "max": 800 },
+			"boost": {
+                "id": "boost_convert_dragon",
+                "cost": "100",
+                "gain": "20"
+            },
+            "specials": [
+				{ "special_carry_dragon": { "number": 8, "min": 96, "max": 1000 } },
+				{ "special_burst_dragon": { "number": 8, "min": 96, "max": 1000 } }
+			]
+        },
+		
+		{
+			"description": "Final level_protect_barrier level",
+            "_level": "15",
+            "_id": "level_protect_barrier",
+            "BackgroundImage": "game_bg4",
+			"width": "12",
+            "height": "23",
+			"symmetry": [ {"x": 6, "pcnt": 50 } ],
+            "holes": { "seed": 15, "number": 35, "symmetry": [ {"x": 6, "pcnt": 100 } ] },
+            "list": [ "bubble_blue", "bubble_green", "bubble_yellow" ],
+			"boost": {
+                "id": "boost_convert_dragon",
+                "cost": "110",
+                "gain": "20"
+            },
+            "specials": [
+				{ "special_bomb": { "number": 4, "min": 96, "max": 1000 } } ,
+				{ "special_rocket": { "number": 4, "min": 96, "max": 1000 } } ,
+				{ "special_burst_dragon": { "number": 4, "min": 96, "max": 1000 } } ,
+				{ "special_carry_dragon": { "number": 4, "min": 96, "max": 1000 } } ,
+				{ "special_frozen_bubble": { "number": 8, "min": 96, "max": 2000 } } 
+			]
+        }
+    ]
+}

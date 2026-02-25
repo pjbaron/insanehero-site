@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>All The Icons!</title>
+</head>
+
+<div id='info'></div>
+<canvas id="canvas" width="256" height="256"></canvas>
+<body>
+	<script type="text/javascript">
+        // 2 <= d <= 36              toString, limit for base
+        // (w * h) ^ d  <  2 ^ 53    Number, accuracy limit for integers
+        const w = 5, h = 5, d = 2;
+        const m = Math.pow(d, w * h);
+
+        const info = document.getElementById('info');
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext('2d');
+        const pixel = Math.floor((256 - 2) / Math.max(w, h));
+
+        function createIcons() {
+            info.innerHTML = i + "/" + m + ": " + w + "x" + h + " " + d + " colours";
+            const s = i.toString(d).padStart(w * h, "0");
+            drawIcon(s, w, h);
+            if (++i < m)
+                requestAnimationFrame(createIcons);
+        }
+
+        function drawIcon(s, w, h) {
+            ctx.fillStyle = "#002010";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for(var y = 0; y < h; y++) {
+                for(var x = 0; x < w; x++) {
+                    ctx.fillStyle = ["#ffffff","#000000","#ff0000","#00ff00","#0000ff","#808080","#800000","#008000",
+                                     "#000080","#00ffff","#ffff00","#008080","#808000","#ff00ff","#800080","#c0c0c0"][s.charAt(x + y * w)];
+                    ctx.fillRect(x * pixel + 1, y * pixel + 1, pixel, pixel);
+                }
+            }
+        }
+
+        var i = 0;
+        createIcons();
+	</script>
+</body>
+</html>

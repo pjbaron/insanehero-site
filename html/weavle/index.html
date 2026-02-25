@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WEAVLE</title>
+
+    <script type="text/javascript" src="data/wordList.json"></script>
+
+    <style>
+        body {
+            margin: 0;
+            background-color: rgb(0, 2, 0);
+            overflow: hidden;
+            overscroll-behavior: contain;
+        }
+        canvas {
+            display: block;
+            text-align: center;
+            margin: auto;
+        }
+    </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@500&family=Fira+Sans:wght@500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<canvas id="canvas">Canvas is not supported by this browser.</canvas>
+
+<script>
+    console.log("Dictionary: " + wordList.length);
+
+    const State = {
+        NORMAL: 0,
+        GUESS: 1
+    };
+
+// TODO:
+// hide letters that no longer exist in the grid to help at end of game
+// hide letters that have been guessed for a selected slot
+// click to select should allow keyboard letter guess
+// pointer to nearest incomplete when there are none visible in window
+
+// should be able to select a letter THEN click the square for a guess
+// should not use daily guesses too easily (forget to select a square)
+// (maybe - click daily button to use selected letter vs click grid to use it there)
+
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    // play area and scrolling control
+    var screenWidth, screenHeight;
+    var playAreaWidth, playAreaHeight;
+    var maxDim, minDim;;
+    var scrollLimitX, scrollLimitY;
+    var scrollX = 0, scrollY = 0;
+    // input
+    var dragX = 0, dragY = 0;
+    var throwX = 0, throwY = 0;
+    var guessX, guessY, guessTime;
+    var letterBox = [];
+    var buttonBox = [];
+    var freeLetters = ["A".charCodeAt(0) - 65,"E".charCodeAt(0) - 65,"I".charCodeAt(0) - 65,"O".charCodeAt(0) - 65,"U".charCodeAt(0) - 65];
+    // game data
+    const windowSize = 10;
+    var mapSize;
+    var worldMap;
+    var guessMap;
+    var wordsUsed;
+    var numLives = 3;
+    var numChoices = 5; // TODO: use min(days since last played, days into this session) - (choices used in this session)
+    // control
+    var fontDelay = 8;
+    var mapReady;
+    var state = State.NORMAL;
+    var flashLives = 0;
+    var elapsed = 0;
+    var lastFrame = Date.now();
+
+    // colours
+    const flashLivesTime = 500;
+    const flashLivesBackground = "#800";
+    const gridBorders = "#000";
+    const gridBackground = "#040";
+    const gridSelected = "#0A0";
+    const boundsBorder = "#FFF";
+    const letterColour = "#FFF";
+    const panelBorder = "#FFF";
+    const panelBackground = "#050";
+    const titleTextColor = "#FFF";
+    const buttonTextColor = "#FFF";
+    const buttonBorderColor = "#FFF";
+    const buttonBackgroundColor = "#020";
+    const buttonHighlightColor = "#060";
+    const letterBarBorder = "#FFF";
+    const letterBarBackground = "#020"
+    const letterBarGuess = "#060"
+    const lettersInBar = "#FFF";
+    const boundsFillColors = [
+        //"rgba(100,100,100,0.25)",
+        "rgba( 96, 64,  0, 0.9)",
+        "rgba( 96, 64, 96, 0.9)",
+        "rgba(  0, 96,  0, 0.9)",
+        "rgba(  0, 64, 96, 0.9)",
+        "rgba(  0, 96, 96, 0.9)",
+    ];
+
+
+    function mouseScroll() {
+
+        var touching = false;
+        var dragged = false;
+        var mousePos = { x:0, y:0 };
+        var lastPos = mousePos;
+
+        function cancelGuess() {
+            guessX = guessY = guessTime = undefined;
+            state = State.NORMAL;
+        }
+
+        function letterSelect(pos) {
+            for(var i = 0; i < letterBox.length; i++) {
+                if (pos.y > letterBox[i].y && pos.y < letterBox[i].y + letterBox[i].high) {
+                    if (pos.x > letterBox[i].x &&
+                        pos.x < letterBox[i].x + letterBox[i].wide) {
+                        var letterIndex = Math.floor(((pos.x - letterBox[i].x) / letterBox[i].wide + i) * 13);
+                        var letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(letterIndex);
+                        switch(state) {
+                            case State.NORMAL:
+                                if (numChoices > 0 && freeLetters.indexOf(letterIndex) == -1) {
+                                    numChoices--;
+                                    freeLetters.push(letterIndex);
+                                    return true;
+                                }
+                                break;
+                            case State.GUESS:
+                                if (numLives > 0) {
+                                    if (letter != worldMap[guessY][guessX].toUpperCase()) {
+                                        if (guessMap[guessY][guessX] == null)
+                                            guessMap[guessY][guessX] = [];
+                                        if (guessMap[guessY][guessX].indexOf(letter) == -1)
+                                            numLives--;
+                                        guessMap[guessY][guessX].push(letter);
+                                        cancelGuess();
+                                        return false;
+                                    }
+                                    numLives++;     // gain a life for each correct guess
+                                    guessMap[guessY][guessX] = true;
+                                    cancelGuess();
+                                    return true;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        function gridSelect(pos) {
+            if (pos.y < playAreaHeight) {
+                var ox = Math.floor((pos.x - scrollX) / maxDim);
+                var oy = Math.floor((pos.y - scrollY) / maxDim);
+                if (state == State.GUESS && ox == guessX && oy == guessY) {
+                    cancelGuess();
+                    return false;
+                }
+                var letter = worldMap[oy][ox].toUpperCase();
+                if (freeLetters.indexOf(letter.charCodeAt(0) - 65) == -1) {
+                    if (guessMap[oy][ox] !== true) {
+                        guessX = ox;
+                        guessY = oy;
+                        guessTime = Date.now();
+                        state = State.GUESS;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function endDrag() {
+            if (touching) {
+                scrollX += dragX;
+                scrollY += dragY;
+                dragX = dragY = 0;
+                touching = false;
+                dragged = false;
+            }
+        }
+
+        function stopScroll(pos, base, limit) {
+            if (pos + base > 0)
+                pos = -base;
+            if (pos + base < -limit)
+                pos = -limit - base;
+            return pos;
+        }
+
+        function length(x, y) {
+            return Math.sqrt(x*x + y*y);
+        }
+
+        canvas.addEventListener("mousedown", function (e) {
+            touching = true;
+            dragged = false;
+            var pos = getMousePos(canvas, e);
+            if (letterSelect(pos)) {
+                endDrag();
+                return;
+            }
+            lastPos = pos;
+        }, false);
+        canvas.addEventListener("mouseup", function (e) {
+            if (!dragged || length(dragX, dragY) < 4) { // tap
+                var pos = getMousePos(canvas, e);
+                if (gridSelect(pos)) {
+                    if (numLives <= 0) { // no lives left!
+                        flashLives = flashLivesTime;
+                        cancelGuess();
+                    }
+                }
+            }
+            endDrag();
+        }, false);
+        canvas.addEventListener("mousemargins", function(e) {
+            endDrag();
+        }, false);
+        document.addEventListener("mousemove", function (e) {
+            endDrag();
+        }, false);
+        canvas.addEventListener("mousemove", function (e) {
+            e.stopPropagation();
+            mousePos = getMousePos(canvas, e);
+            if (touching) {
+                var mx = mousePos.x - lastPos.x, my = mousePos.y - lastPos.y;
+                dragX = stopScroll(mx, scrollX, scrollLimitX);
+                dragY = stopScroll(my, scrollY, scrollLimitY);
+                dragged = dragged || (mx != 0 || my != 0);
+            }
+        }, false);
+
+        // Get the position of the mouse relative to the canvas
+        function getMousePos(canvasDom, mouseEvent) {
+            var rect = canvasDom.getBoundingClientRect();
+            return {
+                x: mouseEvent.clientX - rect.left,
+                y: mouseEvent.clientY - rect.top
+            };
+        }
+    }
+
+    function touchScroll() {
+        var touchX, touchY;
+
+        function getTouchPos(canvasDom, touchEvent) {
+            var rect = canvasDom.getBoundingClientRect();
+            return {
+                x: touchEvent.touches[0].clientX - rect.left,
+                y: touchEvent.touches[0].clientY - rect.top
+            };
+        }
+
+        // send touch events to the mouse handler
+        canvas.addEventListener("touchstart", function (e) {
+            mousePos = getTouchPos(canvas, e);
+            var touch = e.touches[0];
+            touchX = touch.clientX;
+            touchY = touch.clientY;
+            var mouseEvent = new MouseEvent("mousedown", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }, false);
+        canvas.addEventListener("touchend", function (e) {
+            var mouseEvent = new MouseEvent("mouseup", {
+                clientX: touchX,
+                clientY: touchY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }, false);
+        canvas.addEventListener("touchmove", function (e) {
+            var touch = e.touches[0];
+            touchX = touch.clientX;
+            touchY = touch.clientY;
+            var mouseEvent = new MouseEvent("mousemove", {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }, false);
+
+        // prevent page scrolling when touching the canvas
+        document.body.addEventListener("touchstart", function (e) {
+            if (e.target == canvas) {
+                e.preventDefault();
+            }
+        }, false);
+        document.body.addEventListener("touchend", function (e) {
+            if (e.target == canvas) {
+                e.preventDefault();
+            }
+        }, false);
+        document.body.addEventListener("touchmove", function (e) {
+            if (e.target == canvas) {
+                e.preventDefault();
+            }
+        }, false);
+
+    }
+
+
+    function resize() {
+        screenWidth = window.innerWidth;
+        screenHeight = window.innerHeight;
+        //if (screenWidth / screenHeight < 0.75) screenWidth = screenHeight * 0.75;
+        if (screenWidth / screenHeight > 1.25) screenWidth = screenHeight * 1.25;
+        canvas.width = screenWidth;
+        canvas.height = screenHeight;
+        playAreaHeight = screenHeight * 0.8;
+        minDim = (Math.min(screenWidth, playAreaHeight) / windowSize);
+        maxDim = (Math.max(screenWidth, playAreaHeight) / windowSize);
+        if (screenWidth > playAreaHeight)
+        {
+            scrollLimitX = mapSize * maxDim - windowSize * maxDim;
+            scrollLimitY = mapSize * maxDim - windowSize * minDim;
+        }
+        else
+        {
+            scrollLimitX = mapSize * maxDim - windowSize * minDim;
+            scrollLimitY = mapSize * maxDim - windowSize * maxDim;
+        }
+    }
+    window.addEventListener("resize", resize);
+
+
+    function getJSON(url, callback) {
+        console.log("getJSON " + url);
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.onload = function() {
+            var status = xhr.status;
+            if (status === 200) {
+                callback(null, xhr.response);
+            } else {
+                callback(status, xhr.response);
+            }
+        }
+        xhr.send();
+    }
+
+    function getWordMap() {
+        mapReady = false;
+        getJSON("https://www.insanehero.com/weavle/map.json",
+            function(err, data) {
+                if (err !== null) {
+                    console.warn("Cannot get map: " + err);
+                } else {
+                    var world = JSON.parse(data);
+                    console.log("Loaded map size: " + world.size);
+                    mapSize = world.size;
+                    worldMap = world.map;
+                    guessMap = [];
+                    for(var i = 0; i < mapSize; i++) {
+                        guessMap[i] = [];
+                    }
+                    wordsUsed = world.words;
+                    resize();
+                    mapReady = true;
+                }
+            });
+    }
+
+
+    function redraw() {
+
+        function adjustFontSize(size, type) {
+            ctx.font = size.toString() + "px Fira " + type;
+            //letterSize = ctx.measureText("W").width;
+        }
+
+        function fillText(text, x, y, color, align, fontSize, fontType = "Sans") {
+            ctx.fillStyle = color;
+            ctx.textAlign = align;
+            adjustFontSize(fontSize, fontType);
+            ctx.fillText(text, x, y);
+        }
+
+        function roundedRect(x, y, width, height, radius, color, fillColor) {
+            if (width < 2 * radius) radius = width / 2;
+            if (height < 2 * radius) radius = height / 2;
+            ctx.lineWidth = 3.0;
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.arcTo(x + width, y, x + width, y + height, radius);
+            ctx.arcTo(x + width, y + height, x, y + height, radius);
+            ctx.arcTo(x, y + height, x, y, radius);
+            ctx.arcTo(x, y, x + width, y, radius);
+            ctx.stroke();
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+
+        function animate() {
+            if (flashLives > 0) {
+                flashLives = Math.max(flashLives - elapsed, 0);
+            }
+        }
+
+        function drawGrid() {
+            // draw the grid
+            ctx.lineWidth = 1.0;
+            ctx.strokeStyle = gridBorders;
+            for(var y = 0; y < mapSize; y++) {
+                var sy = y * maxDim + scrollY + dragY;
+                for(var x = 0; x < mapSize; x++) {
+                    var sx = x * maxDim + scrollX + dragX;
+
+                    ctx.fillStyle = gridBackground;
+                    if (state == State.GUESS) {
+                        if (x == guessX && y == guessY)
+                            if (((Math.floor((Date.now() - guessTime) / 100) & 15) & 3) != 0)
+                                ctx.fillStyle = gridSelected;
+                    }
+                    ctx.fillRect(sx, sy, maxDim, maxDim);
+                    ctx.beginPath();
+                    ctx.rect(sx, sy, maxDim, maxDim);
+                    ctx.stroke();
+                }
+            }
+            ctx.lineWidth = 2.0;
+            ctx.strokeStyle = "#AA0";
+            ctx.beginPath();
+            ctx.rect(scrollX + dragX + 2, scrollY + dragY + 2, mapSize * maxDim - 3, mapSize * maxDim - 4);
+            ctx.stroke();
+        }
+
+        function wordComplete(wordData) {
+            for(var i = 0; i < wordData.word.length; i++)
+            {
+                var x = wordData.x + i * wordData.dx;
+                var y = wordData.y + i * wordData.dy;
+                var letter = worldMap[y][x].toUpperCase();
+                if (freeLetters.indexOf(letter.charCodeAt(0) - 65) == -1 && 
+                    guessMap[y][x] !== true)
+                    return false;
+            }
+            return true;
+        }
+
+        function drawBounds() {
+            // draw the word-bounding rounded rectangles
+            var sm = maxDim * 0.1;
+            for(var i = 0; i < wordsUsed.length; i++) {
+                var w = wordsUsed[i];
+                var sy = w.y * maxDim + scrollY + dragY;
+                var sx = w.x * maxDim + scrollX + dragX;
+                if (!wordComplete(w))
+                    roundedRect(sx + sm, sy + sm, w.dx == 0 ? (maxDim - sm * 2) : (w.word.length * maxDim - sm * 2), w.dy == 0 ? (maxDim - sm * 2) : (w.word.length * maxDim - sm * 2), maxDim * 0.25, boundsBorder, w.color);
+            }
+        }
+
+        function drawLetters() {
+            for(var y = 0; y < mapSize; y++) {
+                var sy = y * maxDim + scrollY + dragY;
+                for(var x = 0; x < mapSize; x++) {
+                    var sx = x * maxDim + scrollX + dragX;
+                    var letter = worldMap[y][x].toUpperCase();
+                    if (freeLetters.indexOf(letter.charCodeAt(0) - 65) != -1 ||
+                        guessMap[y][x] === true) {
+                            fillText(letter, sx + maxDim * 0.5, sy + maxDim * 0.8, letterColour, "center", maxDim * 0.75, "Mono");
+                    }
+                }
+            }
+        }
+
+        function createUsageString(start, end) {
+            var s = "";
+            function freeCheck(i) {
+                if (freeLetters.indexOf(i) == -1)
+                    s += "_ ";
+                else
+                    s += "  ";
+            }
+
+            for(var i = start; i < end; i++)
+            {
+                var letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(i);
+                if (state == State.GUESS) {
+                    var guesses = guessMap[guessY][guessX];
+                    if (guesses !== true && (guesses == null || guesses.indexOf(letter) == -1)) {
+                        freeCheck(i);
+                    }
+                    else {
+                        s += "  ";  // already guessed (incorrect)
+                    }
+                }
+                else {
+                    freeCheck(i);
+                }
+            }
+            return s.substr(0, s.length - 1);
+        }
+
+        function drawPanel() {
+            var panelWidth = screenWidth;
+            var panelHeight = screenHeight - playAreaHeight;
+            ctx.fillStyle = panelBackground;
+            ctx.fillRect(0, playAreaHeight, panelWidth, panelHeight);
+            ctx.strokeStyle = panelBorder;
+            ctx.lineWidth = 3.0;
+            ctx.beginPath();
+            ctx.rect(0, playAreaHeight, panelWidth, panelHeight);
+            ctx.stroke();
+            fillText("WEAVLE", screenWidth / 2, playAreaHeight + panelHeight * 0.3, titleTextColor, "center", minDim * 0.8);
+            var w0 = minDim * 2.5;
+            buttonBox[0] = { x: screenWidth * 0.05 - minDim * .2, y: playAreaHeight + panelHeight * 0.30 - minDim * 0.46, wide: w0, high: minDim * 0.6 };
+            roundedRect(buttonBox[0].x, buttonBox[0].y, buttonBox[0].wide, buttonBox[0].high, minDim * 0.25, buttonBorderColor, (state == State.NORMAL && numChoices > 0) ? buttonHighlightColor:buttonBackgroundColor);
+            fillText("Daily " + numChoices, buttonBox[0].x + w0 / 2, buttonBox[0].y + minDim * 0.46, buttonTextColor, "center", minDim / 2, "Mono");
+            var w1 = minDim * 2.5;
+            buttonBox[1] = { x: screenWidth * 0.95 - w1, y: buttonBox[0].y, wide: w1, high: buttonBox[0].high };
+            var bkCol = (state == State.GUESS && numLives > 0) ? buttonHighlightColor:buttonBackgroundColor;
+            var txCol = buttonTextColor;
+            if (flashLives) bkCol = flashLivesBackground;
+            roundedRect(buttonBox[1].x, buttonBox[1].y, buttonBox[1].wide, buttonBox[1].high, minDim * 0.25, buttonBorderColor, bkCol);
+            fillText("Lives " + numLives, buttonBox[1].x + w1 / 2, buttonBox[1].y + minDim * 0.46, txCol, "center", minDim / 2, "Mono");
+
+            var s0 = createUsageString(0, 13);
+            var s1 = createUsageString(13, 26);
+            var w = minDim * 8;
+            letterBox[0] = { x: screenWidth / 2 - w / 2, y: playAreaHeight + panelHeight * 0.60 - minDim * .4, wide: w, high: minDim * 0.55};
+            roundedRect(letterBox[0].x, letterBox[0].y, letterBox[0].wide, letterBox[0].high, minDim * 0.25, letterBarBorder, state == State.NORMAL ? letterBarBackground:letterBarGuess);
+            fillText(s0, screenWidth / 2, letterBox[0].y + minDim * 0.39, lettersInBar, "center", minDim / 2, "Mono");
+            fillText("A B C D E F G H I J K L M", screenWidth / 2, letterBox[0].y + minDim * 0.39, lettersInBar, "center", minDim / 2, "Mono");
+            letterBox[1] = { x: screenWidth / 2 - w / 2, y: playAreaHeight + panelHeight * 0.85 - minDim * .4, wide: w, high: minDim * 0.55};
+            roundedRect(letterBox[1].x, letterBox[1].y, letterBox[1].wide, letterBox[1].high, minDim * 0.25, letterBarBorder, state == State.NORMAL ? letterBarBackground:letterBarGuess);
+            fillText(s1, screenWidth / 2, letterBox[1].y + minDim * 0.39, lettersInBar, "center", minDim / 2, "Mono");
+            fillText("N O P Q R S T U V W X Y Z", screenWidth / 2, letterBox[1].y + minDim * 0.39, lettersInBar, "center", minDim / 2, "Mono");
+        }
+
+        ctx.clearRect(0, 0, screenWidth, screenHeight);
+
+        animate();
+        drawGrid();
+        drawBounds();
+        drawLetters();
+        drawPanel();
+    }
+
+    function update() {
+        var now = Date.now();
+        elapsed = now - lastFrame;
+        lastFrame = now;
+
+        if (mapReady) {
+            if (fontDelay <= 0) {
+                redraw();
+                requestAnimationFrame(update);
+                return;
+            }
+            fontDelay--;
+        }
+        requestAnimationFrame(update);
+    }
+
+    // preload fonts to avoid flicker
+    ctx.font = "1px Fira Mono";
+    ctx.fillText(".", 0, 0);
+    ctx.font = "1px Fira Sans";
+    ctx.fillText(".", 0, 0);
+
+    // TODO: restore numChoices and numLives from cookies/localStorage, then update them for today's date
+    // TODO: restore guessMap from cookies/localStorage
+    // TODO: restore freeLetters from cookies/localStorage
+    getWordMap();
+    mouseScroll();
+    touchScroll();
+
+    requestAnimationFrame(update);
+
+</script>
+</body>
+</html>

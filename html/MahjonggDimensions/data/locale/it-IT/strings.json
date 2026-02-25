@@ -1,0 +1,170 @@
+{
+  "Strings": {
+    "String": [
+      {
+        "_id": "new_game_start_button_string",
+        "__text": "GIOCA"
+      },
+      {
+        "_id": "play_mjdb_button_string",
+        "__text": "Giocare a Mahjongg Dimensions Blast"
+      },
+      {
+        "_id": "help_header_string",
+        "__text": "GUIDA"
+      },
+      {
+        "_id": "help_page1_text_string",
+        "__text": "CIRCA IL GIOCO"
+      },
+      {
+        "_id": "help_page1_text1_string",
+        "__text": "Clicca e abbina qualunque tessera che abbia due lati adiacenti liberi per guadagnare punti."
+      },
+      {
+        "_id": "help_page1_text2_string",
+        "__text": "Abbina le tessere il più velocemente possibile per completare tutti i livelli prima che scada il tempo."
+      },
+      {
+        "_id": "help_page1_text3_string",
+        "__text": "Puoi ruotare il rompicapo per trovare altri abbinamenti dall'altro lato! Per ruotare, clicca sulle frecce sullo schermo o usa la tastiera."
+      },
+      {
+        "_id": "help_page1_text4_string",
+        "__text": "CONSIGLIO: Usa i tasti freccia destra/sinistra della tastiera per ruotare il rompicapo più velocemente."
+      },
+      {
+        "_id": "help_page2_text_string",
+        "__text": "BONUS"
+      },
+      {
+        "_id": "help_page2_text1_string",
+        "__text": "COMBO ABBINAMENTO VELOCE: Se effettui un abbinamento entro tre secondi dal precedente attiverai un moltiplicatore di punti."
+      },
+      {
+        "_id": "help_page2_text2_string",
+        "__text": "COMBO ABBINAMENTO MULTIPLO: Otterrai punti bonus abbinando più immagini uguali di seguito."
+      },
+      {
+        "_id": "help_page2_text3_string",
+        "__text": "BONUS TEMPO: Ogni volta che completi un livello riceverai punti bonus in base al tempo a disposizione rimasto."
+      },
+      {
+        "_id": "help_page2_text4_string",
+        "__text": "Se non riesci a trovare abbinamenti puoi premere il pulsante Mischia di nuovo per mischiare le tessere - puoi farlo solo una volta per livello."
+      },
+      {
+        "_id": "help_page2_text5_string",
+        "__text": "Quando il tempo scade la partita termina. Divertiti e buona fortuna!"
+      },
+      {
+        "_id": "help_multimatch_text_string",
+        "__text": "ABBINAMENTO MULTIPLO"
+      },
+      {
+        "_id": "help_speedmatch_text_string",
+        "__text": "ABBINAMENTO VELOCE"
+      },
+      {
+        "_id": "help_show_help_string",
+        "__text": "MOSTRA ALL'AVVIO"
+      },
+      {
+        "_id": "options_header_string",
+        "__text": "OPZIONI"
+      },
+      {
+        "_id": "options_sound_string",
+        "__text": "SUONI"
+      },
+      {
+        "_id": "options_music_string",
+        "__text": "MUSICA"
+      },
+      {
+        "_id": "quit_header_string",
+        "__text": "Vuoi davvero uscire?"
+      },
+      {
+        "_id": "quit_yes_button_string",
+        "__text": "SÌ"
+      },
+      {
+        "_id": "quit_no_button_string",
+        "__text": "NO"
+      },
+      {
+        "_id": "gvp_level_time_indication_text_string",
+        "__text": "TEMPO:"
+      },
+      {
+        "_id": "gvp_level_score_indication_text_string",
+        "__text": "PUNTEGGIO:"
+      },
+	  {
+		"_id": "gvp_high_score_indication_text_string",
+		"__text": "RECORD:"
+	  },      
+      {
+        "_id": "gvp_level_good_job_text_string",
+        "__text": "BEN FATTO!"
+      },
+      {
+        "_id": "gvp_level_next_level_text_string",
+        "__text": "LIVELLO SUCCESSIVO"
+      },
+      {
+        "_id": "gvp_level_reshuffle_text_string",
+        "__text": "PERMUTAZIONE"
+      },
+      {
+        "_id": "gvp_level_no_more_move_text_string",
+        "__text": "NON CI SONO PIÙ ABBINAMENTI!"
+      },
+      {
+        "_id": "gvp_level_times_up_text_string",
+        "__text": "TEMPO SCADUTO!\nFINE DELLA PARTITA"
+      },
+      {
+        "_id": "gvp_level_reshuffle_button_text_string",
+        "__text": "MISCHIA DI NUOVO"
+      },
+      {
+        "_id": "game_over_lose_header_string",
+        "__text": "FINE DELLA PARTITA"
+      },
+      {
+        "_id": "game_over_win_header_string",
+        "__text": "HAI VINTO"
+      },
+      {
+        "_id": "help_play_string",
+        "__text": "GIOCA"
+      },
+      {
+        "_id": "options_quit_string",
+        "__text": "ABBANDONARE"
+      },
+      {
+        "_id": "gvp_level_times_up_final_score_string",
+        "__text": "Punteggio finale"
+      },
+      {
+        "_id": "submit_score_button_string",
+        "__text": "Invia punteggio"
+      },
+      {
+      	"_id": "play_again_string",
+      	"__text": "Gioca di nuovo"
+      },
+      {
+      	"_id": "click_to_continue_string",
+      	"__text": "Clicca per continuare"
+      },
+	  {
+		"_id": "continue_button_string",
+		"__text": "Continua"
+	  }
+    ]
+  }
+}

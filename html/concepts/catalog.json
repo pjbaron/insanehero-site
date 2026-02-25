@@ -1,0 +1,336 @@
+[
+  {
+    "slug": "hungry_hole",
+    "name": "Hungry Hole",
+    "description": "Guide a growing hole to consume progressively larger objects, scaling from tiny items to entire buildings.",
+    "perspective": "top-down",
+    "tags": [
+      "io-game",
+      "progression",
+      "consuming",
+      "physics"
+    ],
+    "built_at": "2026-02-08T12:00:00"
+  },
+  {
+    "slug": "merge_explode",
+    "name": "Merge Explode",
+    "description": "Drop balls that merge on contact and explode at mega tier with chain reactions.",
+    "perspective": "top-down",
+    "tags": [
+      "merge",
+      "puzzle",
+      "physics",
+      "combo"
+    ],
+    "built_at": "2026-02-08T12:00:00"
+  },
+  {
+    "slug": "op_weapons",
+    "name": "OP Weapons",
+    "description": "Destroy enemy waves with 5 absurdly overpowered weapons.",
+    "perspective": "top-down",
+    "tags": [
+      "wave-shooter",
+      "weapons",
+      "arcade"
+    ],
+    "built_at": "2026-02-08T12:00:00"
+  },
+  {
+    "slug": "power_wash",
+    "name": "Power Wash",
+    "description": "Spray water to clean dirty surfaces with satisfaction mechanics.",
+    "perspective": "front-facing orthographic",
+    "tags": [
+      "satisfaction",
+      "cleaning",
+      "level-progression"
+    ],
+    "built_at": "2026-02-08T12:00:00"
+  },
+  {
+    "slug": "ragdoll_launcher",
+    "name": "Ragdoll Launcher",
+    "description": "Slingshot ragdolls at destructible structures for combo scores.",
+    "perspective": "side-view",
+    "tags": [
+      "physics-puzzle",
+      "destruction",
+      "slingshot"
+    ],
+    "built_at": "2026-02-08T12:00:00"
+  },
+  {
+    "slug": "too_many",
+    "name": "Too Many",
+    "description": "Spawn ragdolls down an obstacle course, control chaos with spawn rate slider.",
+    "perspective": "top-down",
+    "tags": [
+      "sandbox",
+      "physics-toy",
+      "chaos"
+    ],
+    "built_at": "2026-02-08T12:00:00"
+  },
+  {
+    "slug": "stack_panic",
+    "name": "Stack Panic",
+    "description": "Catch falling blocks to build wobbly towers while dodging hazards, then watch your tower survive an earthquake to score.",
+    "perspective": "side-view",
+    "tags": [
+      "stacking",
+      "physics",
+      "timing",
+      "tower-building",
+      "casual"
+    ],
+    "built_at": "2026-02-13T14:27:40"
+  },
+  {
+    "slug": "stack_thief",
+    "name": "Stack Thief",
+    "description": "Swipe to steal blocks from wobbling towers and stack them onto yours before everything topples.",
+    "perspective": "side-view",
+    "tags": [
+      "physics",
+      "stacking",
+      "strategy",
+      "timing",
+      "arcade"
+    ],
+    "built_at": "2026-02-13T14:44:57"
+  },
+  {
+    "slug": "lava_rise",
+    "name": "Lava Rise",
+    "description": "Wall-jump between two narrowing walls to outrun rising lava, dodging obstacles and grabbing coins as the climb gets faster and tighter.",
+    "perspective": "side-view",
+    "tags": [
+      "endless-climber",
+      "wall-jump",
+      "reflexes",
+      "one-button",
+      "arcade"
+    ],
+    "built_at": "2026-02-13T15:06:25"
+  },
+  {
+    "slug": "orbit_keeper",
+    "name": "Orbit Keeper",
+    "description": "Tap to launch moons into orbit around planets, building a spinning solar system while avoiding collisions between your own orbiting bodies.",
+    "perspective": "top-down",
+    "tags": [
+      "timing",
+      "orbital-mechanics",
+      "precision",
+      "arcade",
+      "zen"
+    ],
+    "built_at": "2026-02-13T15:19:41"
+  },
+  {
+    "slug": "bounce_back",
+    "name": "Bounce Back",
+    "description": "Aim and release a bouncing ball into a pachinko-style arena of pegs, bumpers, and multiplier zones to rack up the highest score before running out of balls.",
+    "perspective": "front-facing orthographic",
+    "tags": [
+      "peggle-like",
+      "aim-and-launch",
+      "physics",
+      "score-chaser",
+      "casual"
+    ],
+    "built_at": "2026-02-13T15:34:10"
+  },
+  {
+    "slug": "shrink_ray",
+    "name": "Shrink Ray",
+    "description": "Aim a shrink ray to miniaturize oncoming obstacles before they crush you, but shrunk objects become fast ricocheting projectiles you must also dodge.",
+    "perspective": "side-view",
+    "tags": [
+      "dodge",
+      "aim-and-shoot",
+      "self-created-hazards",
+      "reflexes",
+      "arcade",
+      "chaos"
+    ],
+    "built_at": "2026-02-13T15:50:23"
+  },
+  {
+    "slug": "flip_tide",
+    "name": "Flip Tide",
+    "description": "Tap to flip gravity for your surfer between the ocean surface and the ceiling of an underwater cave, threading through gaps in coral above and waves below.",
+    "perspective": "side-view",
+    "tags": [
+      "gravity-flip",
+      "endless-runner",
+      "reflexes",
+      "one-button",
+      "arcade",
+      "surf"
+    ],
+    "built_at": "2026-02-13T16:09:52"
+  },
+  {
+    "slug": "claim_rush",
+    "name": "Claim Rush",
+    "description": "Race to paint the arena floor your color by dragging paths behind you, enclosing regions to claim territory while avoiding AI rivals who cut across your trails.",
+    "perspective": "top-down",
+    "tags": [
+      "territory-capture",
+      "trail-drawing",
+      "risk-reward",
+      "arcade",
+      "area-control"
+    ],
+    "built_at": "2026-02-13T16:27:49"
+  },
+  {
+    "slug": "fold_over",
+    "name": "Fold Over",
+    "description": "Fold a paper sheet along lines to stack colored layers, matching a target pattern in as few folds as possible.",
+    "perspective": "top-down",
+    "tags": [
+      "puzzle",
+      "spatial-reasoning",
+      "paper-folding",
+      "minimalist",
+      "level-progression",
+      "brain-teaser"
+    ],
+    "built_at": "2026-02-13T16:44:46"
+  },
+  {
+    "slug": "rope_rescue",
+    "name": "Rope Rescue",
+    "description": "Fling rope lines between anchor points to build bouncy safety nets that catch falling survivors before they hit the ground.",
+    "perspective": "side-view",
+    "tags": [
+      "rope-physics",
+      "rescue",
+      "drag-to-connect",
+      "timing",
+      "puzzle-action",
+      "level-progression",
+      "casual"
+    ],
+    "built_at": "2026-02-13T17:01:07"
+  },
+  {
+    "slug": "splice_sprint",
+    "name": "Splice Sprint",
+    "description": "Race forward on a procedural track that constantly splits into forking paths \u00e2\u20ac\u201d swipe to pick your lane before each fork, chaining the best route through speed boosts, jumps, and shortcuts while wrong picks dead-end or slow you down.",
+    "perspective": "behind-the-back pseudo-3D",
+    "tags": [
+      "endless-runner",
+      "path-choice",
+      "reaction-speed",
+      "pseudo-3D",
+      "decision-making",
+      "arcade",
+      "one-finger"
+    ],
+    "built_at": "2026-02-13T17:20:03"
+  },
+  {
+    "slug": "hex_clash",
+    "name": "Hex Clash",
+    "description": "Place colored hex tiles to surround and capture enemy hexes, battling an AI opponent for board control in fast 60-second matches.",
+    "perspective": "top-down",
+    "tags": [
+      "strategy",
+      "territory-capture",
+      "hex-grid",
+      "turn-based",
+      "versus-AI",
+      "quick-match",
+      "board-game"
+    ],
+    "built_at": "2026-02-13T19:27:32"
+  },
+  {
+    "slug": "spark_gap",
+    "name": "Spark Gap",
+    "description": "Draw wire paths to connect sparking terminals before the charge drains, routing electricity through a cluttered circuit board while avoiding shorts that blow your fuses.",
+    "perspective": "top-down",
+    "tags": [
+      "path-drawing",
+      "routing-puzzle",
+      "time-pressure",
+      "arcade",
+      "electrical-theme",
+      "one-finger",
+      "score-chaser"
+    ],
+    "built_at": "2026-02-13T19:45:23"
+  },
+  {
+    "slug": "echo_hunt",
+    "name": "Echo Hunt",
+    "description": "Send out sonar pings to reveal hidden creatures in a dark ocean, then tap to catch them before they fade back into the black \u00e2\u20ac\u201d but each ping also wakes up predators that chase your signal.",
+    "perspective": "top-down",
+    "tags": [
+      "sonar-mechanic",
+      "hunt-and-reveal",
+      "risk-reward",
+      "ocean-theme",
+      "collection",
+      "arcade",
+      "stealth",
+      "one-finger"
+    ],
+    "built_at": "2026-02-13T20:00:26"
+  },
+  {
+    "slug": "frost_line",
+    "name": "Frost Line",
+    "description": "Drag to draw ice walls that freeze and redirect a bouncing fireball, shielding fragile snowflakes while deflecting the ball into fire demons to destroy them.",
+    "perspective": "top-down",
+    "tags": [
+      "draw-to-defend",
+      "deflection",
+      "protection",
+      "arcade",
+      "ice-fire-theme",
+      "one-finger",
+      "score-chaser",
+      "chaos"
+    ],
+    "built_at": "2026-02-13T20:14:33"
+  },
+  {
+    "slug": "drift_dodge",
+    "name": "Drift Dodge",
+    "description": "Steer a drifting car through oncoming traffic by holding to curve left or right, building up a near-miss combo multiplier that boosts your score but also increases your speed.",
+    "perspective": "top-down",
+    "tags": [
+      "traffic-dodge",
+      "near-miss",
+      "combo-multiplier",
+      "endless",
+      "drift",
+      "arcade",
+      "one-finger",
+      "risk-reward"
+    ],
+    "built_at": "2026-02-13T20:51:25"
+  },
+  {
+    "slug": "swarm_split",
+    "name": "Swarm Split",
+    "description": "Drag to slice your swarm of critters into groups, sending squads to overwhelm enemy bases before they regroup \u00e2\u20ac\u201d split too thin and you lose, stay bunched and you're too slow.",
+    "perspective": "top-down",
+    "tags": [
+      "swarm-control",
+      "split-mechanic",
+      "strategy",
+      "arcade",
+      "real-time-tactics",
+      "one-finger",
+      "level-progression"
+    ],
+    "built_at": "2026-02-13T21:08:33"
+  }
+]

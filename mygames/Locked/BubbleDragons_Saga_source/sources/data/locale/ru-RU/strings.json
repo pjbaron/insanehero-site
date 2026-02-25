@@ -1,0 +1,174 @@
+{
+	"Strings": {
+		"String": [
+			{
+                "_id": "new_game_start_button_string",
+                "__text": "НАЧАТЬ"
+            },
+			{
+                "_id": "string_level_goal_title",
+                "__text": "ЦЕЛЬ"
+            },
+			{
+                "_id": "string_level_goal_protect",
+                "__text": "Защитить барьер"
+            },
+			{
+                "_id": "string_level_goal_crack_egg",
+                "__text": "Разбить яйцо"
+            },
+			{
+                "_id": "string_level_goal_collect",
+                "__text": "Собрать всю рыбу"
+            },
+			{
+                "_id": "string_level_goal_protect_fail",
+                "__text": "Вы не смогли защитить барьер"
+            },
+			{
+                "_id": "string_level_goal_crack_egg_fail",
+                "__text": "Вы не смогли разбить яйцо"
+            },
+			{
+                "_id": "string_level_goal_collect_fail",
+                "__text": "Вы не смогли собрать достаточно рыбы"
+            },
+			{
+                "_id": "string_level_out_of_shots",
+                "__text": "Вам нечем стрелять"
+            },
+			{
+                "_id": "string_level_complete",
+                "__text": "Уровень пройден"
+            },
+			{
+                "_id": "string_win",
+                "__text": "ПОБЕДА"
+            },
+			{
+                "_id": "string_lose",
+                "__text": "ПОПРОБУЙТЕ ЕЩЕ РАЗ"
+            },
+			{
+                "_id": "string_score",
+                "__text": "СЧЕТ"
+            },
+			{
+                "_id": "string_high_score",
+                "__text": "РЕКОРД"
+            },
+			{
+                "_id": "level_number_ui",
+                "__text": "Уровень"
+            },
+			{
+                "_id": "game_quit_title",
+                "__text": "ВЫХОД"
+            },
+			{
+                "_id": "help_title_boost",
+                "__text": "Усилитель"
+            },
+			{
+                "_id": "help_title_special",
+                "__text": "Особый элемент"
+            },
+			{
+                "_id": "name_special_bomb",
+                "__text": "Бомба"
+            },
+			{
+                "_id": "desc_special_bomb",
+                "__text": "Взрывает группу элементов"
+            },
+			{
+                "_id": "name_special_rocket",
+                "__text": "Ракета"
+            },
+			{
+                "_id": "desc_special_rocket",
+                "__text": "Взрывает линию элементов по траектории полета"
+            },
+			{
+                "_id": "name_special_frozen_bubble",
+                "__text": "Заморозка"
+            },
+			{
+                "_id": "desc_special_frozen_bubble",
+                "__text": "Скрывает цвет элемента до первого удара"
+            },
+			{
+                "_id": "name_special_carry_dragon",
+                "__text": "Жадный дракон"
+            },
+			{
+                "_id": "desc_special_carry_dragon",
+                "__text": "Не дает элементам падать"
+            },
+			{
+                "_id": "name_special_burst_dragon",
+                "__text": "Злой дракон"
+            },
+			{
+                "_id": "desc_special_burst_dragon",
+                "__text": "Взрывает случайную группу элементов"
+            },
+			{
+                "_id": "name_special_convert_dragon",
+                "__text": "Добрый дракон"
+            },
+			{
+                "_id": "desc_special_convert_dragon",
+                "__text": "Превращает элемент в особый"
+            },
+			{
+                "_id": "name_boost_mine",
+                "__text": "Мина"
+            },
+			{
+                "_id": "desc_boost_mine",
+                "__text": "Взрывает большую группу элементов при ударе"
+            },
+			{
+                "_id": "name_boost_wild",
+                "__text": "Хамелеон"
+            },
+			{
+                "_id": "desc_boost_wild",
+                "__text": "Подходит элементу любого цвета"
+            },
+			{
+                "_id": "name_boost_fireball",
+                "__text": "Огненный шар"
+            },
+			{
+                "_id": "desc_boost_fireball",
+                "__text": "Взрывает линию элементов по прямой"
+            },
+			{
+                "_id": "name_boost_extra_moves",
+                "__text": "Дополнительные ходы"
+            },
+			{
+                "_id": "desc_boost_extra_moves",
+                "__text": "Дает 5 дополнительных элементов для выстрела"
+            },
+			{
+                "_id": "name_boost_burst_dragon",
+                "__text": "Злой дракон"
+            },
+			{
+                "_id": "desc_boost_burst_dragon",
+                "__text": "Взрывает 3 случайные группы элементов"
+            },
+			{
+                "_id": "name_boost_convert_dragon",
+                "__text": "Добрый дракон"
+            },
+			{
+                "_id": "desc_boost_convert_dragon",
+                "__text": "Превращает 3 простых элемента в особые"
+            }
+		]
+	}
+}

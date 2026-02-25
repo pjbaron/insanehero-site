@@ -1,0 +1,224 @@
+{
+    "ignoreMeContainer": {
+        "config": {
+            "nTimer": {
+                "_type": "Number",
+                "__text": "350"
+            },
+            "nMaxLevels": {
+                "_type": "Number",
+                "__text": "3"
+            },
+            "nReshuffle": {
+                "_type": "Number",
+                "__text": "1"
+            },
+            "nShowSecondsMessageWindow": {
+                "_type": "Number",
+                "__text": "2"
+            },
+            "nPuzzleRotateSpeed": {
+                "_type": "Number",
+                "__text": "0.5"
+            },
+            "nTimeBonus": {
+                "_type": "Number",
+                "__text": "100"
+            },
+            "aLevelCompleteBonuses": {
+                "_type": "Array",
+                "__text": "1000,2000,3000,4000,5000,6000,7000,8000,9000,10000"
+            },
+            "nSpeedMatchTime": {
+                "_type": "Number",
+                "__text": "2"
+            },
+            "nSpeedMatchValue": {
+                "_type": "Number",
+                "__text": "25"
+            },
+            "nMultiMatchValue": {
+                "_type": "Number",
+                "__text": "250"
+            },
+            "aPreviewTileShow": {
+                "_type": "Array",
+                "__text": "570,115"
+            }
+        },
+        "tileTypes": {
+            "tile": [
+                {
+                    "_id": "0",
+                    "_presentation": "game/presentation",
+                    "_base": "game/base",
+                    "_hit": "game/hit",
+                    "_symbols": "game/basic_symbols"
+                },
+                {
+                    "_id": "1",
+                    "_presentation": "game/presentation",
+                    "_base": "game/base",
+                    "_hit": "game/hit",
+                    "_symbols": "game/basic_symbols"
+                },
+                {
+                    "_id": "time",
+                    "_presentation": "game/timepresentation",
+                    "_base": "game/timebase",
+                    "_hit": "game/hit",
+                    "_symbols": "game/basic_symbols"
+                },
+                {
+                    "_id": "timeconstant",
+                    "_presentation": "game/timecpresentation",
+                    "_base": "game/timebase",
+                    "_hit": "game/hit",
+                    "_symbols": "game/basic_symbols"
+                },
+                {
+                    "_id": "bomb",
+                    "_presentation": "game/specialpresentation",
+                    "_base": "game/base",
+                    "_hit": "game/hit",
+                    "_symbols": "game/basic_symbols"
+                }
+            ]
+        },
+        "levels": {
+            "level": {
+                "nScale": "1.40",
+                "yOff": "1.9",
+                "TileStructure": {
+                    "layer": [
+                        {
+                            "row": [
+                                "1111",
+                                "1111",
+                                "1111",
+                                "1111"
+                            ],
+                            "_id": "0"
+                        },
+                        {
+                            "row": [
+                                "1111",
+                                "1111",
+                                "1111",
+                                "1111"
+                            ],
+                            "_id": "1"
+                        },
+                        {
+                            "row": [
+                                "1111",
+                                "1111",
+                                "1111",
+                                "1111"
+                            ],
+                            "_id": "2"
+                        },
+                        {
+                            "row": [
+                                "1111",
+                                "1111",
+                                "1111",
+                                "1111"
+                            ],
+                            "_id": "3"
+                        }
+                    ],
+                    "_x": "4",
+                    "_y": "4",
+                    "_z": "4"
+                },
+                "TileImages": {
+                    "tile": [
+                        {
+                            "_type": "1",
+                            "_name": "s1",
+                            "_url": "s1",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s22",
+                            "_url": "s22",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s13",
+                            "_url": "s13",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s43",
+                            "_url": "s43",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s38",
+                            "_url": "s38",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s42",
+                            "_url": "s42",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s20",
+                            "_url": "s20",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s14",
+                            "_url": "s14",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s24",
+                            "_url": "s24",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s5",
+                            "_url": "s5",
+                            "_value": "100",
+                            "_num": "6"
+                        },
+                        {
+                            "_type": "1",
+                            "_name": "s3",
+                            "_url": "s3",
+                            "_value": "100",
+                            "_num": "4"
+                        }
+                    ]
+                },
+                "_id": "puzzle_0",
+                "_random": "1",
+                "_levellock": "1",
+                "_x": "320",
+                "_y": "350"
+            }
+        }
+    }
+}

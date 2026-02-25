@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hungry Hole</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #111; }
+canvas { display: block; }
+#ui { position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; }
+#hud { display: none; padding: 10px 16px; font-family: 'Segoe UI', Arial, sans-serif; color: #fff; }
+#hud-top { display: flex; justify-content: space-between; align-items: center; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 3px #000; }
+#progress-wrap { margin-top: 6px; background: rgba(0,0,0,0.5); border-radius: 8px; height: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); }
+#progress-bar { height: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); border-radius: 8px; transition: width 0.3s; }
+#size-msg { text-align: center; font-size: 16px; margin-top: 4px; color: #fbbf24; text-shadow: 1px 1px 2px #000; min-height: 20px; }
+#overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); }
+#overlay h1 { font-family: 'Segoe UI', Arial, sans-serif; color: #fff; font-size: 48px; margin-bottom: 10px; }
+#overlay p { font-family: 'Segoe UI', Arial, sans-serif; color: #ccc; font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.5; }
+#overlay button { pointer-events: all; font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: bold; padding: 14px 48px; border: none; border-radius: 12px; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 15px rgba(139,92,246,0.5); }
+#overlay button:hover { transform: scale(1.08); box-shadow: 0 6px 25px rgba(139,92,246,0.7); }
+#end-stats { font-family: 'Segoe UI', Arial, sans-serif; color: #fff; font-size: 22px; text-align: center; line-height: 1.8; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div id="hud">
+    <div id="hud-top">
+      <span id="score">Eaten: 0</span>
+      <span id="timer">60s</span>
+    </div>
+    <div id="progress-wrap"><div id="progress-bar" style="width:0%"></div></div>
+    <div id="size-msg"></div>
+  </div>
+  <div id="overlay">
+    <h1>HUNGRY HOLE</h1>
+    <p>Devour everything in sight!<br>Move the hole to swallow objects.<br>Grow bigger to eat bigger things!</p>
+    <button id="start-btn">DEVOUR!</button>
+  </div>
+</div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const hudEl = document.getElementById('hud');
+const scoreEl = document.getElementById('score');
+const timerEl = document.getElementById('timer');
+const progressBar = document.getElementById('progress-bar');
+const sizeMsgEl = document.getElementById('size-msg');
+const overlayEl = document.getElementById('overlay');
+const startBtn = document.getElementById('start-btn');
+
+// --- Constants ---
+const MAP_W = 3000, MAP_H = 3000;
+const GAME_TIME = 60;
+const HOLE_MIN_R = 18;
+const HOLE_MAX_R = 280;
+const GRAVITY_RANGE = 2.5; // multiplier of hole radius
+const GRAVITY_STRENGTH = 800;
+const HOLE_SPEED = 280;
+const GROWTH_FACTOR = 0.05;
+
+// Size thresholds (fraction of max radius)
+const TIERS = [
+  { name: 'TINY', min: 0, label: '' },
+  { name: 'SMALL', min: 0.20, label: 'You can now eat BENCHES!' },
+  { name: 'MEDIUM', min: 0.35, label: 'You can now eat CARS!' },
+  { name: 'LARGE', min: 0.55, label: 'You can now eat HOUSES!' },
+  { name: 'HUGE', min: 0.75, label: 'You can now eat BUILDINGS!' },
+];
+
+function tierFrac(r) { return (r - HOLE_MIN_R) / (HOLE_MAX_R - HOLE_MIN_R); }
+function currentTier(r) {
+  const f = tierFrac(r);
+  for (let i = TIERS.length - 1; i >= 0; i--) { if (f >= TIERS[i].min) return i; }
+  return 0;
+}
+
+// --- Object definitions ---
+// Each has: type, tier(0-4), w, h, color, draw(ctx,x,y,w,h)
+const OBJ_DEFS = [
+  // Tiny (tier 0)
+  { type:'can', tier:0, w:8, h:8, color:'#aaa', draw(c,x,y,w,h){ c.fillStyle='#aaa'; c.fillRect(x-w/2,y-h/2,w,h); c.fillStyle='#c33'; c.fillRect(x-w/2,y-2,w,4); }},
+  { type:'rock', tier:0, w:10, h:9, color:'#888', draw(c,x,y,w,h){ c.fillStyle='#777'; c.beginPath(); c.ellipse(x,y,w/2,h/2,0,0,Math.PI*2); c.fill(); }},
+  { type:'plant', tier:0, w:12, h:12, color:'#4a4', draw(c,x,y,w,h){ c.fillStyle='#5a3'; c.beginPath(); c.arc(x,y-2,w/2.5,0,Math.PI*2); c.fill(); c.fillStyle='#743'; c.fillRect(x-1,y+2,2,h/2.5); }},
+  { type:'sign', tier:0, w:6, h:14, color:'#888', draw(c,x,y,w,h){ c.fillStyle='#999'; c.fillRect(x-1,y-2,2,h/2+2); c.fillStyle='#c44'; c.fillRect(x-w/2,y-h/2,w,h/2.5); }},
+  { type:'hydrant', tier:0, w:8, h:12, color:'#d33', draw(c,x,y,w,h){ c.fillStyle='#c22'; c.fillRect(x-w/3,y-h/3,w*0.66,h*0.66); c.beginPath(); c.arc(x,y-h/3,w/3,0,Math.PI*2); c.fill(); }},
+
+  // Small (tier 1)
+  { type:'bench', tier:1, w:28, h:10, color:'#965', draw(c,x,y,w,h){ c.fillStyle='#854'; c.fillRect(x-w/2,y-h/4,w,h/2); c.fillStyle='#643'; c.fillRect(x-w/2+2,y+h/4-2,3,4); c.fillRect(x+w/2-5,y+h/4-2,3,4); }},
+  { type:'mailbox', tier:1, w:10, h:16, color:'#33c', draw(c,x,y,w,h){ c.fillStyle='#999'; c.fillRect(x-1,y,2,h/2); c.fillStyle='#22a'; c.fillRect(x-w/2,y-h/2+2,w,h/2.5); c.beginPath(); c.arc(x,y-h/2+2,w/2,Math.PI,0); c.fill(); }},
+  { type:'dog', tier:1, w:16, h:10, color:'#a74', draw(c,x,y,w,h){ c.fillStyle='#a74'; c.fillRect(x-w/2+2,y-h/3,w*0.7,h*0.5); c.beginPath(); c.arc(x+w/3,y-h/4,h/4,0,Math.PI*2); c.fill(); c.fillStyle='#632'; c.fillRect(x-w/2+2,y+h/6,2,h/4); c.fillRect(x+w/5,y+h/6,2,h/4); }},
+  { type:'person', tier:1, w:8, h:18, color:'#e8b', draw(c,x,y,w,h){ c.fillStyle='#fdb'; c.beginPath(); c.arc(x,y-h/3,w/2.5,0,Math.PI*2); c.fill(); c.fillStyle=this.color; c.fillRect(x-w/3,y-h/6,w*0.66,h/2.5); c.fillStyle='#446'; c.fillRect(x-w/3,y+h/8,w*0.66,h/3.5); }},
+  { type:'trash_can', tier:1, w:12, h:14, color:'#666', draw(c,x,y,w,h){ c.fillStyle='#555'; c.fillRect(x-w/2,y-h/3,w,h*0.65); c.fillStyle='#666'; c.fillRect(x-w/2-1,y-h/3-2,w+2,3); }},
+
+  // Medium (tier 2)
+  { type:'car', tier:2, w:40, h:20, color:'', draw(c,x,y,w,h){
+    const colors = ['#c33','#33c','#3a3','#cc3','#c73','#aaa','#fff'];
+    c.fillStyle = this._color || (this._color = colors[(Math.random()*colors.length)|0]);
+    c.fillRect(x-w/2+3,y-h/2+2,w-6,h-4);
+    c.fillStyle='#333';
+    const wr=3;
+    c.beginPath(); c.arc(x-w/3,y-h/2+1,wr,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(x+w/3,y-h/2+1,wr,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(x-w/3,y+h/2-1,wr,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(x+w/3,y+h/2-1,wr,0,Math.PI*2); c.fill();
+    c.fillStyle='rgba(180,220,255,0.5)'; c.fillRect(x-w/6,y-h/2+3,w/3,h/4);
+  }},
+  { type:'tree', tier:2, w:24, h:28, color:'#3a3', draw(c,x,y,w,h){ c.fillStyle='#654'; c.fillRect(x-3,y,6,h/2.5); c.fillStyle='#3a3'; c.beginPath(); c.arc(x,y-h/6,w/2,0,Math.PI*2); c.fill(); c.fillStyle='#2a2'; c.beginPath(); c.arc(x-w/5,y-h/4,w/3.5,0,Math.PI*2); c.fill(); }},
+  { type:'shed', tier:2, w:36, h:30, color:'#987', draw(c,x,y,w,h){ c.fillStyle='#876'; c.fillRect(x-w/2,y-h/3,w,h*0.65); c.fillStyle='#a65'; c.beginPath(); c.moveTo(x-w/2-3,y-h/3); c.lineTo(x,y-h/2); c.lineTo(x+w/2+3,y-h/3); c.fill(); c.fillStyle='#543'; c.fillRect(x-4,y-h/3+6,8,h*0.65-6); }},
+  { type:'dumpster', tier:2, w:30, h:18, color:'#585', draw(c,x,y,w,h){ c.fillStyle='#474'; c.fillRect(x-w/2,y-h/3,w,h*0.65); c.fillStyle='#363'; c.fillRect(x-w/2,y-h/3,w,4); }},
+
+  // Large (tier 3)
+  { type:'truck', tier:3, w:56, h:22, color:'#eee', draw(c,x,y,w,h){
+    c.fillStyle='#ddd'; c.fillRect(x-w/2+10,y-h/2+2,w*0.6,h-4);
+    c.fillStyle='#69c'; c.fillRect(x-w/2,y-h/2+2,14,h-4);
+    c.fillStyle='#333'; const wr=3.5;
+    c.beginPath(); c.arc(x-w/3,y+h/2-1,wr,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(x+w/5,y+h/2-1,wr,0,Math.PI*2); c.fill();
+    c.beginPath(); c.arc(x+w/4+4,y+h/2-1,wr,0,Math.PI*2); c.fill();
+  }},
+  { type:'house', tier:3, w:60, h:50, color:'#c96', draw(c,x,y,w,h){
+    c.fillStyle='#b85'; c.fillRect(x-w/2,y-h/4,w,h*0.6);
+    c.fillStyle='#944'; c.beginPath(); c.moveTo(x-w/2-5,y-h/4); c.lineTo(x,y-h/2); c.lineTo(x+w/2+5,y-h/4); c.fill();
+    c.fillStyle='#654'; c.fillRect(x-5,y-h/4+10,10,h*0.6-10);
+    c.fillStyle='rgba(180,220,255,0.6)'; c.fillRect(x-w/3,y-h/6,8,8); c.fillRect(x+w/5,y-h/6,8,8);
+  }},
+
+  // Huge (tier 4)
+  { type:'building', tier:4, w:80, h:70, color:'#778', draw(c,x,y,w,h){
+    c.fillStyle='#667'; c.fillRect(x-w/2,y-h/2+5,w,h-5);
+    c.fillStyle='#556'; c.fillRect(x-w/2,y-h/2+5,w,6);
+    c.fillStyle='rgba(200,230,255,0.4)';
+    for(let gy=0;gy<4;gy++) for(let gx=0;gx<3;gx++){
+      c.fillRect(x-w/2+8+gx*(w/3.5), y-h/2+16+gy*(h/5), w/6, h/8);
+    }
+  }},
+  { type:'crane', tier:4, w:30, h:90, color:'#da4', draw(c,x,y,w,h){
+    c.fillStyle='#c93'; c.fillRect(x-4,y-h/2+5,8,h-5);
+    c.fillStyle='#da4'; c.fillRect(x-w/2,y-h/2,w,6);
+    c.strokeStyle='#b82'; c.lineWidth=2; c.beginPath(); c.moveTo(x,y-h/2+5); c.lineTo(x+w/2,y-h/2); c.stroke();
+    c.fillStyle='#444'; c.fillRect(x-6,y+h/3,12,h/6);
+  }},
+];
+
+// --- Game state ---
+let state = 'menu'; // menu, playing, ended
+let hole = { x: MAP_W/2, y: MAP_H/2, r: HOLE_MIN_R, swirlAngle: 0 };
+let objects = [];
+let camera = { x: 0, y: 0 };
+let gameTimer = GAME_TIME;
+let objectsEaten = 0;
+let lastTier = 0;
+let sizeMsgTimer = 0;
+let gulpEffects = []; // {t, maxT}
+let lastTime = 0;
+let mouseX = 0, mouseY = 0;
+let mouseActive = false;
+let keys = {};
+let darkenAlpha = 0;
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// --- Input ---
+canvas.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; mouseActive = true; });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; mouseActive = true; }, { passive: false });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; mouseActive = true; }, { passive: false });
+window.addEventListener('keydown', e => { keys[e.key.toLowerCase()] = true; });
+window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+
+// --- Map generation ---
+function generateMap() {
+  objects = [];
+  const count = 60 + (Math.random() * 20) | 0;
+  const margin = 100;
+
+  // Place objects with tier-based distribution
+  const tierWeights = [20, 15, 12, 8, 5]; // how many of each tier
+  for (let tier = 0; tier < 5; tier++) {
+    const defs = OBJ_DEFS.filter(d => d.tier === tier);
+    const n = tierWeights[tier] + ((Math.random() * 5) | 0);
+    for (let i = 0; i < n; i++) {
+      const def = defs[(Math.random() * defs.length) | 0];
+      const obj = {
+        x: margin + Math.random() * (MAP_W - margin * 2),
+        y: margin + Math.random() * (MAP_H - margin * 2),
+        w: def.w, h: def.h,
+        tier: def.tier,
+        type: def.type,
+        draw: def.draw,
+        _color: null,
+        color: def.color,
+        alive: true,
+        // eating animation
+        eating: false,
+        eatProgress: 0,
+        // size for hole growth
+        size: Math.max(def.w, def.h),
+      };
+      // Assign random car colors at creation
+      if (def.type === 'car') {
+        const colors = ['#c33','#33c','#3a3','#cc3','#c73','#aaa','#fff'];
+        obj._color = colors[(Math.random() * colors.length) | 0];
+      }
+      objects.push(obj);
+    }
+  }
+}
+
+// --- Game logic ---
+function startGame() {
+  state = 'playing';
+  hole = { x: MAP_W / 2, y: MAP_H / 2, r: HOLE_MIN_R, swirlAngle: 0 };
+  gameTimer = GAME_TIME;
+  objectsEaten = 0;
+  lastTier = 0;
+  sizeMsgTimer = 0;
+  gulpEffects = [];
+  darkenAlpha = 0;
+  mouseActive = false;
+  generateMap();
+  overlayEl.style.display = 'none';
+  hudEl.style.display = 'block';
+  updateHUD();
+}
+
+function endGame() {
+  state = 'ended';
+  hudEl.style.display = 'none';
+  overlayEl.style.display = 'flex';
+  const pct = ((hole.r - HOLE_MIN_R) / (HOLE_MAX_R - HOLE_MIN_R) * 100) | 0;
+  const tierName = TIERS[currentTier(hole.r)].name;
+  overlayEl.innerHTML = `
+    <h1>TIME'S UP!</h1>
+    <div id="end-stats">
+      Objects devoured: <b>${objectsEaten}</b><br>
+      Final size: <b>${tierName}</b> (${pct}%)<br>
+      Hole radius: <b>${hole.r.toFixed(0)}px</b>
+    </div>
+    <button id="start-btn" onclick="startGame()">AGAIN?</button>
+  `;
+  overlayEl.querySelector('button').style.cssText = startBtn.style.cssText;
+}
+
+function updateHUD() {
+  scoreEl.textContent = 'Eaten: ' + objectsEaten;
+  timerEl.textContent = Math.ceil(gameTimer) + 's';
+  const frac = tierFrac(hole.r);
+  progressBar.style.width = (Math.min(frac, 1) * 100) + '%';
+  if (sizeMsgTimer > 0) {
+    sizeMsgEl.style.opacity = Math.min(sizeMsgTimer, 1);
+  } else {
+    sizeMsgEl.style.opacity = 0;
+  }
+}
+
+function canEat(obj) {
+  // Object fits in hole if hole radius > object's diagonal/2
+  const objR = Math.sqrt(obj.w * obj.w + obj.h * obj.h) / 2;
+  return hole.r > objR * 0.8;
+}
+
+function update(dt) {
+  if (state !== 'playing') return;
+
+  gameTimer -= dt;
+  if (gameTimer <= 0) { gameTimer = 0; endGame(); return; }
+
+  // Move hole
+  let targetX = hole.x, targetY = hole.y;
+  let usingKeys = false;
+
+  if (keys['w'] || keys['arrowup']) { targetY -= 1; usingKeys = true; }
+  if (keys['s'] || keys['arrowdown']) { targetY += 1; usingKeys = true; }
+  if (keys['a'] || keys['arrowleft']) { targetX -= 1; usingKeys = true; }
+  if (keys['d'] || keys['arrowright']) { targetX += 1; usingKeys = true; }
+
+  if (usingKeys) {
+    const dx = targetX - hole.x, dy = targetY - hole.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > 0) {
+      hole.x += (dx / dist) * HOLE_SPEED * dt;
+      hole.y += (dy / dist) * HOLE_SPEED * dt;
+    }
+  } else if (mouseActive) {
+    // Mouse: hole follows cursor (in world coords)
+    const worldMX = mouseX + camera.x;
+    const worldMY = mouseY + camera.y;
+    const dx = worldMX - hole.x;
+    const dy = worldMY - hole.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > 2) {
+      const speed = Math.min(HOLE_SPEED * dt, dist);
+      hole.x += (dx / dist) * speed;
+      hole.y += (dy / dist) * speed;
+    }
+  }
+
+  // Clamp hole to map
+  hole.x = Math.max(hole.r, Math.min(MAP_W - hole.r, hole.x));
+  hole.y = Math.max(hole.r, Math.min(MAP_H - hole.r, hole.y));
+
+  // Swirl animation
+  hole.swirlAngle += dt * 2;
+
+  // Gravity + eating
+  for (let i = objects.length - 1; i >= 0; i--) {
+    const obj = objects[i];
+    if (!obj.alive) continue;
+
+    if (obj.eating) {
+      obj.eatProgress += dt * 3.5;
+      if (obj.eatProgress >= 1) {
+        obj.alive = false;
+        objectsEaten++;
+        // Grow hole
+        const growth = obj.size * GROWTH_FACTOR;
+        hole.r = Math.min(HOLE_MAX_R, hole.r + growth);
+        // Gulp effect
+        gulpEffects.push({ t: 0, maxT: 0.25, amount: growth * 0.5 });
+        // Check tier change
+        const t = currentTier(hole.r);
+        if (t > lastTier) {
+          lastTier = t;
+          sizeMsgEl.textContent = TIERS[t].label;
+          sizeMsgTimer = 3;
+        }
+      }
+      continue;
+    }
+
+    const dx = hole.x - obj.x;
+    const dy = hole.y - obj.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const gravRange = hole.r * GRAVITY_RANGE;
+
+    if (dist < gravRange) {
+      const eatable = canEat(obj);
+      if (eatable) {
+        // Pull toward hole
+        const force = GRAVITY_STRENGTH * (1 - dist / gravRange) * dt;
+        const nx = dx / dist, ny = dy / dist;
+        obj.x += nx * force;
+        obj.y += ny * force;
+
+        // Check if close enough to eat
+        if (dist < hole.r * 0.6) {
+          obj.eating = true;
+          obj.eatProgress = 0;
+        }
+      } else {
+        // Bump - push away if overlapping
+        const objR = Math.max(obj.w, obj.h) / 2;
+        if (dist < hole.r + objR) {
+          const push = (hole.r + objR - dist) * 0.5;
+          const nx = dx / dist, ny = dy / dist;
+          obj.x -= nx * push;
+          obj.y -= ny * push;
+        }
+      }
+    }
+  }
+
+  // Gulp effects
+  for (let i = gulpEffects.length - 1; i >= 0; i--) {
+    gulpEffects[i].t += dt;
+    if (gulpEffects[i].t >= gulpEffects[i].maxT) gulpEffects.splice(i, 1);
+  }
+
+  // Size message timer
+  if (sizeMsgTimer > 0) sizeMsgTimer -= dt;
+
+  // Darken effect
+  const targetDark = tierFrac(hole.r) * 0.2;
+  darkenAlpha += (targetDark - darkenAlpha) * dt * 2;
+
+  // Camera
+  camera.x = hole.x - W / 2;
+  camera.y = hole.y - H / 2;
+  camera.x = Math.max(0, Math.min(MAP_W - W, camera.x));
+  camera.y = Math.max(0, Math.min(MAP_H - H, camera.y));
+
+  updateHUD();
+}
+
+// --- Rendering ---
+function drawGround() {
+  // Grid background
+  ctx.fillStyle = '#4a5';
+  ctx.fillRect(-camera.x, -camera.y, MAP_W, MAP_H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+  ctx.lineWidth = 1;
+  const gridSize = 100;
+  const startX = Math.floor(camera.x / gridSize) * gridSize;
+  const startY = Math.floor(camera.y / gridSize) * gridSize;
+  for (let x = startX; x < camera.x + W + gridSize; x += gridSize) {
+    ctx.beginPath();
+    ctx.moveTo(x - camera.x, 0);
+    ctx.lineTo(x - camera.x, H);
+    ctx.stroke();
+  }
+  for (let y = startY; y < camera.y + H + gridSize; y += gridSize) {
+    ctx.beginPath();
+    ctx.moveTo(0, y - camera.y);
+    ctx.lineTo(W, y - camera.y);
+    ctx.stroke();
+  }
+
+  // Roads
+  ctx.fillStyle = '#555';
+  const roadW = 50;
+  // Horizontal roads
+  ctx.fillRect(-camera.x, MAP_H * 0.3 - roadW / 2 - camera.y, MAP_W, roadW);
+  ctx.fillRect(-camera.x, MAP_H * 0.7 - roadW / 2 - camera.y, MAP_W, roadW);
+  // Vertical roads
+  ctx.fillRect(MAP_W * 0.3 - roadW / 2 - camera.x, -camera.y, roadW, MAP_H);
+  ctx.fillRect(MAP_W * 0.7 - roadW / 2 - camera.x, -camera.y, roadW, MAP_H);
+
+  // Road lines
+  ctx.strokeStyle = '#cc3';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([12, 8]);
+  const roads = [MAP_H * 0.3, MAP_H * 0.7];
+  roads.forEach(ry => {
+    ctx.beginPath();
+    ctx.moveTo(-camera.x, ry - camera.y);
+    ctx.lineTo(MAP_W - camera.x, ry - camera.y);
+    ctx.stroke();
+  });
+  const vroads = [MAP_W * 0.3, MAP_W * 0.7];
+  vroads.forEach(rx => {
+    ctx.beginPath();
+    ctx.moveTo(rx - camera.x, -camera.y);
+    ctx.lineTo(rx - camera.x, MAP_H - camera.y);
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);
+}
+
+function drawHole() {
+  const sx = hole.x - camera.x;
+  const sy = hole.y - camera.y;
+
+  // Gulp expansion effect
+  let extraR = 0;
+  for (const g of gulpEffects) {
+    const p = g.t / g.maxT;
+    extraR += g.amount * Math.sin(p * Math.PI);
+  }
+  const drawR = hole.r + extraR;
+
+  // Shadow / edge glow
+  const grad = ctx.createRadialGradient(sx, sy, drawR * 0.5, sx, sy, drawR * 1.3);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(0.7, 'rgba(0,0,0,0.2)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(sx, sy, drawR * 1.3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Main hole
+  const holeGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, drawR);
+  holeGrad.addColorStop(0, '#000');
+  holeGrad.addColorStop(0.7, '#111');
+  holeGrad.addColorStop(1, '#1a1a2e');
+  ctx.fillStyle = holeGrad;
+  ctx.beginPath();
+  ctx.arc(sx, sy, drawR, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Swirl effect
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(sx, sy, drawR - 1, 0, Math.PI * 2);
+  ctx.clip();
+
+  const arms = 3;
+  const swirlR = drawR * 0.85;
+  ctx.lineWidth = Math.max(1.5, drawR * 0.04);
+  for (let a = 0; a < arms; a++) {
+    const baseAngle = hole.swirlAngle + (a * Math.PI * 2 / arms);
+    ctx.strokeStyle = `rgba(80, 60, 120, ${0.4 + 0.1 * Math.sin(hole.swirlAngle * 2 + a)})`;
+    ctx.beginPath();
+    for (let t = 0; t < 1; t += 0.02) {
+      const angle = baseAngle + t * Math.PI * 2;
+      const r = t * swirlR;
+      const px = sx + Math.cos(angle) * r;
+      const py = sy + Math.sin(angle) * r;
+      if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Rim highlight
+  ctx.strokeStyle = 'rgba(100, 80, 160, 0.3)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(sx, sy, drawR, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+function drawObject(obj) {
+  const sx = obj.x - camera.x;
+  const sy = obj.y - camera.y;
+
+  // Skip if off screen
+  const margin = Math.max(obj.w, obj.h);
+  if (sx + margin < 0 || sx - margin > W || sy + margin < 0 || sy - margin > H) return;
+
+  ctx.save();
+
+  if (obj.eating) {
+    const p = obj.eatProgress;
+    // Scale down + pull toward hole
+    const scale = 1 - p;
+    const pullX = sx + (hole.x - camera.x - sx) * p * 0.5;
+    const pullY = sy + (hole.y - camera.y - sy) * p * 0.5;
+    ctx.translate(pullX, pullY);
+    // Stretch toward hole
+    const angle = Math.atan2(hole.y - camera.y - sy, hole.x - camera.x - sx);
+    ctx.rotate(angle);
+    ctx.scale(scale * (1 + p * 0.5), scale * (1 - p * 0.3));
+    ctx.rotate(-angle);
+    ctx.globalAlpha = 1 - p * p;
+    obj.draw(ctx, 0, 0, obj.w, obj.h);
+  } else {
+    // Subtle wobble when near hole
+    const dx = hole.x - obj.x;
+    const dy = hole.y - obj.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const gravRange = hole.r * GRAVITY_RANGE;
+    if (dist < gravRange && canEat(obj)) {
+      const wobble = (1 - dist / gravRange) * 0.1;
+      const angle = Math.atan2(dy, dx);
+      ctx.translate(sx, sy);
+      ctx.rotate(wobble * Math.sin(performance.now() * 0.01));
+      obj.draw(ctx, 0, 0, obj.w, obj.h);
+    } else {
+      obj.draw(ctx, sx, sy, obj.w, obj.h);
+    }
+  }
+
+  ctx.restore();
+}
+
+function drawEdibleIndicators() {
+  // Draw subtle outlines on objects that can be eaten
+  for (const obj of objects) {
+    if (!obj.alive || obj.eating) continue;
+    const dx = hole.x - obj.x;
+    const dy = hole.y - obj.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > hole.r * 4) continue;
+    if (!canEat(obj)) continue;
+
+    const sx = obj.x - camera.x;
+    const sy = obj.y - camera.y;
+    const margin = Math.max(obj.w, obj.h);
+    if (sx + margin < 0 || sx - margin > W || sy + margin < 0 || sy - margin > H) continue;
+
+    ctx.strokeStyle = 'rgba(255,255,100,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.strokeRect(sx - obj.w / 2 - 2, sy - obj.h / 2 - 2, obj.w + 4, obj.h + 4);
+    ctx.setLineDash([]);
+  }
+}
+
+function draw() {
+  ctx.fillStyle = '#222';
+  ctx.fillRect(0, 0, W, H);
+
+  drawGround();
+
+  // Sort objects by y for basic depth (draw lower ones on top)
+  const sorted = objects.filter(o => o.alive).sort((a, b) => a.y - b.y);
+
+  // Draw objects behind hole, then hole, then objects in front
+  const behind = sorted.filter(o => o.y < hole.y);
+  const inFront = sorted.filter(o => o.y >= hole.y);
+
+  behind.forEach(drawObject);
+  drawHole();
+  inFront.forEach(drawObject);
+
+  drawEdibleIndicators();
+
+  // Darken overlay for massive hole
+  if (darkenAlpha > 0.01) {
+    ctx.fillStyle = `rgba(10, 0, 20, ${darkenAlpha})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+}
+
+// --- Menu ---
+function drawMenu() {
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(0, 0, W, H);
+
+  // Animated swirl in background
+  const t = performance.now() * 0.001;
+  ctx.save();
+  ctx.translate(W / 2, H / 2);
+  for (let a = 0; a < 4; a++) {
+    ctx.strokeStyle = `rgba(80, 50, 140, ${0.15 + 0.05 * Math.sin(t + a)})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for (let s = 0; s < 1; s += 0.01) {
+      const angle = t + a * Math.PI / 2 + s * Math.PI * 3;
+      const r = s * Math.min(W, H) * 0.4;
+      const px = Math.cos(angle) * r;
+      const py = Math.sin(angle) * r;
+      if (s === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// --- Main loop ---
+function loop(timestamp) {
+  const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+  lastTime = timestamp;
+
+  if (state === 'menu') {
+    drawMenu();
+  } else if (state === 'playing') {
+    update(dt);
+    draw();
+  } else if (state === 'ended') {
+    draw(); // Keep last frame visible
+  }
+
+  requestAnimationFrame(loop);
+}
+
+// --- Start ---
+startBtn.addEventListener('click', startGame);
+lastTime = performance.now();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

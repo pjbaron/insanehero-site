@@ -1,0 +1,36 @@
+{
+	"comment": [
+		"// tint the image using a separate multiplication factor for each of r,g and b"
+		],
+
+	"fragment": [
+		" precision mediump float;",
+		" varying vec2 v_texcoord;",
+		" uniform sampler2D uImageSampler;",
+		" uniform float uRedScale;",
+		" uniform float uGreenScale;",
+		" uniform float uBlueScale;",
+		" void main() {",
+		"   vec4 col = texture2D(uImageSampler, v_texcoord);",
+    	"   gl_FragColor = vec4(col.r * uRedScale, col.g * uGreenScale, col.b * uBlueScale, 1);",
+		" }"
+		],
+
+	"vertex": [
+    	" attribute vec4 aPosition;",
+    	" varying vec2 v_texcoord;",
+		" void main() {",
+		"   gl_Position = aPosition;",
+		"   v_texcoord = aPosition.xy * 0.5 + 0.5;",
+		" }"
+		],
+		
+	"attributes":
+		[ "aPosition" ],
+
+	"uniforms":
+		[ "uRedScale", "uGreenScale", "uBlueScale" ],
+
+	"samplers":
+		[ "uImageSampler" ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Claim Rush",
+  "slug": "claim_rush",
+  "description": "Race to paint the arena floor your color by dragging paths behind you, enclosing regions to claim territory while avoiding AI rivals who cut across your trails.",
+  "perspective": "top-down",
+  "core_loop": "You continuously move, dragging a colored trail behind you. Venture out from your safe claimed territory into neutral or enemy ground, then loop back to your own color to fill everything you enclosed. The longer you stay outside your territory the more you can claim \u00e2\u20ac\u201d but your exposed trail is vulnerable. If any rival crosses your trail before you close the loop, you lose your life and unclaimed path. Rivals get faster and more aggressive each round. Survive and claim 80%+ of the arena to win each level.",
+  "retention_hooks": [
+    "Greed-vs-safety tension: bigger loops score huge but risk death, creating constant 'just one more big grab' moments",
+    "Escalating rival count and aggression across levels with new arena shapes and obstacles",
+    "Percentage-claimed counter ticking up creates satisfying visual progress as the map floods with your color"
+  ],
+  "controls": "Swipe/drag in any direction to steer (touch/mobile). On desktop, mouse movement or arrow keys. Single-input directional control \u00e2\u20ac\u201d no buttons needed.",
+  "tags": [
+    "territory-capture",
+    "trail-drawing",
+    "risk-reward",
+    "arcade",
+    "area-control"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Frost Line",
+  "slug": "frost_line",
+  "description": "Drag to draw ice walls that freeze and redirect a bouncing fireball, shielding fragile snowflakes while deflecting the ball into fire demons to destroy them.",
+  "perspective": "top-down",
+  "core_loop": "A fireball ricochets around the arena automatically. You drag short ice-wall segments (limited ink that regenerates) to deflect it into fire demons that spawn from the edges. Each demon you hit explodes satisfyingly and scores points. But the fireball also melts through your walls on contact, so every shield is temporary \u00e2\u20ac\u201d you're constantly drawing new ones. Snowflakes drift across the arena and you must protect them: each one that survives to the exit earns bonus multiplier. Demons speed up, multiply, and the fireball splits at milestone scores. Rounds end when 3 snowflakes are destroyed.",
+  "retention_hooks": [
+    "Multiplier streaks from protecting consecutive snowflakes create 'just one more round' pressure",
+    "Fireball splits at score milestones make later rounds visually chaotic and exciting",
+    "Unlockable ice-wall styles (zigzag, curve, thick) every few rounds give a sense of progression"
+  ],
+  "controls": "Touch/mouse drag to draw short ice-wall segments anywhere in the arena. Tap/click to shatter your own walls strategically. No buttons, no UI \u00e2\u20ac\u201d pure draw-and-deflect.",
+  "tags": [
+    "draw-to-defend",
+    "deflection",
+    "protection",
+    "arcade",
+    "ice-fire-theme",
+    "one-finger",
+    "score-chaser",
+    "chaos"
+  ]
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="copter.png">
+    <SubTexture name="CopterDown" x="198" y="2" width="64" height="63"/>
+    <SubTexture name="CopterShadow" x="198" y="67" width="64" height="10"/>
+    <SubTexture name="CopterTurnLeft" x="68" y="2" width="63" height="64"/>
+    <SubTexture name="CopterTurnRight" x="133" y="2" width="63" height="64"/>
+    <SubTexture name="copterfront" x="2" y="2" width="64" height="64"/>
+</TextureAtlas>

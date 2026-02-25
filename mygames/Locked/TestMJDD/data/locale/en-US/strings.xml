@@ -1,0 +1,64 @@
+<Strings>
+	<!-- Intro Panel -->
+	<String id="new_game_start_button_string">START</String>
+	<String id="play_mjdb_button_string">Play Mahjongg Dimensions Blast</String>
+
+	<!-- Help window -->
+	<String id="help_header_string">HOW TO PLAY</String>
+	<String id="help_page1_text_string">Basic Gameplay</String>
+	<String id="help_page1_text1_string">Click two tiles to match them. You cannot click tiles that are blocked by other tiles on their left and right sides. </String>
+	<String id="help_page1_text2_string">Match as quickly as possible to complete as many levels as you can before you run out of time.</String>
+	<String id="help_page1_text3_string">Click the arrows or use the keyboard (arrow keys or A and D) to rotate the puzzle and find matches on other sides.</String>
+	<String id="help_page1_text4_string">\n</String>
+	<String id="help_page2_text_string">Maxmimize Your Score!</String>
+	<String id="help_page2_text1_string">SPEED MATCH COMBO: Get a points multiplier by making a match within 3 seconds of another match.</String>
+
+	<String id="help_page2_text2_string">MULTIMATCH COMBO: Get bonus points for matching the same images in a row.</String>
+
+	<String id="help_page2_text3_string">TIME BONUS: You'll get bonus points for beating each level based on how much time you have left.</String>
+
+	<String id="help_page2_text4_string">You can rearrange the tiles once per level. Use this if you’re spending too long looking for a match.</String>
+
+	<String id="help_page2_text5_string">When the timer runs out, the game is over. Good luck, and have fun!</String>
+
+	<String id="help_multimatch_text_string">MULTIMATCH</String>
+	<String id="help_speedmatch_text_string">SPEED MATCH</String>
+
+	<String id="help_show_help_string">Show Help At Game Start</String>
+	
+
+	<!-- Options window -->
+	<String id="options_header_string">OPTIONS</String>
+	<String id="options_sound_string">SOUND</String>
+	<String id="options_music_string">MUSIC</String>
+
+	<!-- Quit window -->
+	<String id="quit_header_string">Are you sure you want to quit?</String>
+
+	<String id="quit_yes_button_string">YES</String>
+	<String id="quit_no_button_string">NO</String>
+
+	<!-- Game View Panel -->
+	<String id="gvp_level_time_indication_text_string">TIME:</String>
+	<String id="gvp_level_score_indication_text_string">SCORE:</String>
+
+	<!-- GVP PopUp -->
+	<String id="gvp_level_good_job_text_string">GOOD JOB!</String>
+	<String id="gvp_level_next_level_text_string">NEXT LEVEL</String>
+	<String id="gvp_level_reshuffle_text_string">RESHUFFLE</String>
+	<String id="gvp_level_no_more_move_text_string">NO MORE
+MATCHES!</String>
+	<String id="gvp_level_times_up_text_string">TIME'S UP!</String>
+
+	<!-- Buttons -->
+	<String id="gvp_level_reshuffle_button_text_string">RESHUFFLE</String>
+
+	<!-- Game Over PopUp -->
+	<String id="game_over_lose_header_string">GAME OVER</String>
+	<String id="game_over_win_header_string">YOU WIN</String>
+
+	<!-- Other files -->
+<String id="help_play_string">PLAY</String>
+	<String id="options_quit_string">QUIT</String>
+	<String id="gvp_level_times_up_final_score_string">Final Score</String>
+</Strings>

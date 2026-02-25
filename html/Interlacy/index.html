@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interlacy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Interlacy</h1>
+    <p class="tagline">Weave the Words.</p>
+  </header>
+
+  <main class="game-container">
+    <div id="game-content" class="loading">Loading dictionary...</div>
+  </main>
+
+  <footer></footer>
+
+  <div id="tutorial-overlay" class="tutorial-overlay hidden">
+    <div class="tutorial-content">
+      <img src="assets/tutorial.gif" alt="How to play" class="tutorial-gif">
+      <button class="tutorial-close" id="tutorial-close">Got it!</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

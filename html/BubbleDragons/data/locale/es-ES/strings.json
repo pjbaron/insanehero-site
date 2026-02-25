@@ -1,0 +1,174 @@
+{
+	"Strings": {
+		"String": [
+			{
+                "_id": "new_game_start_button_string",
+                "__text": "INICIAR"
+            },
+			{
+                "_id": "string_level_goal_title",
+                "__text": "OBJETIVO"
+            },
+			{
+                "_id": "string_level_goal_protect",
+                "__text": "Protege la barrera"
+            },
+			{
+                "_id": "string_level_goal_crack_egg",
+                "__text": "Rompe el huevo"
+            },
+			{
+                "_id": "string_level_goal_collect",
+                "__text": "Recoge todo el pescado"
+            },
+			{
+                "_id": "string_level_goal_protect_fail",
+                "__text": "No has protegido la barrera"
+            },
+			{
+                "_id": "string_level_goal_crack_egg_fail",
+                "__text": "No has roto el huevo"
+            },
+			{
+                "_id": "string_level_goal_collect_fail",
+                "__text": "No has recogido suficiente pescado"
+            },
+			{
+                "_id": "string_level_out_of_shots",
+                "__text": "Te has quedado sin burbujas"
+            },
+			{
+                "_id": "string_level_complete",
+                "__text": "Nivel completado"
+            },
+			{
+                "_id": "string_win",
+                "__text": "HAS GANADO"
+            },
+			{
+                "_id": "string_lose",
+                "__text": "VUELVE A INTENTARLO"
+            },
+			{
+                "_id": "string_score",
+                "__text": "PUNTUACIÓN"
+            },
+			{
+                "_id": "string_high_score",
+                "__text": "RÉCORD"
+            },
+			{
+                "_id": "level_number_ui",
+                "__text": "Nivel"
+            },
+			{
+                "_id": "game_quit_title",
+                "__text": "SALIR DEL JUEGO"
+            },
+			{
+                "_id": "help_title_boost",
+                "__text": "Mejora"
+            },
+			{
+                "_id": "help_title_special",
+                "__text": "Especial"
+            },
+			{
+                "_id": "name_special_bomb",
+                "__text": "Bomba"
+            },
+			{
+                "_id": "desc_special_bomb",
+                "__text": "Revienta las burbujas cercanas con una explosión"
+            },
+			{
+                "_id": "name_special_rocket",
+                "__text": "Cohete"
+            },
+			{
+                "_id": "desc_special_rocket",
+                "__text": "Explota una línea de burbujas en su trayectoria"
+            },
+			{
+                "_id": "name_special_frozen_bubble",
+                "__text": "Burbuja congelada"
+            },
+			{
+                "_id": "desc_special_frozen_bubble",
+                "__text": "Oculta el color de la burbuja hasta recibir un impacto"
+            },
+			{
+                "_id": "name_special_carry_dragon",
+                "__text": "Dragón codicioso"
+            },
+			{
+                "_id": "desc_special_carry_dragon",
+                "__text": "Impide que las burbujas desciendan"
+            },
+			{
+                "_id": "name_special_burst_dragon",
+                "__text": "Dragón de ascua"
+            },
+			{
+                "_id": "desc_special_burst_dragon",
+                "__text": "Explota un grupo de burbujas al azar"
+            },
+			{
+                "_id": "name_special_convert_dragon",
+                "__text": "Dragón chispeante"
+            },
+			{
+                "_id": "desc_special_convert_dragon",
+                "__text": "Convierte una burbuja en una burbuja especial"
+            },
+			{
+                "_id": "name_boost_mine",
+                "__text": "Mina"
+            },
+			{
+                "_id": "desc_boost_mine",
+                "__text": "Revienta burbujas en una gran explosión al impactar"
+            },
+			{
+                "_id": "name_boost_wild",
+                "__text": "Comodín"
+            },
+			{
+                "_id": "desc_boost_wild",
+                "__text": "Combina con una burbuja de cualquier color"
+            },
+			{
+                "_id": "name_boost_fireball",
+                "__text": "Bola de fuego"
+            },
+			{
+                "_id": "desc_boost_fireball",
+                "__text": "Revienta burbujas en una línea recta"
+            },
+			{
+                "_id": "name_boost_extra_moves",
+                "__text": "Movimientos extra"
+            },
+			{
+                "_id": "desc_boost_extra_moves",
+                "__text": "Añade 5 burbujas a tu suministro"
+            },
+			{
+                "_id": "name_boost_burst_dragon",
+                "__text": "Dragón de ascua"
+            },
+			{
+                "_id": "desc_boost_burst_dragon",
+                "__text": "Explota 3 grupos de burbujas al azar"
+            },
+			{
+                "_id": "name_boost_convert_dragon",
+                "__text": "Dragón chispeante"
+            },
+			{
+                "_id": "desc_boost_convert_dragon",
+                "__text": "Convierte 3 burbujas en burbujas especiales"
+            }
+		]
+	}
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Shrink Ray",
+  "slug": "shrink_ray",
+  "description": "Aim a shrink ray to miniaturize oncoming obstacles before they crush you, but shrunk objects become fast ricocheting projectiles you must also dodge.",
+  "perspective": "side-view",
+  "core_loop": "Objects of various sizes scroll toward you from the right. Tap/click on them to zap with your shrink ray \u00e2\u20ac\u201d they shrink to tiny size but ricochet off walls and floor at high speed. You dodge vertically (drag/swipe up-down or arrow keys) to avoid both the incoming large objects AND the tiny bouncing ones you created. Shrinking objects scores points and clears space, but every zap adds a new fast-moving hazard to the arena. The screen gradually fills with your own ricochets, creating escalating self-inflicted chaos. Combo multipliers for rapid-fire shrinking, and periodic 'reverse ray' pickups let you RE-GROW a tiny bouncer into a slow, harmless big object to clear breathing room.",
+  "retention_hooks": [
+    "Self-created chaos: every action makes it harder, creating a unique 'I did this to myself' tension that begs retries",
+    "High score chasing with combo multipliers for rapid-fire shrinking streaks",
+    "Reverse ray power-up creates satisfying strategic moments \u00e2\u20ac\u201d which ricochet do you neutralize?"
+  ],
+  "controls": "Tap/click objects to shrink them. Drag or swipe vertically to dodge (mobile), arrow keys or mouse position to move (desktop). One-hand playable on mobile.",
+  "tags": [
+    "dodge",
+    "aim-and-shoot",
+    "self-created-hazards",
+    "reflexes",
+    "arcade",
+    "chaos"
+  ]
+}

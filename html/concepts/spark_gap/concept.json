@@ -1,0 +1,22 @@
+{
+  "name": "Spark Gap",
+  "slug": "spark_gap",
+  "description": "Draw wire paths to connect sparking terminals before the charge drains, routing electricity through a cluttered circuit board while avoiding shorts that blow your fuses.",
+  "perspective": "top-down",
+  "core_loop": "A charge builds at a glowing terminal \u00e2\u20ac\u201d drag to draw a wire path through the board to reach the target terminal before the energy bar depletes. Obstacles like capacitors, resistors, and live wires block your route; crossing another wire causes a short that blows one of your three fuses. Each completed connection powers up a section of the board, revealing new terminal pairs at faster drain rates. Longer paths score more but risk running out of charge. Every few connections trigger a 'surge round' where multiple pairs must be linked simultaneously under a shared timer.",
+  "retention_hooks": [
+    "Board progressively lights up as you complete connections \u00e2\u20ac\u201d satisfying visual payoff of powering a whole circuit",
+    "Surge rounds create escalating panic moments that feel like clutch plays when you nail them",
+    "High score chasing with combo multipliers for consecutive clean connections (no shorts)"
+  ],
+  "controls": "Touch/mouse drag to draw wire paths from source terminal to target terminal. Tap a drawn wire to erase it and reroute. That's it \u00e2\u20ac\u201d one finger, one action.",
+  "tags": [
+    "path-drawing",
+    "routing-puzzle",
+    "time-pressure",
+    "arcade",
+    "electrical-theme",
+    "one-finger",
+    "score-chaser"
+  ]
+}

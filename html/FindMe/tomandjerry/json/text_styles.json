@@ -1,0 +1,28 @@
+{
+	"comment": {
+			"c0":"// text_styles.json",
+			"c1":"//",
+			"c2":"// contains the parameters for each of the text styles used in the game",
+			"c3":"// for information about these parameters please see the Pixi documentation:",
+			"c4":"// http://pixijs.download/v4.2.2/docs/PIXI.TextStyle.html",
+			"c5":"//",
+			"c6":"// to see how a font is used in the game, search on the name string in this file with loose",
+			"c7":"// matching.  You will see the same name in the game code prefixed with Main."
+		},
+
+    "textStyleVersionTiny": {
+            "align": "left",
+            "fill": "#ffffff",
+            "fontFamily": "Ariel",
+            "fontSize": 30,
+            "fontWeight": "normal"
+        },
+
+    "textStyleTimer": {
+            "align": "center",
+            "fill": "#ffffff",
+            "fontFamily": "Ariel",
+            "fontSize": 130,
+            "fontWeight": "bold"
+        }
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">  <!-- request GPU rasterization from Chrome browsers, where available -->
+    <meta charset="utf-8" />
+    <title>Dots</title>
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            border: none;
+        }
+
+        #gui {
+            position: absolute;
+            top: 200px;
+            right: 0;
+        }
+    </style>
+
+    <!-- libraries -->
+    <script type="text/javascript" src="lib/dat.gui.js"></script>
+    <script type="text/javascript" src="lib/stats.js"></script>
+    <script type="text/javascript" src="lib/goo.min.js"></script>
+
+    <!-- project source -->
+	<script type="text/javascript" src="src/dots.js"></script>
+	<script type="text/javascript" src="src/dot.js"></script>
+	<script type="text/javascript" src="src/world.js"></script>
+
+</head>
+
+<body>
+
+    <div id="gui"></div>
+
+<script type="text/javascript">
+
+    var demo;
+    var demoName = null;
+    var docId = 'dots';
+
+    // after reading: http://www.sitepoint.com/google-closure-how-not-to-write-javascript/
+    var _undefinedCheck;
+    if (undefined !== _undefinedCheck)
+    {
+        alert("'undefined' has been redefined which will screw up this script.");
+    }
+
+    // fps counter
+    var stats = null;
+    stats = new Stats();
+    stats.setMode(0);
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.right = '0px';
+    stats.domElement.style.bottom = '0px';
+    document.body.appendChild( stats.domElement );
+
+    // dat.GUI user interface components
+    var gui = new dat.GUI({ autoPlace: false });
+
+    var guiContainer = document.getElementById('gui');
+    guiContainer.appendChild(gui.domElement);
+
+    // let the user select a demo to view
+    var pickDemo = gui.add(this, "demoName",
+        {
+            none: null,
+            dots: "Dots"
+        }
+    );
+    pickDemo.onFinishChange(
+        function(value)
+        {
+            console.log("Changing demo...", value);
+
+            if (demo)
+            {
+                demo.destroy();
+                demo = null;
+            }
+
+            if (value && window[value])
+            {
+                demo = new window[value](docId);
+            }
+
+            // remember the selected demo name
+            demoName = value;
+        }
+    );
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poki Prototypes</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+}
+
+header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 24px 32px;
+    border-bottom: 1px solid #2a2a4a;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+}
+header h1 span { color: #8b5cf6; }
+
+.controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+#search {
+    flex: 1;
+    min-width: 200px;
+    max-width: 400px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #3a3a5a;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+#search:focus { border-color: #8b5cf6; }
+#search::placeholder { color: #666; }
+
+.tag-filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.tag-btn {
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid #3a3a5a;
+    background: transparent;
+    color: #aaa;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tag-btn:hover { border-color: #8b5cf6; color: #ccc; }
+.tag-btn.active { background: #8b5cf6; border-color: #8b5cf6; color: #fff; }
+
+.count {
+    font-size: 13px;
+    color: #666;
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 24px 32px;
+}
+
+.card {
+    background: linear-gradient(145deg, #1a1a2e, #1e1e36);
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+}
+.card:hover {
+    border-color: #8b5cf6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+}
+.card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+}
+.card .perspective {
+    font-size: 11px;
+    color: #8b5cf6;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.card .desc {
+    font-size: 13px;
+    color: #999;
+    line-height: 1.5;
+    flex: 1;
+    margin-bottom: 12px;
+}
+.card .tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.card .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+}
+.card .date {
+    font-size: 11px;
+    color: #555;
+    margin-top: 10px;
+    text-align: right;
+}
+
+.empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #555;
+    font-size: 16px;
+}
+
+.error {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #ef4444;
+    font-size: 14px;
+    line-height: 1.6;
+}
+</style>
+</head>
+<body>
+<header>
+    <h1><span>Poki</span> Prototypes</h1>
+    <div class="controls">
+        <input type="text" id="search" placeholder="Search games..." autocomplete="off">
+        <div class="tag-filters" id="tag-filters"></div>
+        <div class="count" id="count"></div>
+    </div>
+</header>
+<div class="grid" id="grid"></div>
+
+<script>
+(async function() {
+    const grid = document.getElementById('grid');
+    const search = document.getElementById('search');
+    const tagFilters = document.getElementById('tag-filters');
+    const countEl = document.getElementById('count');
+
+    let catalog = [];
+    let activeTag = null;
+
+    try {
+        const resp = await fetch('catalog.json');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        catalog = await resp.json();
+    } catch (e) {
+        grid.innerHTML = '<div class="error">Could not load catalog.json<br>Make sure you are serving this via a local web server (e.g. <code>npx serve</code> or <code>python -m http.server</code>).<br>File:// URLs block fetch requests.</div>';
+        return;
+    }
+
+    // Sort newest first
+    catalog.sort((a, b) => (b.built_at || '').localeCompare(a.built_at || ''));
+
+    // Collect all unique tags
+    const allTags = new Set();
+    catalog.forEach(g => (g.tags || []).forEach(t => allTags.add(t)));
+    const sortedTags = [...allTags].sort();
+
+    // Build tag filter buttons
+    sortedTags.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.className = 'tag-btn';
+        btn.textContent = tag;
+        btn.addEventListener('click', () => {
+            if (activeTag === tag) {
+                activeTag = null;
+                btn.classList.remove('active');
+            } else {
+                activeTag = tag;
+                tagFilters.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            render();
+        });
+        tagFilters.appendChild(btn);
+    });
+
+    function render() {
+        const q = search.value.toLowerCase().trim();
+        const filtered = catalog.filter(g => {
+            if (activeTag && !(g.tags || []).includes(activeTag)) return false;
+            if (!q) return true;
+            return g.name.toLowerCase().includes(q)
+                || g.description.toLowerCase().includes(q)
+                || g.slug.toLowerCase().includes(q)
+                || (g.tags || []).some(t => t.includes(q));
+        });
+
+        countEl.textContent = filtered.length + ' / ' + catalog.length + ' games';
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="empty">No games match your search.</div>';
+            return;
+        }
+
+        grid.innerHTML = filtered.map(g => {
+            const date = g.built_at ? new Date(g.built_at).toLocaleDateString() : '';
+            const tags = (g.tags || []).map(t => '<span class="tag">' + t + '</span>').join('');
+            return '<a class="card" href="' + g.slug + '/index.html">'
+                + '<h2>' + g.name + '</h2>'
+                + (g.perspective ? '<div class="perspective">' + g.perspective + '</div>' : '')
+                + '<div class="desc">' + g.description + '</div>'
+                + '<div class="tags">' + tags + '</div>'
+                + (date ? '<div class="date">' + date + '</div>' : '')
+                + '</a>';
+        }).join('');
+    }
+
+    search.addEventListener('input', render);
+    render();
+})();
+</script>
+</body>
+</html>

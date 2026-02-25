@@ -1,0 +1,195 @@
+/* header.css - Header and navigation styles */
+
+.header {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+}
+
+.workspace-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.workspace-icon {
+    width: 96px;
+    height: 32px;
+    background: #26d0a0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.board-selector {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.board-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.board-tabs {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+}
+
+.board-tab {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 80px;
+    max-width: 150px;
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.board-tab.active {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.board-tab:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.add-board-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Folder tab in the tab bar */
+.folder-tab {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.folder-tab.expanded {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.folder-tab.active-folder {
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.folder-tab-label {
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px 8px 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.folder-tab-label:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px 0 0 4px;
+}
+
+.folder-chevron {
+    font-size: 10px;
+    font-family: monospace;
+    width: 12px;
+    text-align: center;
+    display: inline-block;
+}
+
+.folder-count {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-left: 2px;
+}
+
+.folder-tab-menu-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 6px 8px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    border-radius: 0 4px 4px 0;
+}
+
+.folder-tab-menu-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.folder-tab-menu-dropdown {
+    position: fixed;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    min-width: 160px;
+    padding: 8px 0;
+}
+
+.folder-tab-menu-dropdown.hidden {
+    display: none;
+}
+
+.folder-tab-menu-dropdown .board-menu-option {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    color: #172b4d;
+    cursor: pointer;
+}
+
+.folder-tab-menu-dropdown .board-menu-option:hover {
+    background: #f4f5f7;
+}
+
+.folder-tab-menu-dropdown .delete-option {
+    color: #eb5a46;
+}
+
+.folder-tab-menu-dropdown .delete-option:hover {
+    background: #ffebe6;
+}
+
+/* Child board tabs inside a folder */
+.folder-child-tab {
+    border-left: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 0 4px 4px 0;
+    margin-left: -6px;
+    padding-left: 12px;
+}

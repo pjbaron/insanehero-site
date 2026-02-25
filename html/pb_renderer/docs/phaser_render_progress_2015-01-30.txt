@@ -1,0 +1,31 @@
+Phaser 3 renderer progress.
+30/1/2015
+
+The WIP can be found here: https://github.com/photonstorm/phaser3/tree/master/renderer
+A recent online demo is here: http://www.insanehero.com/html/renderer/src/
+The project commit log is here: https://github.com/photonstorm/phaser3/commits?author=pjbaron
+
+This week:
+
+I haven't done as much refinement of the API functions as I'd hoped to because I've been pumping out demos to test the basic functionality:
+- 'invaders' is a self-playing space invaders type game with missiles to pump up the sprite count a bit
+- 'text' is a test using my standard shaders to draw letters-as-sprites in three layers
+- 'bunny' and 'bunnyNPOT' are two 'bunny mark' tests: 'bunny' by-passes all the sprite/layer logic to just pump the minimal location data to the simplest possible batch quad renderer.  This produces 175k bunnies (at 59fps) on my desktop.  'bunnyNPOT' uses non-power-of-two texture drawing and the sprite/layer interface to produce 65k bunnies.  I did a side-by-side test of POT and NPOT (originally both versions used the sprite/layer code) and found that handling NPOT actually slows the rendering down a small percentage (about 3-5%) compared with drawing empty pixels after extending the source texture to POT.  The speed difference caused by the sprite/layer code is significant and indicates a promising avenue for later optimisation of the JS side of this project.
+- 'instances' runs multiple 'invaders' demos in a tiled window grid, every time the FPS is stable at 60fps for 5 consecutive seconds, it extends the number of rows or columns of the game instances.  My desktop can support 25 game instances.  This demo also shows the use of 'clipping' to prevent out of bounds sprites from leaving a portion of the display area.  A limitation of the glScissor command means that this clipping box must be aligned with the display (we can't clip rotating layers... although I'm thinking about a fragment shader extension that might manage to do that).
+- 'scroll' shows multiple layers of parallax using a JSON tile map definition.  Currently set to 8 scrolling layers plus one static background (60 fps on my desktop), depth is adjustable with the this.numLayers parameter in the create function.  The per layer automatic sprite batching seems to work very well with tiles because the tiles are coming from a single tile sheet, so the entire layer is always just one batch draw.
+
+I've cleaned up the mess that was pbGraphics.js by eliminating it entirely.  Instead I now have a 'base class' type object pbBaseGraphics.js which all rendering modes will extend (eg. pbWebGl.js).  This avoids time-wasting stub functions that pass along parameters, but it imposes an obligation on all renderers to conform to a standard pattern of variables.  I haven't found a JS way to enforce this, but I'm creating dummy stubs in pbBaseGraphics which should help clarify the parameter order.
+
+The anchor point code has been improved to work in a more logical fashion, and the corner offsets have been added to 'single' sprite rendering as well as the fast batch mode.
+
+The dat.GUI menu widget has been moved down because I've started using the Chrome FPS monitor to get more accurate information about the framerate of each demo... unfortunately that's locked to the top right corner so the widget had to move.  The 'mrdoob' fps monitor is still present because I'm using it to control many of these demos, I don't think I can query the google fps meter from code (plus it wouldn't work in other browsers).
+
+Next up:
+
+The tile-based scrolling demo should use optimisations available to a rectilinear grid output shader, and in cases where the tiles are not scaled,skewed or rotated, it should use a simpler (faster) sprite batch render function.
+Now I've sorted out the pbGraphics mess, I will start looking at a Canvas parallel implementation of the rendering API, then possibly a DOM sprite one just for the heck of it.
+I want to take a good look at each of the demos and isolate the repeated code fragments - that'll give me a nice pointer on how to implement more powerful API top-layer interfaces.
+I was disappointed to see the speed difference in the bunny mark when removing the layer/sprite interface code (75k - 175k).  The interface was designed to be nearly insignificant, but it's taking far too much CPU time when processing huge numbers of very simple objects like the bunnies.  I will do optimisations on the general purpose approach while I have this clean test-bed, but eventually I want to implement a number of specific rendering modes which by-pass as much as possible and 'fast-track' the data through to the shaders.
+
+
+- Pete

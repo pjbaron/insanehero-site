@@ -1,0 +1,64 @@
+<Strings>
+	<!-- Intro Panel -->
+	<String id="new_game_start_button_string">DÉMARRER</String>
+	<String id="play_mjdb_button_string">Jouer à Mahjongg Dimensions Blast</String>
+
+	<!-- Help window -->
+	<String id="help_header_string">AIDE</String>
+	<String id="help_page1_text_string">COMMENT JOUER</String>
+	<String id="help_page1_text1_string">Cliquez et rassemblez les tuiles identiques qui ne touchent pas d'autres tuiles sur deux côtés adjacents pour marquer des points.</String>
+	<String id="help_page1_text2_string">Cliquez sur les paires le plus vite possible pour terminer tous les niveaux avant la fin du temps imparti.</String>
+	<String id="help_page1_text3_string">Vous pouvez faire pivoter le plateau pour trouver de nouvelles paires de l'autre côté ! Pour cela, cliquez sur les flèches à l'écran ou utilisez le clavier.</String>
+	<String id="help_page1_text4_string">ASTUCE : Utilisez les flèches gauche et droite pour faire pivoter le plateau plus rapidement.</String>
+	<String id="help_page2_text_string">BONUS</String>
+	<String id="help_page2_text1_string">COMBO ENCHAÎNEMENT : Vous activerez un multiplicateur de points si vous trouvez deux paires à moins de trois secondes d'intervalle.</String>
+
+	<String id="help_page2_text2_string">COMBO MULTITUILES : Vous obtiendrez des points bonus en rassemblant plusieurs tuiles identiques à la suite.</String>
+
+	<String id="help_page2_text3_string">BONUS DE TEMPS : Vous gagnerez des points bonus en terminant chaque niveau avant la fin du temps imparti : le nombre de points dépend du temps restant.</String>
+
+	<String id="help_page2_text4_string">Si vous ne trouvez de paires, vous pouvez appuyer sur le bouton Redistribuer pour mélanger les tuiles - mais seulement une seule fois par niveau.</String>
+
+	<String id="help_page2_text5_string">Lorsque le chronomètre se termine, la partie prend fin. Bonne chance, et amusez-vous bien !</String>
+
+	<String id="help_multimatch_text_string">MULTITUILES</String>
+	<String id="help_speedmatch_text_string">ENCHAÎNEMENT</String>
+
+	<String id="help_show_help_string">AFFICHER AU DÉMARRAGE</String>
+
+	<!-- Options window -->
+	<String id="options_header_string">OPTIONS</String>
+	<String id="options_sound_string">SONS</String>
+	<String id="options_music_string">MUSIQUE</String>
+
+	<!-- Quit window -->
+	<String id="quit_header_string">Voulez-vous vraiment quitter ?</String>
+
+	<String id="quit_yes_button_string">OUI</String>
+	<String id="quit_no_button_string">NON</String>
+
+	<!-- Game View Panel -->
+	<String id="gvp_level_time_indication_text_string">TEMPS :</String>
+	<String id="gvp_level_score_indication_text_string">SCORE :</String>
+
+	<!-- GVP PopUp -->
+	<String id="gvp_level_good_job_text_string">BIEN JOUÉ !</String>
+	<String id="gvp_level_next_level_text_string">NIVEAU SUIVANT</String>
+	<String id="gvp_level_reshuffle_text_string">REDISTRIBUER</String>
+	<String id="gvp_level_no_more_move_text_string">PLUS DE
+PAIRES !</String>
+	<String id="gvp_level_times_up_text_string">FIN DU TEMPS IMPARTI !
+PARTIE TERMINÉE</String>
+
+	<!-- Buttons -->
+	<String id="gvp_level_reshuffle_button_text_string">REDISTRIBUER</String>
+
+	<!-- Game Over PopUp -->
+	<String id="game_over_lose_header_string">PARTIE TERMINÉE</String>
+	<String id="game_over_win_header_string">VOUS AVEZ GAGNÉ</String>
+
+	<!-- Other files -->
+<String id="help_play_string">JOUER</String>
+	<String id="options_quit_string">QUITTER</String>
+	<String id="gvp_level_times_up_final_score_string">Score final</String>
+</Strings>

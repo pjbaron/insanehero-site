@@ -1,0 +1,20 @@
+{
+  "name": "Orbit Keeper",
+  "slug": "orbit_keeper",
+  "description": "Tap to launch moons into orbit around planets, building a spinning solar system while avoiding collisions between your own orbiting bodies.",
+  "perspective": "top-down",
+  "core_loop": "Planets drift onto screen one at a time. You tap/click to launch a moon toward a planet \u00e2\u20ac\u201d if it lands in the gravitational sweet spot, it locks into orbit and scores points. Each planet can hold multiple moons at different orbital rings. As your solar system grows, orbiting moons create an increasingly dense web of spinning paths. You must time new launches to thread through gaps between existing orbits. Moons that collide with each other shatter, triggering a chain reaction that can destroy nearby moons. Survive as long as possible while maximizing your constellation of orbiting moons.",
+  "retention_hooks": [
+    "Mesmerizing visual: watching 20+ moons spinning in layered orbits is hypnotic and screenshot-worthy",
+    "High score chasing: total moons orbiting simultaneously is your score, with milestones unlocking new planet skins and moon trails",
+    "Near-miss dopamine: threading a launch through a narrow gap between two spinning orbits feels incredible"
+  ],
+  "controls": "Tap/click on empty space to set launch origin, drag toward a planet to aim, release to launch moon. Launch power is fixed \u00e2\u20ac\u201d only angle matters. One-finger mobile play.",
+  "tags": [
+    "timing",
+    "orbital-mechanics",
+    "precision",
+    "arcade",
+    "zen"
+  ]
+}

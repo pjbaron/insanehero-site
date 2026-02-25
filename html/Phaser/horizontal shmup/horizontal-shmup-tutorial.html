@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <pre><title>horizontal shmup Tutorial</title></pre>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        pre {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        p {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <h1>horizontal shmup Tutorial For Phaser</h1>
+
+    <div class="section" id="preface">
+        <h2>Preface</h2>
+        <p>Title: "Crafting a Horizontal Scrolling Shooter in Phaser"<br><br>Welcome to this tutorial on creating a horizontal scrolling shooter, commonly known as a "horizontal shmup" (shoot 'em up), using Phaser!<br><br>A horizontal shmup is a subgenre of shoot 'em up games where the player's character, typically a spaceship or aircraft, moves from left to right across the screen. The gameplay involves dodging obstacles and enemy fire while shooting at incoming enemies and collecting power-ups. Classic examples include R-Type, Gradius, and Thunder Force.<br><br>In this tutorial, we'll focus on the core elements that make a horizontal shmup:<br><br>1. Creating a continuously scrolling background<br>2. Implementing player movement and shooting mechanics<br>3. Spawning and managing enemies<br>4. Handling collisions between player bullets and enemies<br><br>By the end of this tutorial, you'll have a solid foundation for building your own horizontal scrolling shooter game using Phaser. Let's dive in and start creating an exciting, action-packed experience!</p>
+    </div>
+
+    <div class="section" id="project-shell" style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px;">
+        <h2>Project Shell</h2>
+        <p style="margin-bottom: 20px;">Welcome to our Horizontal Shmup game tutorial! We're about to embark on an exciting journey to create a classic side-scrolling shooter using Phaser 3. Our template provides a solid foundation for building this game, with a well-organized structure that separates concerns and makes it easy to expand upon.<br><br>Let's start by examining the structure and purpose of our template code. We have an HTML file that sets up the game container and loads the necessary scripts, and several JavaScript files that define different scenes and the main game configuration. This modular approach allows us to manage complexity and focus on specific aspects of the game in isolation.<br><br>index.html<br><br>Our HTML file serves as the entry point for our game. It sets up the basic structure of our web page and includes the necessary scripts to run our Phaser game.<br><br><pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot; /&gt;
+    &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;./favicon.png&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+    &lt;title&gt;Horizontal Shmup&lt;/title&gt;
+    &lt;script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;app&quot;&gt;
+        &lt;div id=&quot;game-container&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;script type=&quot;module&quot; src=&quot;./src/main.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><br><br>In the head section, we set up the character encoding, favicon, viewport, and title for our game. We also include the Phaser library from a CDN, which provides all the game development tools we'll be using.<br><br>The body of our HTML is quite simple. We have a div with the id "app" that contains another div with the id "game-container". This "game-container" div is where our Phaser game will be rendered.<br><br>Finally, we include our main JavaScript file as a module. This is where our game configuration and scene management will take place.<br><br>src/main.js<br><br>Our main.js file is the central hub of our game. It imports all the necessary scenes and sets up the game configuration.<br><br><pre><code class="language-javascript">import { Boot } from &#x27;./scenes/Boot.js&#x27;;
+import { Game } from &#x27;./scenes/Game.js&#x27;;
+import { GameOver } from &#x27;./scenes/GameOver.js&#x27;;
+import { MainMenu } from &#x27;./scenes/MainMenu.js&#x27;;
+import { Preloader } from &#x27;./scenes/Preloader.js&#x27;;
+
+const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    parent: &#x27;game-container&#x27;,
+    backgroundColor: &#x27;#000000&#x27;,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
+    scene: [
+        Boot,
+        Preloader,
+        MainMenu,
+        Game,
+        GameOver
+    ],
+    physics: {
+        default: &#x27;arcade&#x27;,
+        arcade: {
+            gravity: { y: 0 },
+            debug: false
+        }
+    }
+};
+
+export default new Phaser.Game(config);</code></pre><br><br>We start by importing all our game scenes. These scenes represent different states or screens in our game, like the boot process, preloader, main menu, actual gameplay, and game over screen.<br><br>Next, we define our game configuration. This object tells Phaser how to set up our game. Let's break down some key properties:<br><br>- `type: Phaser.AUTO` tells Phaser to use WebGL if available, falling back to Canvas if not.<br>- `width` and `height` set the dimensions of our game.<br>- `parent` specifies which HTML element will contain our game.<br>- `backgroundColor` sets the default background color.<br>- The `scale` property ensures our game fits nicely in different screen sizes.<br>- `scene` is an array of all the scenes in our game, in the order they'll be initialized.<br>- The `physics` property sets up Phaser's physics system. We're using the arcade physics system with no gravity, which is perfect for our space-themed shooter.<br><br>Finally, we create a new Phaser.Game instance with our configuration and export it. This is what kicks off our entire game.<br><br>src/scenes/Boot.js<br><br>The Boot scene is the first to run when our game starts. Its main job is to load any assets needed for the preloader scene.<br><br><pre><code class="language-javascript">export class Boot extends Phaser.Scene
+{
+    constructor ()
+    {
+        super(&#x27;Boot&#x27;);
+    }
+
+    preload ()
+    {
+        this.load.image(&#x27;background&#x27;, &#x27;assets/background.png&#x27;);
+    }
+
+    create ()
+    {
+        this.scene.start(&#x27;Preloader&#x27;);
+    }
+}</code></pre><br><br>In the `preload` method, we load our background image. This image will be used in the preloader scene to give the player something to look at while the rest of the assets load.<br><br>Once the background is loaded, the `create` method immediately starts the Preloader scene. Think of this Boot scene as a quick preparation step before the main asset loading begins.<br><br>src/scenes/Preloader.js<br><br>The Preloader scene is responsible for loading all the main assets our game will need. It also displays a loading bar to give the player feedback on the loading progress.<br><br><pre><code class="language-javascript">export class Preloader extends Phaser.Scene
+{
+    constructor ()
+    {
+        super(&#x27;Preloader&#x27;);
+    }
+
+    preload ()
+    {
+        this.add.image(400, 300, &#x27;background&#x27;);
+
+        const progressBar = this.add.graphics();
+        const progressBox = this.add.graphics();
+        progressBox.fillStyle(0x222222, 0.8);
+        progressBox.fillRect(240, 270, 320, 50);
+
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
+        const loadingText = this.make.text({
+            x: width / 2,
+            y: height / 2 - 50,
+            text: &#x27;Loading...&#x27;,
+            style: {
+                font: &#x27;20px monospace&#x27;,
+                fill: &#x27;#ffffff&#x27;
+            }
+        });
+        loadingText.setOrigin(0.5, 0.5);
+
+        this.load.on(&#x27;progress&#x27;, (value) =&gt; {
+            progressBar.clear();
+            progressBar.fillStyle(0xffffff, 1);
+            progressBar.fillRect(250, 280, 300 * value, 30);
+        });
+
+        this.load.on(&#x27;complete&#x27;, () =&gt; {
+            progressBar.destroy();
+            progressBox.destroy();
+            loadingText.destroy();
+        });
+
+        // Load assets here
+        this.load.image(&#x27;player&#x27;, &#x27;assets/player.png&#x27;);
+        this.load.image(&#x27;enemy&#x27;, &#x27;assets/enemy.png&#x27;);
+        this.load.image(&#x27;bullet&#x27;, &#x27;assets/bullet.png&#x27;);
+    }
+
+    create ()
+    {
+        this.scene.start(&#x27;MainMenu&#x27;);
+    }
+}</code></pre><br><br>In the `preload` method, we first display the background image we loaded in the Boot scene. Then we create a progress bar and loading text to show the player that assets are being loaded.<br><br>We use Phaser's event system to update the progress bar as assets load. The 'progress' event fires repeatedly during loading, allowing us to update the bar's width. The 'complete' event fires when all assets are loaded, at which point we clean up our loading graphics.<br><br>At the end of the `preload` method, we load our game assets: the player ship, enemy ship, and bullet images.<br><br>Once all assets are loaded, the `create` method starts the MainMenu scene.<br><br>src/scenes/MainMenu.js<br><br>The MainMenu scene presents the player with the game's title and a prompt to start the game.<br><br><pre><code class="language-javascript">export class MainMenu extends Phaser.Scene
+{
+    constructor ()
+    {
+        super(&#x27;MainMenu&#x27;);
+    }
+
+    create ()
+    {
+        this.add.image(400, 300, &#x27;background&#x27;);
+
+        this.add.text(400, 300, &#x27;Horizontal Shmup&#x27;, {
+            fontFamily: &#x27;Arial Black&#x27;, fontSize: 38, color: &#x27;#ffffff&#x27;,
+            stroke: &#x27;#000000&#x27;, strokeThickness: 8,
+            align: &#x27;center&#x27;
+        }).setOrigin(0.5);
+
+        this.add.text(400, 350, &#x27;Click to Start&#x27;, {
+            fontFamily: &#x27;Arial&#x27;, fontSize: 24, color: &#x27;#ffffff&#x27;,
+            align: &#x27;center&#x27;
+        }).setOrigin(0.5);
+
+        this.input.once(&#x27;pointerdown&#x27;, () =&gt; {
+            this.scene.start(&#x27;Game&#x27;);
+        });
+    }
+}</code></pre><br><br>In the `create` method, we set up our main menu. We display the background image, add text for the game title and start prompt, and set up an input listener to start the game when the player clicks.<br><br>The `setOrigin(0.5)` call centers our text elements, and we use some text styling to make the title stand out with a stroke effect.<br><br>src/scenes/Game.js<br><br>The Game scene is where the main gameplay will take place. Right now, it's just a skeleton waiting for us to implement the game mechanics.<br><br><pre><code class="language-javascript">export class Game extends Phaser.Scene
+{
+    constructor ()
+    {
+        super(&#x27;Game&#x27;);
+    }
+
+    create ()
+    {
+        // Game scene setup will be implemented here
+    }
+
+    update ()
+    {
+        // Game logic will be implemented here
+    }
+}</code></pre><br><br>The `create` method will be used to set up our game objects, like the player ship, enemies, and any UI elements. The `update` method will run every frame, allowing us to implement game logic like movement and collision detection.<br><br>src/scenes/GameOver.js<br><br>The GameOver scene is displayed when the player loses, showing their final score and offering a chance to restart.<br><br><pre><code class="language-javascript">export class GameOver extends Phaser.Scene
+{
+    constructor ()
+    {
+        super(&#x27;GameOver&#x27;);
+    }
+
+    create ()
+    {
+        this.add.image(400, 300, &#x27;background&#x27;);
+
+        this.add.text(400, 200, &#x27;Game Over&#x27;, {
+            fontFamily: &#x27;Arial Black&#x27;, fontSize: 64, color: &#x27;#ffffff&#x27;,
+            stroke: &#x27;#000000&#x27;, strokeThickness: 8,
+            align: &#x27;center&#x27;
+        }).setOrigin(0.5);
+
+        this.add.text(400, 300, &#x27;Score: &#x27; + this.registry.get(&#x27;score&#x27;), {
+            fontFamily: &#x27;Arial&#x27;, fontSize: 32, color: &#x27;#ffffff&#x27;,
+            align: &#x27;center&#x27;
+        }).setOrigin(0.5);
+
+        this.add.text(400, 350, &#x27;Click to Restart&#x27;, {
+            fontFamily: &#x27;Arial&#x27;, fontSize: 24, color: &#x27;#ffffff&#x27;,
+            align: &#x27;center&#x27;
+        }).setOrigin(0.5);
+
+        this.input.once(&#x27;pointerdown&#x27;, () =&gt; {
+            this.scene.start(&#x27;Game&#x27;);
+        });
+    }
+}</code></pre><br><br>Similar to the MainMenu scene, we display some text and wait for player input. We also show the player's score, which we'll store in Phaser's global registry during gameplay.<br><br>Experiment with the Code<br><br>Now that we've explored our game's structure, let's try a few simple modifications to get a feel for how everything works together. First, try changing the game's dimensions in main.js. Adjust the width and height values and see how it affects the game's display. Next, head over to the MainMenu scene and experiment with the text styles. Try changing the colors, font sizes, or adding new text elements to customize your game's look. Finally, in the Preloader scene, add a new asset to load, like a power-up image. You'll need to add a new this.load.image() call and make sure you have the corresponding image file in your assets folder.<br><br>Looking Ahead<br><br>As we move forward with our horizontal shmup game, we'll be diving into the core mechanics of gameplay. We'll start by implementing a scrolling background to give the illusion of movement. Then, we'll create a player ship that can move vertically and shoot. We'll add enemies that move from right to left, and implement collision detection between bullets and enemies. We'll also set up a scoring system and create conditions for ending the game. By the end of this tutorial series, you'll have a fully functional, basic horizontal scrolling shooter game!</p>
+        <ol style="padding-left: 20px;">
+    </div>
+
+    <div class="section" id="stage-1">
+        <h2>Stage 1: Initial Development</h2>
+        <p>Welcome to our Horizontal Shmup game tutorial! We're about to embark on an exciting journey to create a classic side-scrolling shooter using Phaser 3. Our template provides a solid foundation for building this game, with a well-organized structure that separates concerns and makes it easy to expand upon.<br><br>Let's start by examining the structure and purpose of our template code. We have an HTML file that sets up the game container and loads the necessary scripts, and several JavaScript files that define different scenes and the main game configuration. This modular approach allows us to manage complexity and focus on specific aspects of the game in isolation.<br><br>index.html<br><br>Our HTML file serves as the entry point for our game. It sets up the basic structure of our web page and includes the necessary scripts to run our Phaser game.<br><br>The head section sets up the character encoding, favicon, viewport, and title for our game. We also include the Phaser library from a CDN, which provides all the game development tools we'll be using.<br><br>The body of our HTML is quite simple. We have a div with the id "app" that contains another div with the id "game-container". This "game-container" div is where our Phaser game will be rendered.<br><br>Finally, we include our main JavaScript file as a module. This is where our game configuration and scene management will take place.<br><br>src/main.js<br><br>Our main.js file is the central hub of our game. It imports all the necessary scenes and sets up the game configuration.<br><br>We start by importing all our game scenes. These scenes represent different states or screens in our game, like the boot process, preloader, main menu, actual gameplay, and game over screen.<br><br>Next, we define our game configuration. This object tells Phaser how to set up our game. Key properties include:<br><br>- `type: Phaser.AUTO` for automatic renderer selection<br>- `width` and `height` for game dimensions<br>- `parent` to specify the container element<br>- `backgroundColor` for the default background color<br>- `scale` property for responsive sizing<br>- `scene` array listing all game scenes<br>- `physics` property setting up the arcade physics system<br><br>Finally, we create a new Phaser.Game instance with our configuration and export it.<br><br>src/scenes/Boot.js<br><br>The Boot scene is the first to run when our game starts. Its main job is to load any assets needed for the preloader scene.<br><br>In the `preload` method, we load our background image. This image will be used in the preloader scene to give the player something to look at while the rest of the assets load.<br><br>The `create` method immediately starts the Preloader scene.<br><br>src/scenes/Preloader.js<br><br>The Preloader scene is responsible for loading all the main assets our game will need. It also displays a loading bar to give the player feedback on the loading progress.<br><br>In the `preload` method, we display the background image, create a progress bar and loading text, and set up event listeners to update the progress bar as assets load.<br><br>At the end of the `preload` method, we load our game assets: the player ship, enemy ship, and bullet images.<br><br><pre><code class="language-javascript">// Load assets here
+this.load.image(&#x27;player&#x27;, &#x27;assets/player.png&#x27;);
+this.load.image(&#x27;enemy&#x27;, &#x27;assets/enemy.png&#x27;);
+this.load.image(&#x27;bullet&#x27;, &#x27;assets/bullet.png&#x27;);</code></pre><br><br>Once all assets are loaded, the `create` method starts the MainMenu scene.<br><br>src/scenes/MainMenu.js<br><br>The MainMenu scene presents the player with the game's title and a prompt to start the game.<br><br>In the `create` method, we set up our main menu with the background image, game title, and start prompt. We also set up an input listener to start the game when the player clicks.<br><br>src/scenes/Game.js<br><br>The Game scene is where the main gameplay will take place. Currently, it's just a skeleton waiting for implementation of game mechanics.<br><br>src/scenes/GameOver.js<br><br>The GameOver scene is displayed when the player loses, showing their final score and offering a chance to restart.<br><br>Similar to the MainMenu scene, we display some text and wait for player input. We also show the player's score, which we'll store in Phaser's global registry during gameplay.<br><br>Now, let's add some simple visuals and basic code elements to start bringing our game to life:<br><br>1. Scrolling Background<br><br>In the Game scene's create method, add the following code:<br><br><pre><code class="language-javascript">create() {
+    this.bg1 = this.add.tileSprite(0, 0, 800, 600, &#x27;background&#x27;).setOrigin(0, 0);
+    this.bg2 = this.add.tileSprite(800, 0, 800, 600, &#x27;background&#x27;).setOrigin(0, 0);
+}</code></pre><br><br>This creates two tiled background sprites that we'll use to create a scrolling effect. We position the second sprite right after the first one.<br><br>In the update method, add:<br><br><pre><code class="language-javascript">update() {
+    this.bg1.tilePositionX += 2;
+    this.bg2.tilePositionX += 2;
+
+    if (this.bg1.x &lt;= -800) {
+        this.bg1.x = 800;
+    }
+    if (this.bg2.x &lt;= -800) {
+        this.bg2.x = 800;
+    }
+}</code></pre><br><br>This code moves both background sprites to the left by 2 pixels each frame, creating a scrolling effect. When a sprite moves completely off-screen to the left, we reposition it to the right side of the screen.<br><br>2. Player Ship<br><br>Add the following to the Game scene's create method:<br><br><pre><code class="language-javascript">this.player = this.physics.add.sprite(100, 300, &#x27;player&#x27;);
+this.player.setCollideWorldBounds(true);</code></pre><br><br>This creates a player sprite with physics enabled, positioned at x=100 and y=300. The `setCollideWorldBounds(true)` call prevents the player from moving off-screen.<br><br>3. Player Movement<br><br>In the create method, add:<br><br><pre><code class="language-javascript">this.cursors = this.input.keyboard.createCursorKeys();</code></pre><br><br>This sets up keyboard input. Then, in the update method:<br><br><pre><code class="language-javascript">if (this.cursors.up.isDown) {
+    this.player.setVelocityY(-200);
+} else if (this.cursors.down.isDown) {
+    this.player.setVelocityY(200);
+} else {
+    this.player.setVelocityY(0);
+}</code></pre><br><br>This allows the player to move up and down using the arrow keys. The velocity of 200 (or -200) pixels per second gives smooth movement.<br><br>These additions provide a scrolling background and a movable player ship, setting the stage for the next steps in our game development process.</p>
+    </div>
+
+    <div class="section" id="stage-2">
+        <h2>Stage 2: Further Development</h2>
+        <p>Stage 2: Gameplay Enhancement<br><br>In this stage, we'll enhance our basic horizontal shmup game by adding collision detection, a score system, a game over condition, and a simple enemy spawning system. We'll modify existing files and create new ones as needed.<br><br>1. src/scenes/Game.js<br>   - Add collision detection between player bullets and enemies<br>   - Implement the score system<br>   - Create a game over condition when enemies reach the left side<br>   - Add the enemy spawning system<br><br><pre><code class="language-javascript">// Create bullet group
+this.bullets = this.physics.add.group({
+    classType: Bullet,
+    maxSize: 10,
+    runChildUpdate: true
+});
+
+// Create enemy group
+this.enemies = this.physics.add.group({
+    classType: Enemy,
+    runChildUpdate: true
+});
+
+// Set up collision between bullets and enemies
+this.physics.add.collider(this.bullets, this.enemies, this.bulletHitEnemy, null, this);
+
+// Set up collision between player and enemies
+this.physics.add.collider(this.player, this.enemies, this.gameOver, null, this);
+
+// Set up score
+this.score = 0;
+this.scoreText = this.add.text(16, 16, &#x27;Score: 0&#x27;, { fontSize: &#x27;32px&#x27;, fill: &#x27;#fff&#x27; });
+
+// Enemy spawning
+this.time.addEvent({
+    delay: 2000,
+    callback: this.spawnEnemy,
+    callbackScope: this,
+    loop: true
+});
+
+// Check for game over
+this.enemies.getChildren().forEach((enemy) =&gt; {
+    if (enemy.x &lt;= 0) {
+        this.gameOver();
+    }
+});
+
+spawnEnemy ()
+{
+    const y = Phaser.Math.Between(50, 550);
+    const enemy = this.enemies.get();
+    if (enemy) {
+        enemy.spawn(800, y);
+    }
+}
+
+bulletHitEnemy (bullet, enemy)
+{
+    bullet.destroy();
+    enemy.destroy();
+    this.score += 10;
+    this.scoreText.setText(&#x27;Score: &#x27; + this.score);
+}
+
+gameOver ()
+{
+    this.registry.set(&#x27;score&#x27;, this.score);
+    this.scene.start(&#x27;GameOver&#x27;);
+}</code></pre><br><br>2. src/gameObjects/Bullet.js (New file)<br>   - Create a Bullet class extending Phaser.GameObjects.Image<br>   - Implement bullet movement and destruction when off-screen<br><br><pre><code class="language-javascript">export class Bullet extends Phaser.Physics.Arcade.Image
+{
+    constructor(scene, x, y)
+    {
+        super(scene, x, y, &#x27;bullet&#x27;);
+    }
+
+    fire(x, y)
+    {
+        this.setPosition(x + 50, y);
+        this.setActive(true);
+        this.setVisible(true);
+        this.setVelocityX(300);
+    }
+
+    preUpdate(time, delta)
+    {
+        if (this.x &gt; 800)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+}</code></pre><br><br>3. src/gameObjects/Enemy.js (New file)<br>   - Create an Enemy class extending Phaser.GameObjects.Sprite<br>   - Implement enemy movement and destruction when off-screen or hit by a bullet<br><br><pre><code class="language-javascript">export class Enemy extends Phaser.Physics.Arcade.Sprite
+{
+    constructor(scene, x, y)
+    {
+        super(scene, x, y, &#x27;enemy&#x27;);
+    }
+
+    spawn(x, y)
+    {
+        this.setPosition(x, y);
+        this.setActive(true);
+        this.setVisible(true);
+        this.setVelocityX(-100);
+    }
+
+    preUpdate(time, delta)
+    {
+        if (this.x &lt; -50)
+        {
+            this.setActive(false);
+            this.setVisible(false);
+        }
+    }
+}</code></pre><br><br>4. src/scenes/GameOver.js<br>   - Update to display the final score from the Game scene<br><br><pre><code class="language-javascript">create ()
+{
+    this.add.image(400, 300, &#x27;background&#x27;);
+
+    this.add.text(400, 200, &#x27;Game Over&#x27;, {
+        fontSize: &#x27;64px&#x27;, color: &#x27;#ffffff&#x27;,
+        stroke: &#x27;#000000&#x27;, strokeThickness: 8,
+        align: &#x27;center&#x27;
+    }).setOrigin(0.5);
+
+    this.add.text(400, 300, &#x27;Score: &#x27; + this.registry.get(&#x27;score&#x27;), {
+        fontSize: &#x27;32px&#x27;, color: &#x27;#ffffff&#x27;,
+        align: &#x27;center&#x27;
+    }).setOrigin(0.5);
+
+    this.add.text(400, 350, &#x27;Click to Restart&#x27;, {
+        fontSize: &#x27;24px&#x27;, color: &#x27;#ffffff&#x27;,
+        align: &#x27;center&#x27;
+    }).setOrigin(0.5);
+
+    this.input.once(&#x27;pointerdown&#x27;, () =&gt; {
+        this.scene.start(&#x27;Game&#x27;);
+    });
+}</code></pre><br><br>5. src/main.js<br>   - No changes required<br><br>6. src/scenes/Boot.js<br>   - No changes required<br><br>7. src/scenes/MainMenu.js<br>   - No changes required<br><br>8. src/scenes/Preloader.js<br>   - No changes required<br><br>These modifications will complete our basic horizontal shmup game, adding essential gameplay elements and creating a more engaging experience for the player.</p>
+    </div>
+
+    <div class="section" id="summary">
+        <h2>Summary</h2>
+        <p>Congratulations! You've successfully completed the tutorial for creating a basic horizontal shmup game using Phaser 3. Let's recap what we've accomplished:<br><br>1. We set up a game structure with multiple scenes, including Boot, Preloader, MainMenu, Game, and GameOver.<br>2. We implemented a scrolling background to create the illusion of movement.<br>3. We added a player ship with vertical movement controls.<br>4. We created a basic shooting mechanic for the player.<br>5. We implemented enemy spawning and movement.<br>6. We added collision detection between player bullets and enemies.<br>7. We created a score system to track the player's progress.<br>8. We implemented a game over condition when enemies reach the left side of the screen.<br><br>This project has given you a solid foundation in creating a simple game using Phaser 3. However, there's always room for improvement and expansion. Here are some suggestions for further work:<br><br>1. Power-ups: Add collectible power-ups that enhance the player's abilities, such as faster shooting or a shield.<br>2. Different enemy types: Create various enemy types with unique movement patterns and health points.<br>3. Boss battles: Implement challenging boss encounters at set intervals.<br>4. Sound effects and music: Add audio to enhance the gaming experience.<br>5. Levels and difficulty progression: Create multiple levels with increasing difficulty.<br>6. Player lives system: Implement a lives system instead of instant game over.<br>7. High score system: Add a persistent high score system using local storage.<br>8. Visual effects: Implement particle systems for explosions and other visual enhancements.<br>9. Touch controls: Add touch controls for mobile device compatibility.<br>10. Upgrades system: Create an in-game shop where players can upgrade their ship between levels.<br><br>By expanding on these areas, you can transform this basic game into a more complex and engaging experience. Remember to break down new features into smaller, manageable tasks, and tackle them one at a time. Happy coding, and enjoy developing your game further!</p>
+    </div>
+</body>
+</html>
+    

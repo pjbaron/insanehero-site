@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width,user-scalable=no,minimum-scale=1.0,minimal-ui=1" />  <!-- request GPU rasterization from Chrome browsers, where available -->
+	<!-- http://www.html5rocks.com/en/mobile/fullscreen/ -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="msapplication-tap-highlight" content="no" />  <!-- disable built-in tap highlight on windows phone ie10 and ie11 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- http://stackoverflow.com/questions/1695376/msie-and-addeventlistener-problem-in-javascript/1695383#1695383 -->
+	<meta charset="utf-8" />
+
+	<title>Find It!</title>
+
+	<style type="text/css">
+
+		body {
+            		position: fixed;    /* prevent scrolling while the game is active */
+			margin: 0;
+			padding: 0;
+			background: #872f87;
+			border: none;
+			overflow: hidden;
+
+			user-select: none;
+			-moz-user_select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+
+	</style>
+
+    <script src="lib/webfontloader.js"></script>
+    <script>
+    WebFont.load({
+                    google: {
+                        families: ['BenchNine', 'Bangers', 'Mouse Memoirs', 'PT Sans Narrow', 'Russo One', 'Mada']
+                    }
+              });
+    </script>
+
+    <!-- 3rd party libraries -->
+	<script type="text/javascript" src="lib/pixi_453pjb.js"></script>
+    <script type="text/javascript" src="lib/howler.min.js"></script>
+    <script type="text/javascript" src="lib/Tween.min.js"></script>
+    <script type="text/javascript" src="lib/mobile-detect.min.js"></script>
+    <script type="text/javascript" src="lib/stats.min.js"></script>
+    <script type="text/javascript" src="lib/ifvisible.min.js"></script>
+
+    <script type="text/javascript" src="app.js"></script>
+
+</head>
+
+
+<body>
+    <div id="focusDiv" tabindex="-1">
+    	<script type="text/javascript">
+
+    		new Main().createGame();
+    		
+    	</script>
+    </div>
+</body>
+</html>

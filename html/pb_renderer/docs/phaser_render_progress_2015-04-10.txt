@@ -1,0 +1,38 @@
+Phaser 3 renderer progress.
+2015-04-10
+
+The WIP can be found here: https://github.com/photonstorm/phaser3/tree/master/renderer
+A recent online demo is here: http://www.insanehero.com/html/renderer/src/
+The project commit log is here: https://github.com/photonstorm/phaser3/commits?author=pjbaron
+
+This update:
+
+I've started keeping notes in a desktop file as I go along so I don't miss anything when it's time to summarise the progress.  As you'll see this tends to lead to more of a narrative... ideas being noted, developed and completed.  If I get enough complaints I'll go back to a bare-bones summary :)
+
+
+Render-to-texture objective: I want to be able to switch rendering to go to a texture which can be grabbed from the GPU and used as a render source in its own right.  This will enable filtering effects in JS (render your scene, grab it, apply filters, upload it to display) and all manner of clever trickery involving scenes within scenes.  I'm hoping it will also greatly enhance the current 'camera' capabilities.
+
+The new "renderTexture" demo illustrates how to set up a framebuffer to redirect drawing to a render-to-texture. It then uses a new pbWebGl function to transfer that texture to the visible display.  Currently this demo does not download the texture or upload it again when finished - which means it should be very fast because all operations are on the GPU.
+
+Extended "renderTexture" demo to apply a filter to the rendered texture. Separated the filter into a new demo because it added too much extra complexity to the render-to-texture example.  Created a generic 'tint' filter shader program with dat.GUI style slider controls and extended the code to handle it.
+
+Wrote a simple 'wave' effect filter.  Duplicated the filter demo and extended it to apply multiple filters in succession (wave, then tint) to show how textures can be processed and reprocessed for as many times as the GPU supports separate texture (I think the minimum for webgl is 8 texture registers?).
+
+Optimised the texture download to avoid per-pixel copy entirely which should make glToCanvas, the renderTexture, and the filterTexture demos all a lot faster and less CPU bound.
+
+Render to texture enables rotating camera views... so I built a ping-pong spinning scaling invaders demo as "cameraRTT".  I'm using the layer system to render the invaders to texture (which works great) but I grab that texture to a RAM surface, then send it up to the GPU again so it can be drawn... which seems entirely redundant.  Also, although I created a 'camera' layer intending to use it as the draw system... there isn't a clean way to tell the renderer that all the invader stuff should be drawn to texture, and then the camera layer should be drawn to the display.  I think this might be possible with a simple additional parameter on the layers and a design constraint to restrict the drawing order (you can't draw the 'camera' until the camera contents have been rendered of course) but I need to look at that carefully as its setting off the 'hack alert' in my head.
+
+That turned out to be easy with a new function 'prepareOnGPU' added to webGlTextures, accessed by the previously unused webGl.drawTextureWithTransform function.  The camera output appears to be square which needs to be investigated, it should be 800:600 ratio.
+
+Found & fixed the aspect ratio bug in the camera rtt demo, added a new demo showing 100 bouncing cameras all viewing the same invaders core demo scene.  As I hoped, using the texture from the GPU like this makes the display extremely efficient with both CPU and GPU resources.
+
+Added another new demo: 'pointLight' shows how to combine the postUpdate approach from 'multiCamera' and the applyFilter function with callback from 'filterDemo' to do more complex tricks.  In this case I'm rendering the old 'core invader' demo to a render-to-texture and drawing a logo texture into the same surface, then postUpdate applies a point-light effect filter as it copies the render-to-texture to another GPU texture surface.  The filter callback is used to adjust the light source position when the filter shader is plugged in.
+
+
+Coming soon:
+
+I'm finding it slow using the older systems because quite often I can't remember how they work... That's a good indication that it's time for some more refactoring and a considered look at the API design.  There are silly annoyances (eg: my use of 'image' for both ImageData as loaded by the HTML loader, and also for instances of pbImage... one of them has to be renamed and that's going to be painful), some overly complex interfaces (eg. having to create a surface, an image and a sprite, just to get a single object on screen), and some cludge code which has accumulated where I've used a quick fix while working on something else but didn't get back to clean it up later (a great many TODO comments point out much of this).  It's time to fix all that so we can move forwards with confidence that the basis is solid.
+
+
+- Pete
+

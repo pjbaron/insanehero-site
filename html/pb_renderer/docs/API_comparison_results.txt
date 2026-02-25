@@ -1,0 +1,51 @@
+API Comparison Results.
+10/02/2015
+
+
+matrix-gl:  https://github.com/toji/gl-matrix
+- uses a Float32Array when available (vs JS Array)... I've adopted this approach now (no significant speed increase)
+- does not support fast operations for homogenous matrix manipulation (pbMatrix should be faster for this specific purpose)
+
+
+PIXI 3:   https://github.com/GoodBoyDigital/pixi.js/tree/dev
+- uses an Object for matrices (vs a Float32Array) TODO: try this, it looks like it'll be even faster than pbMatrix with Float32Array
+- uses non-indexed TRIANGLES (vs TRIANGLE_STRIP) TODO: compare directly in pbRender
+- does all transform maths in JS (vs sending to GPU) TODO: try this too
+- adds colour blending/tinting parameter to data stream. TODO: check use-cases, does this need to be per sprite or will per batch be ok
+- forms max batches of 2000, comment about mobile optimisation on the constant declaration.  TODO: get pbRender working on mobile to check limits
+- lowp (vs mediump) on fragment and vertex shaders... I've adopted this for the simple batch shader, TODO: check for speed changes
+
+
+GLSL:  http://greweb.me/2013/02/glsl-js-a-javascript-glsl-library-dry-efficient/
+- abstracts the WebGL stuff elegantly
+- exposes the shaders for more complex programming
+- the mario-sprites example shows that this approach can work for game sprites 
+- TODO: speed trials with this approach, it's not clear how fast it will be but it should be lightning!
+
+
+TojiCode:  http://blog.tojicode.com/2012/07/sprite-tile-maps-on-gpu.html
+- uses a texture to represent a tile-map, permitting tiled levels to be rendered entirely on the GPU
+- this looks like it should work very nicely with the GLSL abstraction library functions
+
+
+Kami:  https://github.com/mattdesl/kami
+- another approach to abstracting a lot of the GL support code
+- I like the use of "new Texture" (vs pbLoader then assigning to pbSurface etc)
+- not keen on the batch.begin() approach in our case... We'll be processing potentially huge lists of sprites so abstracting on a per-sprite basis will entail too much overhead.
+- TODO: poke around a bit deeper into the source, there are probably a bunch of other good ideas in there :)
+
+
+LibGDX:  https://github.com/libgdx/libgdx/wiki/Running-Demos
+- Java library with GTW addition to permit JS conversions
+- encapsulates full functionality for games creation (like Phaser), I'll limit my exploration to the SpriteBatch, TextureRegion and Sprite
+- SpriteBatch does not automatically group sprites with common textures, the assumption being that the developer will or that the use of sprite-sheets will be sufficiently ubiquitous that sprites will commonly produce batches.  (vs pbLayer which uses pbDictionary to force this)
+- SpriteBatch provides multiple 'draw' functions for different cases (vs. pbLayer/pbSprite use flags 'fullscreen', 'particle' etc to categorise sprites, separate functions may be a better approach - more transparent to the developer)
+- TextureRegion is a nice abstraction of a sprite sheet into animation cells (vs. pbImage/pbSurface -> cellTextureBounds), may eliminate the need for PIXI style 'trim' settings although it's not clear if anchor points will be taken into account properly then)
+- Sprite is a data holder (pbSprite uses the same approach), documentation mentions the possibility of caching position/rotation sub-calculations which may be applicable to pbSprite too.
+- very clever idea in GLProfiler which replaces the open gl code with variants to track details like number of texture switches etc.  We could probably use something like that to help developers optimise their Phaser 3 games.
+
+
+PlayN:  TODO: look into this library, only read about it in passing today...
+
+Turbulenz:  TODO: check out the 2D elements of this API
+

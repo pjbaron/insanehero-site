@@ -1,0 +1,42 @@
+Phaser 3 renderer progress.
+2015-05-20
+
+The WIP can be found here: https://github.com/photonstorm/phaser3/tree/master/renderer
+A recent online demo is here: http://www.insanehero.com/html/renderer/src/
+The project commit log is here: https://github.com/photonstorm/phaser3/commits?author=pjbaron
+
+This update:
+
+2nd, 18th, 19th, 20th May
+
+Created a bump map generator using a Sobel operator for edge detection in the source texture.  It's written in c# and the whole project can be found here: https://github.com/pjbaron/BumpMapper  It's built using VS2010 Express, and an exe is in the debug folder which should run independently if you don't have that installed... the usual caveats apply (it might not work, it might do nasty things... run at your own risk).
+This program was necessary because generating the bump maps for the depth mapping textures in Phaser 3 using Gimp/Photoshop is extremely tricky, involving manipulation of the red and green channels and requiring a good understanding of the underlying algorithm used in the bump shader.  I need to do some more work because the edge detection doesn't create very good bump maps.  It's ok for 'noisy' surfaces like pebbles/dirt but it doesn't produce correct results for raised flat surfaces (it only detects the edges, not the middle).  My idea is to add a manual edit mode which shows the source texture tile in an orthogonal 3d view, and let the user push/pull the pixels up or down... the program can then generate a perfect bump map output texture using the accurate height information.
+
+Creature (http://www.kestrelmoon.com/creature/) - bone animation system with texture morphing.  My first demo used a hacked shader to draw yellow squares, looks kinda cool having the silhouette of a dinosaur running :)  After lots of hacking to get textures working properly, ended up with dino running demo looking pretty good... demo is called 'creature' and it's using the Utah Raptor images and bones.
+I modified the dino demo to use render-to-texture, this went very smoothly and provides a level of connection between the hard-wired rendering code and bespoke shader, and the existing rendering systems.
+While attempting to reuse the dino render-to-texture as a sprite source image I ran into some incorrect assumptions deep in the webgl stuff (it's hard-wired to TEXTURE0 but the texture register should always be specified).  I spent a few hours tracking down and fixing all instances of hard-wired texture usage, and then fixing the demos which previously expected it to be hard-wired.
+Added zip library (JSZip) and some code to decompress the Creature animation data after loading.  Compression reduced the data file from 3.6Mb to 0.5Mb which should substantially improve loading time.  It will be very useful to have this facility for other large data sources too.
+Installed the latest run-times for creatures which now pre-cache the point data for each animation frame to improve run-time performance considerably when using multiple instances of the same creature (which is definitely part of my plan for this demo).  Pre-caching is quite slow (4 seconds for one animation of the Utah Raptor) so I've disabled it again pending an asynchronous implementation (NOTE: the async version has since been added but I haven't had time to implement it yet).
+Created the "flock" demo with thirty instances of two separate "creature" types, both drawing from the same source texture and data, but animating entirely separately from each other.  This demo shows one way of rendering to multiple textures and then displaying those textures as sprite sources with transforms.  It by-passes most of the regular draw system to achieve this.
+
+
+
+
+Coming soon:
+
+Install the latest Creature run-times and set up asynchronous data point preparation to speed up all subsequent animations.  Expand the 'flock' demo to use more variations of different creatures so the amount of work being done is more visible.
+
+Integrate the 'creature' drawing tricks into the primary render system with a few new API calls and a "drawing queue" system to allow the user to schedule a complicated series of drawings and system changes.
+
+The bump shader needs some work to permit a tile-map of different bump textures, currently it just tiles a single one for the whole ground area.
+
+Explore replacing the current "super" implementation with simple prototype declarations... for derived classes specify exactly and only the functions that are derived using the prototype syntax.  If this can work it'll reduce call overhead in the crucial drawing stack loops considerably.
+
+Research into "how to build shaders dynamically" (find a good structure) so we can have several shader effects in a single shader program and avoid the overhead of running them sequentially.
+
+Add modification tools to the bump map editor so it's possible to edit the pseudo-3D image of the bump surface and generate the bump data image.  Extend the bump map editor to use the 'b' colour component to carry further information (height or reflectivity) to improve the power of this approach.  Carry those changes over into the shader code.
+
+The bump shader needs to handle different bump textures for different tiles... probably the best way to do this is to have a bump texture which parallels the tile texture (all tiles in the same positions in both textures).  I need to decide if I want bump mapping for wall tops (currently when it's on top of a wall it's using a flat shader for the lighting effect over-spill).
+
+- Pete
+

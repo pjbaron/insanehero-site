@@ -1,0 +1,21 @@
+{
+  "name": "Flip Tide",
+  "slug": "flip_tide",
+  "description": "Tap to flip gravity for your surfer between the ocean surface and the ceiling of an underwater cave, threading through gaps in coral above and waves below.",
+  "perspective": "side-view",
+  "core_loop": "Your surfer auto-scrolls right. Tap/click to flip between riding the top of the water and clinging to the cave ceiling below. Obstacles alternate \u00e2\u20ac\u201d jagged coral hangs from the ceiling, crashing waves roll along the surface. You must constantly flip between the two lanes, timing each switch to thread through safe gaps. Collectible shells appear in risky positions. Speed gradually increases and the gap between surface and ceiling narrows, compressing your reaction window. Bonus 'riptide' zones temporarily reverse your scroll direction, forcing you to dodge obstacles you already passed from a new angle.",
+  "retention_hooks": [
+    "Distance-based unlockable surfer skins and trail effects that feel instantly rewarding",
+    "Riptide reverse zones create memorable 'oh no' moments that make great stories and retry motivation",
+    "Narrowing cave ceiling creates escalating tension \u00e2\u20ac\u201d every run feels like you almost beat your record"
+  ],
+  "controls": "One-touch/click to flip gravity. Hold to slow-fall in current lane. That's it \u00e2\u20ac\u201d fully playable with one thumb on mobile.",
+  "tags": [
+    "gravity-flip",
+    "endless-runner",
+    "reflexes",
+    "one-button",
+    "arcade",
+    "surf"
+  ]
+}

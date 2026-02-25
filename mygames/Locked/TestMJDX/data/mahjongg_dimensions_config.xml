@@ -1,0 +1,10 @@
+<!--
+This is the new as3 Config file.  It includes required fields.  
+These are loaded as flashvars unless other variables are are already included as flashvars
+-->
+
+<ignoreMeContainer>
+	<StageWidth type="Number">720</StageWidth>
+	<StageHeight type="Number">500</StageHeight>
+	<!--<encryptedGameEndLoc>30279bfaf4655a08ab4b3be5f325aaaa9953ee89</encryptedGameEndLoc>-->
+</ignoreMeContainer>

@@ -1,0 +1,23 @@
+{
+  "name": "Echo Hunt",
+  "slug": "echo_hunt",
+  "description": "Send out sonar pings to reveal hidden creatures in a dark ocean, then tap to catch them before they fade back into the black \u00e2\u20ac\u201d but each ping also wakes up predators that chase your signal.",
+  "perspective": "top-down",
+  "core_loop": "Tap anywhere to emit a sonar ring that expands outward, briefly illuminating sea creatures it passes over as glowing silhouettes. Quickly tap revealed creatures to catch them before the ring fades and they vanish. Each ping also reveals and agitates predators (anglerfish, jellyfish) that swim toward your last ping location, so you must balance pinging to find targets against attracting danger. Catch enough creatures to fill a quota and advance to deeper, darker levels with rarer creatures and nastier predators. Drag to move your submarine's ping origin point around the screen.",
+  "retention_hooks": [
+    "Depth progression \u00e2\u20ac\u201d each new depth zone introduces exotic bioluminescent creatures and new predator types with unique movement patterns",
+    "Catch combos \u00e2\u20ac\u201d netting multiple creatures from a single ping multiplies score, rewarding precise timing and bold pings near clusters",
+    "Bestiary collection \u00e2\u20ac\u201d every unique species caught is logged with a glowing portrait, driving completionist replays across deeper zones"
+  ],
+  "controls": "Tap/click to emit sonar ping at that location, tap revealed creatures to catch them, drag to reposition your submarine (ping origin). One-finger fully playable on mobile.",
+  "tags": [
+    "sonar-mechanic",
+    "hunt-and-reveal",
+    "risk-reward",
+    "ocean-theme",
+    "collection",
+    "arcade",
+    "stealth",
+    "one-finger"
+  ]
+}

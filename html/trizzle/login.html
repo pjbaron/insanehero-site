@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Reference Game <%= htmlWebpackPlugin.options.version %></title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1">
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    
+    <script src="https://jsconsole.com/js/remote.js?trizzleconsole"></script>
+    
+	<script type="text/javascript">
+
+        var gamePage = 'index.html'; // Change this to the name of the game html host page
+
+	</script>
+	<style>
+		#master {
+			font: normal 30px Arial, Helvetica, sans-serif;
+			position:absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 10.5em;
+		}
+		ul { list-style: none; padding: 0; margin: 0 0 30px 0}
+		li { margin: 0.24em 0; }
+		label { display: inline-block; min-width: 8em; }
+		label:after { content: ":"; margin-right: 0.5em; }
+		input[type=text], input[type=password], select {
+			min-width: 14em;
+			font-size: 24px;
+			margin: 0.25em 0;
+			border: 1px solid black;
+			padding: 0 0.25em;
+			box-sizing: border-box;
+		}
+		p {
+			font-size: 12px;
+			position: relative;
+			float: left;
+			margin: 0;
+			padding-top: 30px;
+			width: 100%;
+			text-align: center;
+		}
+		input[type=checkbox] { font-size: 24px; width: 1em; height: 1em; vertical-align: middle; }
+		button { display: block; min-width: 10em; font-size: 24px; margin: 0.25em auto; }
+
+		@media (min-width: 600px) {
+			#master { width: 19.2em; }
+			button#login { position: relative; float: left; z-index: 1; }
+			button#guest { position: relative; float: right; z-index: 1; }
+		}
+
+		button {
+			border: none;
+			padding: 0.4em 0.5em;
+			text-align: center;
+			border-radius: 5px;
+			font-weight: bold;
+			text-transform: uppercase;
+			color: #212121;
+			text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5);
+			background: #ffd600;
+			box-shadow: 0 3px 0 0 #e6c200;
+		}
+		button:hover {
+			background: #fadc00;
+		}
+		button:active, button[active] {
+			background: #e6c200;
+			box-shadow: none;
+			top: 3px;
+		}
+		.hide-element {
+			display: none;
+		}
+	</style>
+</head>
+<body>
+<form id="master">
+	<ul>
+		<li><label for="environment">Environment</label><select id="environment" name="environment"></select></li>
+	</ul>
+	<button id="login" type="button" style="margin-bottom: 20px;">Login</button>
+	<button type="button" id="guest">Sign in as Guest</button>
+	<p>Note: you might need to change the name of the
+		game page inside login.html</p>
+</form>
+<script type="text/javascript">
+    (function() {
+        var pogoHosts = {
+            dev: 'https://www.pogodev.pogo.com',
+            prealpha: 'https://www.prealpha.pogo.com',
+            alpha: 'https://www.alpha.pogo.com',
+            beta: 'https://www.pogobeta.com',
+            prod: 'https://www.pogo.com',
+        };
+
+        var viewHosts = {
+            dev: 'h5sdk-dev.pogospike.com',
+            prealpha: 'h5sdk-dev.pogospike.com',
+            alpha: 'h5sdk-integration.pogospike.com',
+            beta: 'h5sdk-stage.pogospike.com',
+            prod: 'h5sdk-prod.pogospike.com',
+        };
+
+        var el = document.getElementById('environment');
+        el.innerHTML = dropDown('environment');
+
+        function dropDown() {
+            var list;
+            for (var host in pogoHosts) {
+                list += '<option>' + host + "</option>";
+            }
+            return list;
+        }
+
+        function getUrl(isGuest) {
+            var url;
+            var env = el.options[el.selectedIndex].innerHTML;
+            var host = 'http://' + viewHosts[env];
+
+            host += '/index.html?t=' + (new Date()).getTime() +
+                '&gameHost=' + window.location.href.replace('login.html', gamePage);
+
+            var path = '/hotdeploy/us/partners/login/h5.jsp?localView=true&host=' + encodeURIComponent(host);
+
+            if (isGuest) {
+                url = pogoHosts[env] + path + '&guest=true';
+            } else {
+                url = pogoHosts[env] + '/action/pogo/signin.do?returnType=urlRedirect&' +
+                    'returnValue=' + encodeURIComponent(path);
+            }
+            return url;
+        }
+
+        document.getElementById('guest').onclick = function() {
+            window.location.href = getUrl(true)
+        };
+
+        document.getElementById('login').onclick = function() {
+            window.location.href = getUrl()
+        };
+    })();
+</script>
+</body>
+</html>

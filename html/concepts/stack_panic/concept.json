@@ -1,0 +1,20 @@
+{
+  "name": "Stack Panic",
+  "slug": "stack_panic",
+  "description": "Catch falling blocks to build wobbly towers while dodging hazards, then watch your tower survive an earthquake to score.",
+  "perspective": "side-view",
+  "core_loop": "Blocks fall from the sky in varied shapes and sizes. Tap/click to lock each block in place as it drops \u00e2\u20ac\u201d good timing stacks them neatly, bad timing makes the tower lean. Every few seconds a wind gust or tremor tests your tower's stability. Blocks that fall off are lost. Reach height milestones to trigger a full earthquake that violently shakes the screen \u00e2\u20ac\u201d whatever survives is your score. Then you start the next round with harder block shapes and stronger quakes.",
+  "retention_hooks": [
+    "Earthquake payoff moment \u00e2\u20ac\u201d watching your tower survive (or hilariously collapse) is inherently shareable and replayable",
+    "Height milestones unlock cosmetic block themes (ice, lava, candy) and increasingly dramatic disaster events",
+    "Near-miss physics \u00e2\u20ac\u201d a leaning tower that barely survives feels incredible, creating constant 'one more try' tension"
+  ],
+  "controls": "Tap/click anywhere to lock the currently falling block in place. Swipe left/right or arrow keys to nudge it horizontally before locking. That's it \u00e2\u20ac\u201d two inputs total.",
+  "tags": [
+    "stacking",
+    "physics",
+    "timing",
+    "tower-building",
+    "casual"
+  ]
+}

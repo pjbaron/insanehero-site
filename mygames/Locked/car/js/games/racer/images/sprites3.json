@@ -1,0 +1,21 @@
+var sprites3 = {"frames": [
+
+{
+	"filename": "WindMill2.png",
+	"frame": {"x":1,"y":1,"w":269,"h":525},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":269,"h":525},
+	"sourceSize": {"w":269,"h":525},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "sprites3.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":2048},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:574b37419152f5af72171eeacae7ac7a:1a99eb3503b6e558ed485abb70f4da64:98ba61cce977d803285b31b1450becfc$"
+}
+}

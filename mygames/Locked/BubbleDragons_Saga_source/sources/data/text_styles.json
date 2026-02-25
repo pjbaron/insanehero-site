@@ -1,0 +1,190 @@
+{
+	"comment": {
+			"c0":"// text_styles.json",
+			"c1":"//",
+			"c2":"// contains the parameters for each of the text styles used in Bubble Shooter game",
+			"c3":"// for information about these parameters please see the Pixi documentation:",
+			"c4":"// http://pixijs.download/v4.2.2/docs/PIXI.TextStyle.html",
+			"c5":"//",
+			"c6":"// to see how a font is used in the game, search on the name string in this file with loose",
+			"c7":"// matching.  You will see the same name in the game code prefixed with Main."
+		},
+
+    "textStyleVersionTiny": {
+            "align": "left",
+            "fill": "#ffffff",
+            "fontFamily": "bub_font1",
+            "fontSize": 34,
+            "fontWeight": "normal"
+        },
+    "textStyleBigMessageTitle": {
+            "align": "center",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 80,
+            "fontWeight": "normal"
+        },
+    "textStyleBigMessage": {
+            "align": "center",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 60,
+            "fontWeight": "normal"
+        },
+    "textStyleMediumMessage": {
+            "align": "center",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 45,
+            "fontWeight": "normal"
+        },
+    "textStyleHelpBannerTitle": {
+            "align": "left",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 70,
+            "fontWeight": "normal"
+        },
+    "textStyleHelpBoostTitle": {
+            "align": "left",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 75,
+            "fontWeight": "normal"
+        },
+    "textStyleHelpBoostDescription": {
+            "align": "center",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 60,
+            "fontWeight": "normal"
+        },
+    "textStyleBigMessageObjTitle": {
+            "align": "left",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 70,
+            "fontWeight": "normal"
+        },
+    "textStyleBigMessageObjective": {
+            "align": "left",
+            "fill": "white",
+            "fontFamily": "bub_font1",
+            "fontSize": 40,
+            "fontWeight": "normal"
+        },
+    "textStyleBigMessageSubText": {
+            "align": "center",
+            "fill": "#ffcf6f",
+            "fontFamily": "bub_font1",
+            "fontSize": 40,
+            "fontWeight": "normal"
+        },
+    "textStyleUIScoreAndShots": {
+            "align": "left",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 45,
+            "fontWeight": "normal"
+        },
+    "textStyleUILevelNumber": {
+            "align": "right",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 45,
+            "fontWeight": "normal"
+        },
+    "textStyleShowLevelNumber": {
+            "align": "right",
+            "fill": "black",
+            "fontFamily": "bub_font2",
+            "fontSize": 45,
+            "fontWeight": "normal"
+        },
+    "textStyleSelectLevelNumber": {
+            "align": "right",
+            "fill": "white",
+            "fontFamily": "bub_font2",
+            "fontSize": 30,
+            "fontWeight": "normal"
+        },
+
+    "textStyleBold": {
+            "align": "left",
+            "fill": "white",
+            "fontFamily": "bub_font1",
+            "fontSize": 80,
+            "fontWeight": "normal"
+        },
+    "textStyleBoldSmall": {
+            "align": "left",
+            "fill": "white",
+            "fontFamily": "bub_font1",
+            "fontSize": 40,
+            "fontWeight": "normal"
+        },
+	"textStyleBoldButtons": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "bub_font1",
+			"fontSize": 40,
+			"fontWeight": "normal",
+			"letterSpacing": 0.5,
+			"padding": 5
+		},
+	"textStyleBoldButtonsLarge": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "bub_font2",
+			"fontSize": 75,
+			"fontWeight": "normal",
+			"letterSpacing": 0.5,
+			"padding": 5
+		},
+	"textStyleBoldButtonTitles": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "bub_font2",
+			"fontSize": 60,
+			"fontWeight": "normal",
+			"letterSpacing": 0.5,
+			"padding": 5
+		},
+	"textStyleBoldLargeCentered": {
+			"align": "center",
+			"fill": "white",
+			"fontFamily": "bub_font1",
+			"fontSize": 80,
+			"fontWeight": "normal"
+		},
+	"textStyleMedium": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "bub_font1",
+			"fontSize": 38,
+			"fontWeight": "normal"
+		},
+	"textStyleMedium2": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "bub_font1",
+			"fontSize": 34,
+			"fontWeight": "normal"
+		},
+	"textStyleMediumTiny": {
+			"align": "left",
+			"fill": "#7fffff",
+			"fontFamily": "bub_font1",
+			"fontSize": 20,
+			"fontWeight": "normal"
+		},
+	"textStyleLarge": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "bub_font1",
+			"fontSize": 50,
+			"fontWeight": "normal",
+			"letterSpacing": 0.5,
+			"padding": 5
+		}
+}

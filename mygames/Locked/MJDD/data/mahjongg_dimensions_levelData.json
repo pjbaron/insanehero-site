@@ -1,0 +1,1914 @@
+{
+    "nTimer": 120,
+    "nShuffles": 1000,
+    "bIsRandom": false,
+    "nMaxLevels": 9,
+    "nTimeBonus": 100,
+    "aLevelCompleteBonuses": [ 500,1000,2000,2500,3000,3500,4000,4500,5000 ],
+    "nSpeedBonusTime": 2,
+    "nSpeedBonusValue": 25,
+    "n4MatchValue": 250,
+    "nTimeBonusCountDownStep": 1,
+    "nPointBonusCountDownStep": 1,
+    "nCountDownTimeShuffle": 0,
+    "levels": 
+    [        
+        {
+            "_level": "1",
+            "_id": "smallest square",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "1.2",
+            "yOffset": "1.75",
+            "TileStructure": 
+            {
+                "_x": "4",
+                "_y": "4",
+                "_z": "4",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "1111",
+                            "1111",
+                            "1111",
+                            "1111"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "1111",
+                            "1111",
+                            "1112",
+                            "1111"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "1111",
+                            "1112",
+                            "1111",
+                            "1111"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "1111",
+                            "1111",
+                            "1111",
+                            "1111"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "90",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s1",
+                    "_url": "images/1.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s2",
+                    "_url": "images/2.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s3",
+                    "_url": "images/3.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s4",
+                    "_url": "images/4.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s5",
+                    "_url": "images/5.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s6",
+                    "_url": "images/6.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s7",
+                    "_url": "images/7.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s8",
+                    "_url": "images/8.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s9",
+                    "_url": "images/9.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s10",
+                    "_url": "images/10.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s11",
+                    "_url": "images/11.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s12",
+                    "_url": "images/12.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s13",
+                    "_url": "images/13.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s14",
+                    "_url": "images/14.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s15",
+                    "_url": "images/15.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s16",
+                    "_url": "images/16.png",
+                    "_value": "100",
+                    "_num": "4"
+                }
+            ]
+        },        
+        {
+            "_level": "2",
+            "_id": "branches 46 tiles",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "1.1",
+            "yOffset": "2.25",
+            "TileStructure": 
+            {
+                "_x": "5",
+                "_y": "5",
+                "_z": "6",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "00100",
+                            "00100",
+                            "11211",
+                            "00100",
+                            "00100"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "00000",
+                            "01110",
+                            "01110",
+                            "01110",
+                            "00000"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "00100",
+                            "00100",
+                            "11211",
+                            "00100",
+                            "00100"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "00000",
+                            "01110",
+                            "01110",
+                            "01110",
+                            "00000"
+                        ]
+                    },                    
+                    {
+                        "_id": "4",
+                        "row": 
+                        [
+                            "00100",
+                            "00100",
+                            "11211",
+                            "00100",
+                            "00100"
+                        ]
+                    },                    
+                    {
+                        "_id": "5",
+                        "row": 
+                        [
+                            "00000",
+                            "00000",
+                            "00200",
+                            "00000",
+                            "00000"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "50",
+                    "_rolloverMessage": "this is a ...",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s5",
+                    "_url": "images/5.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s6",
+                    "_url": "images/6.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s7",
+                    "_url": "images/7.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s8",
+                    "_url": "images/8.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s9",
+                    "_url": "images/9.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s10",
+                    "_url": "images/10.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s11",
+                    "_url": "images/11.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s12",
+                    "_url": "images/12.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s13",
+                    "_url": "images/13.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s14",
+                    "_url": "images/14.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s15",
+                    "_url": "images/15.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s16",
+                    "_url": "images/16.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s17",
+                    "_url": "images/17.png",
+                    "_value": "100",
+                    "_num": "4"
+                }
+            ]
+        },        
+        {
+            "_level": "3",
+            "_id": "Medium Cube 80 Tiles",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "0.925",
+            "yOffset": "1.5",
+            "TileStructure": 
+            {
+                "_x": "5",
+                "_y": "4",
+                "_z": "5",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "11111",
+                            "11111",
+                            "11111",
+                            "11111"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "11211",
+                            "11111",
+                            "11111",
+                            "11211"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "00000",
+                            "00000",
+                            "00000",
+                            "00000"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "11111",
+                            "11111",
+                            "11111",
+                            "11111"
+                        ]
+                    },                    
+                    {
+                        "_id": "4",
+                        "row": 
+                        [
+                            "11111",
+                            "11111",
+                            "11111",
+                            "11111"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "100",
+                    "_rolloverMessage": "this is a ...",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s1",
+                    "_url": "images/1.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s10",
+                    "_url": "images/10.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s11",
+                    "_url": "images/11.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s12",
+                    "_url": "images/12.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s13",
+                    "_url": "images/13.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s14",
+                    "_url": "images/14.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s15",
+                    "_url": "images/15.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s16",
+                    "_url": "images/16.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s17",
+                    "_url": "images/17.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s18",
+                    "_url": "images/18.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s19",
+                    "_url": "images/19.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s20",
+                    "_url": "images/20.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s21",
+                    "_url": "images/21.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s22",
+                    "_url": "images/22.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s23",
+                    "_url": "images/23.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s24",
+                    "_url": "images/24.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s25",
+                    "_url": "images/25.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s26",
+                    "_url": "images/26.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s27",
+                    "_url": "images/27.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s28",
+                    "_url": "images/28.png",
+                    "_value": "100",
+                    "_num": "4"
+                }
+            ]
+        },        
+        {
+            "_level": "4",
+            "_id": "Magnetic strips 72",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "0.80",
+            "yOffset": "2",
+            "TileStructure": 
+            {
+                "_x": "8",
+                "_y": "3",
+                "_z": "5",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "11111111",
+                            "11111111",
+                            "11111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "00000000",
+                            "00000000",
+                            "00000000"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "11122111",
+                            "11111111",
+                            "11122111"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "00000000",
+                            "00000000",
+                            "00000000"
+                        ]
+                    },                    
+                    {
+                        "_id": "4",
+                        "row": 
+                        [
+                            "11111111",
+                            "11111111",
+                            "11111111"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "80",
+                    "_rolloverMessage": "this is a ...",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s16",
+                    "_url": "images/16.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s17",
+                    "_url": "images/17.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s18",
+                    "_url": "images/18.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s19",
+                    "_url": "images/19.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s20",
+                    "_url": "images/20.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s21",
+                    "_url": "images/21.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s22",
+                    "_url": "images/22.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s23",
+                    "_url": "images/23.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s24",
+                    "_url": "images/24.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s25",
+                    "_url": "images/25.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s26",
+                    "_url": "images/26.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s27",
+                    "_url": "images/27.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s28",
+                    "_url": "images/28.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s29",
+                    "_url": "images/29.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s30",
+                    "_url": "images/30.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s31",
+                    "_url": "images/31.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s32",
+                    "_url": "images/32.png",
+                    "_value": "100",
+                    "_num": "4"
+                }
+            ]
+        },        
+        {
+            "_level": "5",
+            "_id": "tree bonus round 48",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "0.85",
+            "yOffset": "3",
+            "TileStructure": 
+            {
+                "_x": "4",
+                "_y": "4",
+                "_z": "7",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "0001",
+                            "0011",
+                            "1100",
+                            "1000"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "1000",
+                            "1100",
+                            "0010",
+                            "0011"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "0001",
+                            "0121",
+                            "1210",
+                            "1000"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "1000",
+                            "1210",
+                            "0121",
+                            "0001"
+                        ]
+                    },                    
+                    {
+                        "_id": "4",
+                        "row": 
+                        [
+                            "0001",
+                            "0121",
+                            "1210",
+                            "1000"
+                        ]
+                    },                    
+                    {
+                        "_id": "5",
+                        "row": 
+                        [
+                            "1000",
+                            "1100",
+                            "0010",
+                            "0011"
+                        ]
+                    },                    
+                    {
+                        "_id": "6",
+                        "row": 
+                        [
+                            "0001",
+                            "0011",
+                            "1100",
+                            "1000"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "50",
+                    "_rolloverMessage": "this is a ...",
+                    "_num": "6"
+                },                
+                {
+                    "_name": "s21",
+                    "_url": "images/21.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s22",
+                    "_url": "images/22.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s23",
+                    "_url": "images/23.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s24",
+                    "_url": "images/24.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s25",
+                    "_url": "images/25.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s26",
+                    "_url": "images/26.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s27",
+                    "_url": "images/27.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s28",
+                    "_url": "images/28.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s29",
+                    "_url": "images/29.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s30",
+                    "_url": "images/30.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s31",
+                    "_url": "images/31.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s32",
+                    "_url": "images/32.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s33",
+                    "_url": "images/33.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s34",
+                    "_url": "images/34.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s35",
+                    "_url": "images/35.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s36",
+                    "_url": "images/36.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s37",
+                    "_url": "images/37.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s38",
+                    "_url": "images/38.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s39",
+                    "_url": "images/39.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s40",
+                    "_url": "images/40.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s41",
+                    "_url": "images/41.png",
+                    "_value": "100",
+                    "_num": "2"
+                }
+            ]
+        },        
+        {
+            "_level": "6",
+            "_id": "hollow brick 98 tiles",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "0.85",
+            "yOffset": "2",
+            "TileStructure": 
+            {
+                "_x": "5",
+                "_y": "5",
+                "_z": "5",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "11111",
+                            "11111",
+                            "11111",
+                            "11111",
+                            "11111"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "11111",
+                            "10001",
+                            "10001",
+                            "10001",
+                            "11111"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "11211",
+                            "10001",
+                            "20002",
+                            "10001",
+                            "11211"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "11111",
+                            "10001",
+                            "10001",
+                            "10001",
+                            "11111"
+                        ]
+                    },                    
+                    {
+                        "_id": "4",
+                        "row": 
+                        [
+                            "11111",
+                            "11111",
+                            "11111",
+                            "11111",
+                            "11111"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "90",
+                    "_rolloverMessage": "this is a ...",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s1",
+                    "_url": "images/1.png",
+                    "_value": "100",
+                    "_num": "2"
+                },                
+                {
+                    "_name": "s21",
+                    "_url": "images/21.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s22",
+                    "_url": "images/22.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s23",
+                    "_url": "images/23.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s24",
+                    "_url": "images/24.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s25",
+                    "_url": "images/25.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s26",
+                    "_url": "images/26.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s27",
+                    "_url": "images/27.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s28",
+                    "_url": "images/28.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s29",
+                    "_url": "images/29.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s30",
+                    "_url": "images/30.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s31",
+                    "_url": "images/31.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s32",
+                    "_url": "images/32.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s33",
+                    "_url": "images/33.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s34",
+                    "_url": "images/34.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s35",
+                    "_url": "images/35.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s36",
+                    "_url": "images/36.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s37",
+                    "_url": "images/37.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s38",
+                    "_url": "images/38.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s39",
+                    "_url": "images/39.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s40",
+                    "_url": "images/40.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s41",
+                    "_url": "images/41.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s42",
+                    "_url": "images/42.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s43",
+                    "_url": "images/43.png",
+                    "_value": "100",
+                    "_num": "4"
+                }
+            ]
+        },        
+        {
+            "_level": "7",
+            "_id": "Easy Wall, 4 time tiles, med bonus 28*4",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "0.75",
+            "yOffset": "3",
+            "TileStructure": 
+            {
+                "_x": "8",
+                "_y": "2",
+                "_z": "7",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "11111111",
+                            "11111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "11111111",
+                            "11111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "11111111",
+                            "11111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "11122111",
+                            "11122111"
+                        ]
+                    },                    
+                    {
+                        "_id": "4",
+                        "row": 
+                        [
+                            "11111111",
+                            "11111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "5",
+                        "row": 
+                        [
+                            "11111111",
+                            "11111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "6",
+                        "row": 
+                        [
+                            "11111111",
+                            "11111111"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "110",
+                    "_rolloverMessage": "this is a ...",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s6",
+                    "_url": "images/6.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s7",
+                    "_url": "images/7.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s8",
+                    "_url": "images/8.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s9",
+                    "_url": "images/9.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s10",
+                    "_url": "images/10.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s11",
+                    "_url": "images/11.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s29",
+                    "_url": "images/29.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s30",
+                    "_url": "images/30.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s31",
+                    "_url": "images/31.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s32",
+                    "_url": "images/32.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s33",
+                    "_url": "images/33.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s34",
+                    "_url": "images/34.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s35",
+                    "_url": "images/35.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s36",
+                    "_url": "images/36.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s37",
+                    "_url": "images/37.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s38",
+                    "_url": "images/38.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s39",
+                    "_url": "images/39.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s40",
+                    "_url": "images/40.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s41",
+                    "_url": "images/41.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s42",
+                    "_url": "images/42.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s43",
+                    "_url": "images/43.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s44",
+                    "_url": "images/44.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s12",
+                    "_url": "images/12.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s13",
+                    "_url": "images/13.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s14",
+                    "_url": "images/14.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s15",
+                    "_url": "images/15.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s16",
+                    "_url": "images/16.png",
+                    "_value": "100",
+                    "_num": "4"
+                }
+            ]
+        },        
+        {
+            "_level": "8",
+            "_id": "diamond, t time bonus, med time  21X4 tiles",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "0.9",
+            "yOffset": "2",
+            "TileStructure": 
+            {
+                "_x": "6",
+                "_y": "6",
+                "_z": "5",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "000000",
+                            "011110",
+                            "011110",
+                            "011110",
+                            "011110",
+                            "000000"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "000000",
+                            "011110",
+                            "011110",
+                            "011110",
+                            "011110",
+                            "000000"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "111111",
+                            "121121",
+                            "111111",
+                            "111111",
+                            "121121",
+                            "111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "000000",
+                            "011110",
+                            "011110",
+                            "011110",
+                            "011110",
+                            "000000"
+                        ]
+                    },                    
+                    {
+                        "_id": "4",
+                        "row": 
+                        [
+                            "000000",
+                            "011110",
+                            "011110",
+                            "011110",
+                            "011110",
+                            "000000"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "100",
+                    "_rolloverMessage": "this is a ...",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s2",
+                    "_url": "images/2.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s3",
+                    "_url": "images/3.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s4",
+                    "_url": "images/4.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s5",
+                    "_url": "images/5.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s6",
+                    "_url": "images/6.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s7",
+                    "_url": "images/7.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s8",
+                    "_url": "images/8.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s9",
+                    "_url": "images/9.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s10",
+                    "_url": "images/10.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s11",
+                    "_url": "images/11.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s12",
+                    "_url": "images/12.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s38",
+                    "_url": "images/38.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s39",
+                    "_url": "images/39.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s40",
+                    "_url": "images/40.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s41",
+                    "_url": "images/41.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s42",
+                    "_url": "images/42.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s43",
+                    "_url": "images/43.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s44",
+                    "_url": "images/44.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s20",
+                    "_url": "images/20.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s21",
+                    "_url": "images/21.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s22",
+                    "_url": "images/22.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s23",
+                    "_url": "images/23.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s24",
+                    "_url": "images/24.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s25",
+                    "_url": "images/25.png",
+                    "_value": "100",
+                    "_num": "4"
+                }
+            ]
+        },        
+        {
+            "_level": "9",
+            "_id": "big bad wall, many small time bonuses 32X4",
+            "BackgroundImage": "images/bg1.swf",
+            "nScale": "0.73",
+            "yOffset": "3",
+            "TileStructure": 
+            {
+                "_x": "8",
+                "_y": "4",
+                "_z": "7",
+                "layer": 
+                [                    
+                    {
+                        "_id": "0",
+                        "row": 
+                        [
+                            "11111111",
+                            "11211111",
+                            "11111211",
+                            "11111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "1",
+                        "row": 
+                        [
+                            "00000000",
+                            "00000000",
+                            "00000000",
+                            "00000000"
+                        ]
+                    },                    
+                    {
+                        "_id": "2",
+                        "row": 
+                        [
+                            "11211111",
+                            "11111111",
+                            "11111111",
+                            "11111211"
+                        ]
+                    },                    
+                    {
+                        "_id": "3",
+                        "row": 
+                        [
+                            "00000000",
+                            "00000000",
+                            "00000000",
+                            "00000000"
+                        ]
+                    },                    
+                    {
+                        "_id": "4",
+                        "row": 
+                        [
+                            "11111111",
+                            "21111111",
+                            "11111112",
+                            "11111111"
+                        ]
+                    },                    
+                    {
+                        "_id": "5",
+                        "row": 
+                        [
+                            "00000000",
+                            "00000000",
+                            "00000000",
+                            "00000000"
+                        ]
+                    },                    
+                    {
+                        "_id": "6",
+                        "row": 
+                        [
+                            "11111111",
+                            "11121111",
+                            "11112111",
+                            "11111111"
+                        ]
+                    }
+                ]
+            },
+            "TileImages": 
+            [                
+                {
+                    "_name": "s0",
+                    "_url": "images/time.png",
+                    "_value": "100",
+                    "_rolloverMessage": "this is a ...",
+                    "_num": "8"
+                },                
+                {
+                    "_name": "s6",
+                    "_url": "images/6.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s7",
+                    "_url": "images/7.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s8",
+                    "_url": "images/8.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s9",
+                    "_url": "images/9.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s10",
+                    "_url": "images/10.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s11",
+                    "_url": "images/11.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s12",
+                    "_url": "images/12.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s13",
+                    "_url": "images/13.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s14",
+                    "_url": "images/14.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s29",
+                    "_url": "images/29.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s30",
+                    "_url": "images/30.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s31",
+                    "_url": "images/31.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s32",
+                    "_url": "images/32.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s33",
+                    "_url": "images/33.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s34",
+                    "_url": "images/34.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s35",
+                    "_url": "images/35.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s36",
+                    "_url": "images/36.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s37",
+                    "_url": "images/37.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s38",
+                    "_url": "images/38.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s39",
+                    "_url": "images/39.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s40",
+                    "_url": "images/40.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s41",
+                    "_url": "images/41.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s42",
+                    "_url": "images/42.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s43",
+                    "_url": "images/43.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s44",
+                    "_url": "images/44.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s25",
+                    "_url": "images/25.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s26",
+                    "_url": "images/26.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s27",
+                    "_url": "images/27.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s28",
+                    "_url": "images/28.png",
+                    "_value": "100",
+                    "_num": "4"
+                },                
+                {
+                    "_name": "s19",
+                    "_url": "images/19.png",
+                    "_value": "100",
+                    "_num": "4"
+                }
+            ]
+        }
+    ]
+}

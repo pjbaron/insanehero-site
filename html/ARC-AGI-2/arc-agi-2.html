@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Puzzle Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .file-input input[type="file"] {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .controls button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #333;
+            background-color: #fff;
+            border-radius: 4px;
+        }
+
+        .controls button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .puzzle-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .puzzle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .section {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .examples-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .example {
+            border: 2px solid #666;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .example-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .grid-pair {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .grid-section {
+            text-align: center;
+        }
+
+        .grid-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .grid {
+            display: inline-grid;
+            gap: 1px;
+            border: 1px solid #444;
+            background-color: #444;
+            padding: 1px;
+        }
+
+        .cell {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        /* Color definitions extracted from provided color bar */
+        .color-0 { background-color: #000000; color: #ffffff; } /* black */
+        .color-1 { background-color: #5b9bd5; color: #ffffff; } /* blue */
+        .color-2 { background-color: #e74c3c; color: #ffffff; } /* red */
+        .color-3 { background-color: #2ecc71; color: #000000; } /* green */
+        .color-4 { background-color: #f1c40f; color: #000000; } /* yellow */
+        .color-5 { background-color: #95a5a6; color: #ffffff; } /* mid-grey */
+        .color-6 { background-color: #e91e63; color: #ffffff; } /* hot-pink */
+        .color-7 { background-color: #f39c12; color: #000000; } /* orange */
+        .color-8 { background-color: #1abc9c; color: #000000; } /* cyan */
+        .color-9 { background-color: #8e44ad; color: #ffffff; } /* burgundy */
+
+        .color-legend {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .legend-grid {
+            display: inline-grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            margin: 10px auto;
+        }
+
+        .legend-item {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid #333;
+            margin: 0 auto 5px auto;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin: 50px 0;
+        }
+
+        .autocomplete-container {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .autocomplete-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-family: monospace;
+        }
+
+        .autocomplete-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .hex-search-container {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Grid Puzzle Viewer</h1>
+    </div>
+
+    <div class="file-input">
+        <div style="margin-bottom: 15px;">
+            <label for="presetSelect" style="font-weight: bold; margin-right: 10px;">Load Preset:</label>
+            <select id="presetSelect" style="padding: 8px; font-size: 16px; margin-right: 15px;">
+                <option value="">-- Select a preset file --</option>
+                <option value="all_puzzles.txt">All Puzzles</option>
+                <option value="training_puzzles.txt">Training Puzzles</option>
+                <option value="evaluation_puzzles.txt">Evaluation Puzzles</option>
+            </select>
+            <button id="loadPresetBtn" style="padding: 8px 15px; font-size: 16px;">Load</button>
+        </div>
+        
+        <div style="margin: 15px 0; text-align: center; color: #666; font-weight: bold;">
+            -- OR --
+        </div>
+        
+        <div>
+            <input type="file" id="fileInput" accept=".txt,.json" />
+            <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                Upload a local text file containing puzzle data in JSON format
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="prevBtn" disabled>Previous Puzzle</button>
+        <button id="nextBtn" disabled>Next Puzzle</button>
+        
+        <div style="margin-left: 30px; display: inline-block; position: relative;">
+            <label for="hexSearch" style="margin-right: 10px;">Find by Hex ID:</label>
+            <input type="text" id="hexSearch" placeholder="Enter 8-digit hex..." 
+                   style="padding: 8px; font-size: 14px; width: 120px; text-transform: lowercase;" 
+                   maxlength="8" />
+            <button id="searchBtn" style="margin-left: 5px; padding: 8px 12px;">Go</button>
+        </div>
+    </div>
+
+    <div class="puzzle-info" id="puzzleInfo">
+        Load a file to view puzzles
+    </div>
+    
+    <div class="hex-display" id="hexDisplay" style="text-align: center; margin-bottom: 15px; font-family: monospace; font-size: 18px; font-weight: bold; color: #333; display: none;">
+        <!-- Hex ID will be displayed here -->
+    </div>
+
+    <div class="puzzle-container" id="puzzleContainer">
+        <div class="no-data">
+            Please load a puzzle file to begin viewing examples.
+        </div>
+    </div>
+
+    <div class="color-legend">
+        <h3>Color Legend</h3>
+        <div class="legend-grid">
+            <div class="legend-item">
+                <div class="legend-color color-0">0</div>
+                Black
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-1">1</div>
+                Blue
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-2">2</div>
+                Red
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-3">3</div>
+                Green
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-4">4</div>
+                Yellow
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-5">5</div>
+                Mid-Grey
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-6">6</div>
+                Hot-Pink
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-7">7</div>
+                Orange
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-8">8</div>
+                Cyan
+            </div>
+            <div class="legend-item">
+                <div class="legend-color color-9">9</div>
+                Burgundy
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let puzzles = [];
+        let currentPuzzleIndex = 0;
+        let puzzleIndex = new Map(); // Map hex IDs to puzzle indices
+
+        const fileInput = document.getElementById('fileInput');
+        const presetSelect = document.getElementById('presetSelect');
+        const loadPresetBtn = document.getElementById('loadPresetBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const puzzleInfo = document.getElementById('puzzleInfo');
+        const hexDisplay = document.getElementById('hexDisplay');
+        const puzzleContainer = document.getElementById('puzzleContainer');
+        const hexSearch = document.getElementById('hexSearch');
+        const searchBtn = document.getElementById('searchBtn');
+
+        fileInput.addEventListener('change', handleFileLoad);
+        loadPresetBtn.addEventListener('click', handlePresetLoad);
+        prevBtn.addEventListener('click', showPreviousPuzzle);
+        nextBtn.addEventListener('click', showNextPuzzle);
+        searchBtn.addEventListener('click', handleHexSearch);
+        hexSearch.addEventListener('input', handleHexInput);
+        hexSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleHexSearch();
+            }
+        });
+
+        function handlePresetLoad() {
+            const selectedFile = presetSelect.value;
+            if (!selectedFile) {
+                alert('Please select a preset file first.');
+                return;
+            }
+
+            // Show loading state
+            loadPresetBtn.textContent = 'Loading...';
+            loadPresetBtn.disabled = true;
+
+            fetch(selectedFile)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to load ${selectedFile}: ${response.status} ${response.statusText}`);
+                    }
+                    return response.text();
+                })
+                .then(content => {
+                    processPuzzleContent(content, selectedFile);
+                })
+                .catch(error => {
+                    console.error('Error loading preset file:', error);
+                    alert(`Error loading ${selectedFile}: ${error.message}`);
+                })
+                .finally(() => {
+                    loadPresetBtn.textContent = 'Load';
+                    loadPresetBtn.disabled = false;
+                });
+        }
+
+        function processPuzzleContent(content, filename) {
+            try {
+                // Split by lines and parse each JSON object
+                const lines = content.trim().split('\n');
+                puzzles = [];
+                puzzleIndex.clear();
+                
+                for (let line of lines) {
+                    line = line.trim();
+                    if (line) {
+                        try {
+                            const puzzleData = JSON.parse(line);
+                            puzzles.push(puzzleData);
+                            
+                            // Build index for hex ID search
+                            if (puzzleData.id) {
+                                puzzleIndex.set(puzzleData.id.toLowerCase(), puzzles.length - 1);
+                            }
+                        } catch (parseError) {
+                            console.warn('Failed to parse line:', line, parseError);
+                        }
+                    }
+                }
+
+                if (puzzles.length > 0) {
+                    currentPuzzleIndex = 0;
+                    updateControls();
+                    displayCurrentPuzzle();
+                    console.log(`Loaded ${puzzles.length} puzzles from ${filename}`);
+                    console.log(`Indexed ${puzzleIndex.size} puzzles with hex IDs`);
+                } else {
+                    alert(`No valid puzzle data found in ${filename}.`);
+                }
+            } catch (error) {
+                alert(`Error processing ${filename}: ${error.message}`);
+            }
+        }
+
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                processPuzzleContent(e.target.result, file.name);
+            };
+            reader.readAsText(file);
+        }
+
+        function updateControls() {
+            prevBtn.disabled = currentPuzzleIndex <= 0;
+            nextBtn.disabled = currentPuzzleIndex >= puzzles.length - 1;
+            puzzleInfo.textContent = `Puzzle ${currentPuzzleIndex + 1} of ${puzzles.length}`;
+            
+            // Update hex display
+            const currentPuzzle = puzzles[currentPuzzleIndex];
+            if (currentPuzzle && currentPuzzle.id) {
+                hexDisplay.textContent = `Hex ID: ${currentPuzzle.id.toUpperCase()}`;
+                hexDisplay.style.display = 'block';
+            } else {
+                hexDisplay.style.display = 'none';
+            }
+        }
+
+        function handleHexSearch() {
+            const searchValue = hexSearch.value.toLowerCase().trim();
+            if (searchValue.length !== 8) {
+                alert('Please enter exactly 8 hex characters (0-9, a-f)');
+                return;
+            }
+            
+            if (!searchValue.match(/^[0-9a-f]{8}$/)) {
+                alert('Invalid hex format. Use only characters 0-9 and a-f');
+                return;
+            }
+            
+            if (puzzleIndex.has(searchValue)) {
+                currentPuzzleIndex = puzzleIndex.get(searchValue);
+                updateControls();
+                displayCurrentPuzzle();
+                clearAutocomplete();
+            } else {
+                alert(`Puzzle with hex ID "${searchValue.toUpperCase()}" not found`);
+            }
+        }
+
+        function handleHexInput() {
+            const searchValue = hexSearch.value.toLowerCase().trim();
+            
+            if (searchValue.length === 0) {
+                clearAutocomplete();
+                return;
+            }
+            
+            // Find matching hex IDs
+            const matches = [];
+            for (const [hexId, index] of puzzleIndex) {
+                if (hexId.startsWith(searchValue)) {
+                    matches.push(hexId);
+                }
+            }
+            
+            // Show autocomplete if we have matches
+            if (matches.length > 0 && searchValue.length >= 2) {
+                showAutocomplete(matches.slice(0, 10)); // Limit to 10 suggestions
+            } else {
+                clearAutocomplete();
+            }
+        }
+
+        function showAutocomplete(matches) {
+            clearAutocomplete();
+            
+            const container = document.createElement('div');
+            container.className = 'autocomplete-container';
+            container.style.position = 'absolute';
+            container.style.top = '100%';
+            container.style.left = '0';
+            container.style.right = '0';
+            container.style.zIndex = '1000';
+            container.style.background = 'white';
+            container.style.border = '1px solid #ccc';
+            container.style.borderTop = 'none';
+            container.style.borderRadius = '0 0 4px 4px';
+            container.style.maxHeight = '200px';
+            container.style.overflowY = 'auto';
+            container.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            
+            matches.forEach(hexId => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = hexId.toUpperCase();
+                item.style.padding = '8px 12px';
+                item.style.cursor = 'pointer';
+                item.style.borderBottom = '1px solid #eee';
+                item.style.fontFamily = 'monospace';
+                
+                item.addEventListener('mouseenter', () => {
+                    item.style.backgroundColor = '#f0f0f0';
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    item.style.backgroundColor = 'white';
+                });
+                
+                item.addEventListener('click', () => {
+                    hexSearch.value = hexId;
+                    handleHexSearch();
+                });
+                
+                container.appendChild(item);
+            });
+            
+            // Position relative to search input
+            const searchContainer = hexSearch.parentNode;
+            searchContainer.style.position = 'relative';
+            searchContainer.appendChild(container);
+        }
+
+        function clearAutocomplete() {
+            const existing = document.querySelector('.autocomplete-container');
+            if (existing) {
+                existing.remove();
+            }
+        }
+
+        // Clear autocomplete when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!hexSearch.contains(e.target) && !e.target.closest('.autocomplete-container')) {
+                clearAutocomplete();
+            }
+        });
+
+        function showPreviousPuzzle() {
+            if (currentPuzzleIndex > 0) {
+                currentPuzzleIndex--;
+                updateControls();
+                displayCurrentPuzzle();
+            }
+        }
+
+        function showNextPuzzle() {
+            if (currentPuzzleIndex < puzzles.length - 1) {
+                currentPuzzleIndex++;
+                updateControls();
+                displayCurrentPuzzle();
+            }
+        }
+
+        function createGrid(data, containerId) {
+            const rows = data.length;
+            const cols = data[0].length;
+            
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+            grid.style.gridTemplateColumns = `repeat(${cols}, 20px)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, 20px)`;
+
+            data.forEach(row => {
+                row.forEach(value => {
+                    const cell = document.createElement('div');
+                    cell.className = `cell color-${value}`;
+                    cell.textContent = value;
+                    grid.appendChild(cell);
+                });
+            });
+
+            return grid;
+        }
+
+        function displayCurrentPuzzle() {
+            if (puzzles.length === 0) return;
+
+            const puzzle = puzzles[currentPuzzleIndex];
+            puzzleContainer.innerHTML = '';
+
+            // Training examples
+            if (puzzle.train && puzzle.train.length > 0) {
+                const trainSection = document.createElement('div');
+                trainSection.className = 'section';
+                
+                const trainTitle = document.createElement('div');
+                trainTitle.className = 'section-title';
+                trainTitle.textContent = 'Training Examples';
+                trainSection.appendChild(trainTitle);
+
+                const trainContainer = document.createElement('div');
+                trainContainer.className = 'examples-container';
+
+                puzzle.train.forEach((example, index) => {
+                    const exampleDiv = document.createElement('div');
+                    exampleDiv.className = 'example';
+
+                    const exampleTitle = document.createElement('div');
+                    exampleTitle.className = 'example-title';
+                    exampleTitle.textContent = `Training Example ${index + 1}`;
+                    exampleDiv.appendChild(exampleTitle);
+
+                    const gridPair = document.createElement('div');
+                    gridPair.className = 'grid-pair';
+
+                    // Input grid
+                    const inputSection = document.createElement('div');
+                    inputSection.className = 'grid-section';
+                    
+                    const inputTitle = document.createElement('div');
+                    inputTitle.className = 'grid-title';
+                    inputTitle.textContent = 'INPUT';
+                    inputSection.appendChild(inputTitle);
+                    
+                    const inputGrid = createGrid(example.input);
+                    inputSection.appendChild(inputGrid);
+
+                    // Output grid
+                    const outputSection = document.createElement('div');
+                    outputSection.className = 'grid-section';
+                    
+                    const outputTitle = document.createElement('div');
+                    outputTitle.className = 'grid-title';
+                    outputTitle.textContent = 'OUTPUT';
+                    outputSection.appendChild(outputTitle);
+                    
+                    const outputGrid = createGrid(example.output);
+                    outputSection.appendChild(outputGrid);
+
+                    gridPair.appendChild(inputSection);
+                    gridPair.appendChild(outputSection);
+                    exampleDiv.appendChild(gridPair);
+                    trainContainer.appendChild(exampleDiv);
+                });
+
+                trainSection.appendChild(trainContainer);
+                puzzleContainer.appendChild(trainSection);
+            }
+
+            // Test examples
+            if (puzzle.test && puzzle.test.length > 0) {
+                const testSection = document.createElement('div');
+                testSection.className = 'section';
+                
+                const testTitle = document.createElement('div');
+                testTitle.className = 'section-title';
+                testTitle.textContent = 'Test Examples';
+                testSection.appendChild(testTitle);
+
+                const testContainer = document.createElement('div');
+                testContainer.className = 'examples-container';
+
+                puzzle.test.forEach((example, index) => {
+                    const exampleDiv = document.createElement('div');
+                    exampleDiv.className = 'example';
+
+                    const exampleTitle = document.createElement('div');
+                    exampleTitle.className = 'example-title';
+                    exampleTitle.textContent = `Test Example ${index + 1}`;
+                    exampleDiv.appendChild(exampleTitle);
+
+                    const gridPair = document.createElement('div');
+                    gridPair.className = 'grid-pair';
+
+                    // Input grid
+                    const inputSection = document.createElement('div');
+                    inputSection.className = 'grid-section';
+                    
+                    const inputTitle = document.createElement('div');
+                    inputTitle.className = 'grid-title';
+                    inputTitle.textContent = 'INPUT';
+                    inputSection.appendChild(inputTitle);
+                    
+                    const inputGrid = createGrid(example.input);
+                    inputSection.appendChild(inputGrid);
+
+                    gridPair.appendChild(inputSection);
+
+                    // Output grid (if available)
+                    if (example.output) {
+                        const outputSection = document.createElement('div');
+                        outputSection.className = 'grid-section';
+                        
+                        const outputTitle = document.createElement('div');
+                        outputTitle.className = 'grid-title';
+                        outputTitle.textContent = 'OUTPUT';
+                        outputSection.appendChild(outputTitle);
+                        
+                        const outputGrid = createGrid(example.output);
+                        outputSection.appendChild(outputGrid);
+                        
+                        gridPair.appendChild(outputSection);
+                    }
+                    exampleDiv.appendChild(gridPair);
+                    testContainer.appendChild(exampleDiv);
+                });
+
+                testSection.appendChild(testContainer);
+                puzzleContainer.appendChild(testSection);
+            }
+        }
+    </script>
+</body>
+</html>

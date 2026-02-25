@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+<ignoreMeContainer>
+	<levels>
+		<level id="puzzle_1" random="1" levellock="1" x = "320" y = "380">
+			<nScale>1</nScale>
+			<TileStructure x="5" y="5" z="5">
+				<layer id="0">
+					<row>00100</row>
+					<row>01110</row>
+					<row>11111</row>
+					<row>01110</row>
+					<row>00100</row>
+				</layer>
+				<layer id="1">
+					<row>01110</row>
+					<row>11111</row>
+					<row>11111</row>
+					<row>11111</row>
+					<row>01110</row>
+				</layer>
+				<layer id="2">
+					<row>11111</row>
+					<row>11111</row>
+					<row>11011</row>
+					<row>11111</row>
+					<row>11111</row>
+				</layer>
+				<layer id="3">
+					<row>01110</row>
+					<row>11111</row>
+					<row>11111</row>
+					<row>11111</row>
+					<row>01110</row>
+				</layer>
+				<layer id="4">
+					<row>00100</row>
+					<row>01110</row>
+					<row>11111</row>
+					<row>01110</row>
+					<row>00100</row>
+				</layer>
+			</TileStructure>
+			<TileImages>
+				<tile type="0" name="s40" url="s40" value="100" num="4"/>
+				<tile type="0" name="s2" url="s2" value="100" num="4"/>
+				<tile type="0" name="s44" url="s44" value="100" num="4"/>
+				<tile type="0" name="s43" url="s43" value="100" num="4"/>
+				<tile type="0" name="s5" url="s5" value="100" num="4"/>
+				<tile type="0" name="s42" url="s42" value="100" num="4"/>
+				<tile type="0" name="s13" url="s13" value="100" num="4"/>
+				<tile type="0" name="s14" url="s14" value="100" num="4"/>
+				<tile type="0" name="s15" url="s15" value="100" num="4"/>
+				<tile type="0" name="s16" url="s16" value="100" num="4"/>
+				<tile type="0" name="s41" url="s41" value="100" num="4"/>
+				<tile type="0" name="s18" url="s18" value="100" num="4"/>
+				<tile type="0" name="s19" url="s19" value="100" num="4"/>
+				<tile type="0" name="s20" url="s20" value="100" num="4"/>
+				<tile type="0" name="s21" url="s21" value="100" num="4"/>
+				<tile type="0" name="s45" url="s45" value="100" num="4"/>
+				<tile type="0" name="s23" url="s23" value="100" num="4"/>
+				<tile type="0" name="s46" url="s46" value="100" num="4"/>
+				<tile type="0" name="s47" url="s47" value="100" num="4"/>
+				<tile type="0" name="s26" url="s26" value="100" num="4"/>
+				<tile type="0" name="s27" url="s27" value="100" num="4"/>
+				<tile type="0" name="s28" url="s28" value="100" num="4"/>
+				<tile type="0" name="s29" url="s29" value="100" num="4"/>
+			</TileImages>
+		</level>
+	</levels>
+</ignoreMeContainer>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved Music Player</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .player-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            margin: 0;
+            color: #333;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .now-playing {
+            margin-bottom: 1.5rem;
+            display: none;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+        .info-label {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            opacity: 0.9;
+        }
+        .info-value {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        .track-path {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+        audio {
+            width: 100%;
+            margin-top: 1rem;
+            display: none;
+        }
+        #status {
+            margin-top: 1rem;
+            color: #666;
+            font-style: italic;
+            text-align: center;
+        }
+        .error {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+            padding: 1rem;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .success {
+            color: #059669;
+            background: rgba(5, 150, 105, 0.1);
+            padding: 1rem;
+            border: 1px solid rgba(5, 150, 105, 0.3);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: block;
+            margin: 0 auto;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #browserSupport {
+            display: none;
+            background-color: #fee2e2;
+            border: 1px solid #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .controls {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .controls button {
+            display: inline-block;
+            margin: 0 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        .loading {
+            text-align: center;
+            color: #667eea;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: rgba(255,255,255,0.8);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <div class="header">
+            <h1>🎵 Smart Music Player</h1>
+        </div>
+        
+        <div id="browserSupport">
+            Your browser doesn't support the File System Access API. 
+            Please use a modern browser like Chrome, Edge, or Opera.
+        </div>
+
+        <button id="selectFolder">Select Music Folder</button>
+        
+        <div id="scanningStatus" style="display: none;">
+            <div class="loading">
+                <div>🔍 Scanning your music library...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="scanProgress">Found 0 tracks</div>
+            </div>
+        </div>
+
+        <div class="stats" style="display: none;" id="statsContainer">
+            <div class="stat-item">
+                <div class="stat-number" id="totalTracks">0</div>
+                <div class="stat-label">Total Tracks</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalFolders">0</div>
+                <div class="stat-label">Folders</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="supportedFormats">0</div>
+                <div class="stat-label">Formats</div>
+            </div>
+        </div>
+        
+        <div class="now-playing">
+            <div class="info-label">Now Playing:</div>
+            <div id="track" class="info-value">-</div>
+            
+            <div class="info-label">Location:</div>
+            <div id="artist" class="info-value">-</div>
+            
+            <div class="track-path" id="fullPath">-</div>
+        </div>
+
+        <div class="controls">
+            <button id="skipTrack">⏭️ Skip Track</button>
+            <button id="rescan">🔄 Rescan Library</button>
+        </div>
+        
+        <audio id="audio-player" controls autoplay></audio>
+        <div id="status">Select your music folder to begin...</div>
+    </div>
+
+    <script>
+        let allTracks = [];
+        let playedTracks = new Set();
+        let failedTracks = new Set();
+        let rootHandle = null;
+        let currentTrackIndex = 0;
+        let folderCount = 0;
+        let formatCount = new Set();
+
+        // Supported audio formats
+        const SUPPORTED_FORMATS = ['.mp3', '.m4a', '.aac', '.ogg', '.wav', '.flac', '.opus', '.webm'];
+
+        // Check browser support
+        if (!('showDirectoryPicker' in window)) {
+            document.getElementById('browserSupport').style.display = 'block';
+            document.getElementById('selectFolder').disabled = true;
+        }
+
+        function isAudioFile(filename) {
+            const ext = filename.toLowerCase().substring(filename.lastIndexOf('.'));
+            return SUPPORTED_FORMATS.includes(ext);
+        }
+
+        function getFileExtension(filename) {
+            return filename.toLowerCase().substring(filename.lastIndexOf('.'));
+        }
+
+        function sanitizeFilename(filename) {
+            // Remove file extension and clean up the name
+            const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.')) || filename;
+            // Replace common separators and clean up
+            return nameWithoutExt
+                .replace(/[-_]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function extractTrackInfo(path, filename) {
+            const cleanFilename = sanitizeFilename(filename);
+            const pathParts = path.filter(part => part && part.trim());
+            
+            // Try to extract meaningful info from path
+            let artist = 'Unknown Artist';
+            let album = 'Unknown Album';
+            
+            if (pathParts.length >= 2) {
+                // If we have at least 2 folders, assume last is album, second-to-last is artist
+                artist = pathParts[pathParts.length - 2];
+                album = pathParts[pathParts.length - 1];
+            } else if (pathParts.length === 1) {
+                // If only one folder, use it as artist/album
+                artist = pathParts[0];
+                album = pathParts[0];
+            }
+            
+            return {
+                track: cleanFilename,
+                artist: artist,
+                album: album,
+                fullPath: [...pathParts, filename].join(' / '),
+                pathArray: [...pathParts, filename]  // Keep array version for unique IDs
+            };
+        }
+
+        async function scanDirectory(dirHandle, path = []) {
+            folderCount++;
+            const tracks = [];
+            
+            try {
+                for await (const entry of dirHandle.values()) {
+                    if (entry.kind === 'directory') {
+                        // Recursively scan subdirectories
+                        const subTracks = await scanDirectory(entry, [...path, entry.name]);
+                        tracks.push(...subTracks);
+                    } else if (isAudioFile(entry.name)) {
+                        // Add audio file to our collection
+                        tracks.push({
+                            fileHandle: entry,
+                            path: path,
+                            filename: entry.name,
+                            pathArray: [...path, entry.name],
+                            ...extractTrackInfo(path, entry.name)
+                        });
+                        formatCount.add(getFileExtension(entry.name));
+                        
+                        // Update progress
+                        updateScanProgress(tracks.length);
+                    }
+                }
+            } catch (error) {
+                console.warn('Error scanning directory:', error);
+            }
+            
+            return tracks;
+        }
+
+        function updateScanProgress(trackCount) {
+            document.getElementById('scanProgress').textContent = `Found ${trackCount} tracks in ${folderCount} folders`;
+            // Simple progress animation
+            const progress = Math.min((trackCount / 100) * 100, 100); // Cap at 100%
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function updatePlayerInfo(trackInfo) {
+            document.getElementById('track').textContent = trackInfo.track;
+            document.getElementById('artist').textContent = `${trackInfo.artist} - ${trackInfo.album}`;
+            document.getElementById('fullPath').textContent = trackInfo.fullPath;
+        }
+
+        function updateStats() {
+            document.getElementById('totalTracks').textContent = allTracks.length;
+            document.getElementById('totalFolders').textContent = folderCount;
+            document.getElementById('supportedFormats').textContent = formatCount.size;
+            document.getElementById('statsContainer').style.display = 'flex';
+        }
+
+        async function getNextTrack() {
+            // Filter out failed tracks
+            const availableTracks = allTracks.filter(track => !failedTracks.has(track.pathArray.join('/')));
+            
+            if (availableTracks.length === 0) {
+                throw new Error('No playable tracks found');
+            }
+            
+            // If we've played all available tracks, reset
+            if (playedTracks.size >= availableTracks.length) {
+                playedTracks.clear();
+                console.log('Shuffling playlist...');
+            }
+            
+            // Find an unplayed track
+            let track;
+            let attempts = 0;
+            do {
+                track = availableTracks[Math.floor(Math.random() * availableTracks.length)];
+                attempts++;
+            } while (playedTracks.has(track.pathArray.join('/')) && attempts < 50);
+            
+            playedTracks.add(track.pathArray.join('/'));
+            return track;
+        }
+
+        let currentObjectUrl = null;
+
+        async function playTrack(track) {
+            try {
+                updatePlayerInfo(track);
+                document.getElementById('status').textContent = 'Loading track...';
+                
+                // Clean up previous track's URL
+                if (currentObjectUrl) {
+                    URL.revokeObjectURL(currentObjectUrl);
+                    currentObjectUrl = null;
+                }
+                
+                // Get the file and create an object URL
+                const file = await track.fileHandle.getFile();
+                
+                // Validate file size (skip empty files)
+                if (file.size === 0) {
+                    throw new Error('Empty file');
+                }
+                
+                currentObjectUrl = URL.createObjectURL(file);
+                const audioPlayer = document.getElementById('audio-player');
+                
+                audioPlayer.src = currentObjectUrl;
+                document.getElementById('status').textContent = 'Now playing...';
+                
+                // Ensure autoplay works - try to play the track
+                try {
+                    await audioPlayer.play();
+                } catch (playError) {
+                    console.warn('Autoplay failed, user interaction may be required:', playError);
+                    // Don't throw here - the user can manually click play
+                }
+                
+                return true;
+            } catch (error) {
+                console.warn('Failed to play track:', track.pathArray.join('/'), error);
+                failedTracks.add(track.pathArray.join('/'));
+                throw error;
+            }
+        }
+
+        async function playNextTrack() {
+            const maxRetries = 5;
+            let retries = 0;
+            
+            while (retries < maxRetries) {
+                try {
+                    const track = await getNextTrack();
+                    await playTrack(track);
+                    return; // Success!
+                } catch (error) {
+                    retries++;
+                    console.warn(`Attempt ${retries} failed:`, error.message);
+                    
+                    if (retries < maxRetries) {
+                        document.getElementById('status').innerHTML = `
+                            <div class="error">
+                                Track failed to load (attempt ${retries}/${maxRetries}). Trying another...
+                            </div>`;
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    } else {
+                        document.getElementById('status').innerHTML = `
+                            <div class="error">
+                                Unable to find playable tracks after ${maxRetries} attempts. Please check your music folder.
+                            </div>`;
+                    }
+                }
+            }
+        }
+
+        async function initPlayer() {
+            try {
+                document.getElementById('selectFolder').style.display = 'none';
+                document.getElementById('scanningStatus').style.display = 'block';
+                document.getElementById('status').textContent = 'Requesting folder access...';
+                
+                // Request permission to access files
+                rootHandle = await window.showDirectoryPicker();
+                
+                // Reset counters
+                folderCount = 0;
+                formatCount.clear();
+                
+                // Scan the directory structure
+                document.getElementById('status').textContent = 'Scanning music library...';
+                allTracks = await scanDirectory(rootHandle);
+                
+                if (allTracks.length === 0) {
+                    throw new Error('No supported audio files found in the selected folder');
+                }
+                
+                // Shuffle the tracks for variety
+                allTracks = shuffleArray(allTracks);
+                
+                document.getElementById('scanningStatus').style.display = 'none';
+                document.getElementById('status').innerHTML = `
+                    <div class="success">
+                        Found ${allTracks.length} tracks! Starting playback...
+                    </div>`;
+                
+                // Show player elements
+                document.querySelector('.now-playing').style.display = 'block';
+                document.getElementById('audio-player').style.display = 'block';
+                document.querySelector('.controls').style.display = 'block';
+                
+                updateStats();
+                
+                const audioPlayer = document.getElementById('audio-player');
+                
+                // Set up event listeners
+                audioPlayer.addEventListener('ended', () => {
+                    console.log('Track ended, playing next...');
+                    playNextTrack();
+                });
+                
+                audioPlayer.addEventListener('error', (e) => {
+                    console.warn('Audio error:', e);
+                    // Clean up the failed URL
+                    if (currentObjectUrl) {
+                        URL.revokeObjectURL(currentObjectUrl);
+                        currentObjectUrl = null;
+                    }
+                    setTimeout(playNextTrack, 2000);
+                });
+                
+                // Start playing
+                await playNextTrack();
+                
+            } catch (error) {
+                document.getElementById('scanningStatus').style.display = 'none';
+                document.getElementById('selectFolder').style.display = 'block';
+                
+                if (error.name === 'AbortError') {
+                    document.getElementById('status').textContent = 'Folder selection cancelled.';
+                } else {
+                    document.getElementById('status').innerHTML = `
+                        <div class="error">
+                            Error: ${error.message}
+                        </div>`;
+                }
+            }
+        }
+
+        // Event listeners
+        document.getElementById('selectFolder').addEventListener('click', initPlayer);
+        document.getElementById('skipTrack').addEventListener('click', playNextTrack);
+        document.getElementById('rescan').addEventListener('click', () => {
+            // Reset everything and rescan
+            allTracks = [];
+            playedTracks.clear();
+            failedTracks.clear();
+            document.querySelector('.now-playing').style.display = 'none';
+            document.getElementById('audio-player').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            document.getElementById('statsContainer').style.display = 'none';
+            initPlayer();
+        });
+    </script>
+</body>
+</html>

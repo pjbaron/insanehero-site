@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>V8 Muscle Cars - remaster</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="css/global.css">
+
+    <script type="text/javascript" language="javascript" src="./js/games/racer/images/sprites0.json"></script>
+    <script type="text/javascript" language="javascript" src="./js/games/racer/images/sprites1.json"></script>
+    <script type="text/javascript" language="javascript" src="./js/games/racer/images/sprites2.json"></script>
+    <script type="text/javascript" language="javascript" src="./js/games/racer/images/sprites3.json"></script>
+    <script data-main="js/main" src="js/libs/require-2.1.6.js"></script>
+</head>
+
+<body>
+    <div id="session-page">
+        <!--session-template-->
+    </div>
+
+<!--==========HANDLEBARS TEMPLATES==========-->
+
+<script id="session-template" type="text/x-handlebars-template">
+    <!--h1 style="color:#111;">{{name}}</h1-->
+    <div id="game">
+        <canvas id="game-canvas" data-title="game-canvas"></canvas>
+        <div class="canvas-overlay"></div>
+    </div>
+</script>
+
+<script id="waiting-template" type="text/x-handlebars-template">
+    <p>Waiting for {{host}} to start the game</p>
+</script>
+
+</body>
+</html>

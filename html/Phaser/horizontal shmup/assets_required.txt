@@ -1,0 +1,7 @@
+Here's a list of external assets referenced in the code:
+
+favicon.png, root directory, image, png
+assets/background.png, assets directory, image, png
+assets/player.png, assets directory, image, png
+assets/enemy.png, assets directory, image, png
+assets/bullet.png, assets directory, image, png

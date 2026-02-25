@@ -1,0 +1,64 @@
+<Strings>
+	<!-- Intro Panel -->
+	<String id="new_game_start_button_string">START</String>
+	<String id="play_mjdb_button_string">Spielen Mahjongg Dimensions Blast</String>
+
+	<!-- Help window -->
+	<String id="help_header_string">HILFE</String>
+	<String id="help_page1_text_string">SO WIRD GESPIELT</String>
+	<String id="help_page1_text1_string">Klicke auf gleiche Kacheln, die zwei freie gegenüberliegende Seiten haben, um sie zu entfernen und Punkte zu erzielen.</String>
+	<String id="help_page1_text2_string">Bilde so schnell wie möglich Gruppen, um alle Level zu beenden, bevor die Zeit abläuft.</String>
+	<String id="help_page1_text3_string">Du kannst das Feld drehen, um mehr gleiche Kacheln auf der anderen Seite zu finden! Klicke dazu auf die Pfeile oder verwende die Tastatur.</String>
+	<String id="help_page1_text4_string">TIPP: Mit den linken und rechten Pfeiltasten kannst du das Feld schneller drehen.</String>
+	<String id="help_page2_text_string">BONI</String>
+	<String id="help_page2_text1_string">TEMPOGRUPPE-BONUS: Du bekommst einen Punktemultiplikator, wenn du innerhalb von drei Sekunden zwei Gruppen bildest. </String>
+
+	<String id="help_page2_text2_string">MULTIGRUPPE-KOMBO: Du bekommst Bonuspunkte, wenn du eine Gruppe aus mehreren gleichen Kacheln am Stück bildest.</String>
+
+	<String id="help_page2_text3_string">ZEITBONUS: Für die Zeit, die nach Beenden eines Levels noch übrig ist, erhältst du Bonuspunkte.</String>
+
+	<String id="help_page2_text4_string">Wenn du keine Gruppe findest, kannst du mit &quot;Neu mischen&quot; die Kacheln mischen, dies jedoch nur einmal pro Level.</String>
+
+	<String id="help_page2_text5_string">Wenn die Zeit abgelaufen ist, endet das Spiel. Viel Glück und eine Menge Spaß!</String>
+
+	<String id="help_multimatch_text_string">MULTIGRUPPE</String>
+	<String id="help_speedmatch_text_string">TEMPOGRUPPE</String>
+
+	<String id="help_show_help_string">DIESE HILFE BEIM SPIELSTART ANZEIGEN</String>
+
+	<!-- Options window -->
+	<String id="options_header_string">OPTIONEN</String>
+	<String id="options_sound_string">TON</String>
+	<String id="options_music_string">MUSIK</String>
+
+	<!-- Quit window -->
+	<String id="quit_header_string">Möchtest du das Spiel wirklich beenden?</String>
+
+	<String id="quit_yes_button_string">JA</String>
+	<String id="quit_no_button_string">NEIN</String>
+
+	<!-- Game View Panel -->
+	<String id="gvp_level_time_indication_text_string">ZEIT:</String>
+	<String id="gvp_level_score_indication_text_string">ERGEBNIS:</String>
+
+	<!-- GVP PopUp -->
+	<String id="gvp_level_good_job_text_string">GUT GEMACHT!</String>
+	<String id="gvp_level_next_level_text_string">NÄCHSTES LEVEL</String>
+	<String id="gvp_level_reshuffle_text_string">NEU MISCHEN</String>
+	<String id="gvp_level_no_more_move_text_string">KEINE GRUPPEN
+MEHR MÖGLICH!</String>
+	<String id="gvp_level_times_up_text_string">ZEIT ABGELAUFEN!
+SPIEL VORBEI</String>
+
+	<!-- Buttons -->
+	<String id="gvp_level_reshuffle_button_text_string">NEU MISCHEN</String>
+
+	<!-- Game Over PopUp -->
+	<String id="game_over_lose_header_string">SPIEL VORBEI</String>
+	<String id="game_over_win_header_string">DU HAST GEWONNEN</String>
+
+	<!-- Other files -->
+<String id="help_play_string">SPIELEN</String>
+	<String id="options_quit_string">BEENDEN</String>
+	<String id="gvp_level_times_up_final_score_string">Abschlussnote</String>
+</Strings>

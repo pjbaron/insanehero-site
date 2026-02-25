@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Particle Overlay</title>
+
+        <!-- Unity WebGL stuff -->
+        <link rel="shortcut icon" href="TemplateData/favicon.ico">
+        <link rel="stylesheet" href="TemplateData/style.css">
+        <script src="TemplateData/UnityProgress.js"></script>
+        <script src="Build/UnityLoader.js"></script>
+
+        <!-- fonts, with attempt to preload on modern browsers (after webfontloader) -->
+        <link rel="stylesheet" type="text/css" href="fonts.css">
+        <link rel="preload" as="font" href="images/font/GROBOLD.ttf" crossorigin="anonymous">
+
+        <!-- FX Overlay -->
+        <script type="text/javascript" src="app.js"></script>
+
+        <script>
+            var gameInstance = UnityLoader.instantiate("gameContainer", "Build/BuildGL.json",
+                {
+                    onProgress: function(instance, progress)
+                    {
+                        // there is no onComplete parameter here so we check progress instead
+                        FX.unityReady = (progress >= 1.0);
+                        
+                        // default loading progress indicator
+                        UnityProgress(instance, progress);
+                    },
+                });
+        </script>
+    </head>
+
+    <body>
+        <div class="webgl-content">
+            <div id="gameContainer" style="width: 1551px; height: 876px"></div>
+
+            <script type="text/javascript">
+                // start the FX Overlay system and provide the Unity game container div id
+                new FX().create(document, "gameContainer");
+            </script>
+
+            <div class="footer">
+                <div class="webgl-logo"></div>
+                <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
+                <div class="title">UnityWebGL</div>
+            </div>
+        </div>
+    </body>
+</html>

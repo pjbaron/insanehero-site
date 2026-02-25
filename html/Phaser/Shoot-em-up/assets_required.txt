@@ -1,0 +1,8 @@
+Here's a list of external assets referenced in the code:
+
+favicon.png, root directory, image, PNG
+assets/space-background.png, assets directory, image, PNG
+assets/player-ship.png, assets directory, image, PNG
+assets/alien-ship.png, assets directory, image, PNG
+assets/bullet.png, assets directory, image, PNG
+assets/powerup.png, assets directory, image, PNG

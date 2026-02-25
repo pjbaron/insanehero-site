@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OP Weapons</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #111; }
+canvas { display: block; }
+#startScreen {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: radial-gradient(circle, #222 0%, #000 100%);
+  z-index: 10;
+}
+#startScreen h1 {
+  font-family: Impact, sans-serif; font-size: 80px; color: #f00;
+  text-shadow: 0 0 30px #f00, 0 0 60px #f00, 4px 4px 0 #000;
+  letter-spacing: 8px; margin-bottom: 40px;
+  animation: pulse 0.5s ease-in-out infinite alternate;
+}
+@keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+#startBtn {
+  font-family: Impact, sans-serif; font-size: 48px; color: #fff;
+  background: linear-gradient(180deg, #f00 0%, #900 100%);
+  border: 4px solid #f44; border-radius: 12px;
+  padding: 16px 64px; cursor: pointer;
+  text-shadow: 2px 2px 0 #000;
+  box-shadow: 0 0 30px rgba(255,0,0,0.5), 0 8px 0 #600;
+  transition: transform 0.1s;
+}
+#startBtn:hover { transform: scale(1.1); cursor: pointer; }
+#startBtn:active { transform: scale(0.95); box-shadow: 0 0 30px rgba(255,0,0,0.5), 0 2px 0 #600; }
+</style>
+</head>
+<body>
+<div id="startScreen">
+  <h1>OP WEAPONS</h1>
+  <button id="startBtn">DESTROY!</button>
+</div>
+<canvas id="c"></canvas>
+<script>
+'use strict';
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// --- Game State ---
+let running = false;
+let kills = 0;
+let killDisplaySize = 32;
+let killFlashTimer = 0;
+let screenShakeX = 0, screenShakeY = 0, screenShakeDur = 0;
+let screenFlashAlpha = 0;
+let currentWeapon = 0; // 0-4
+let mouseX = W / 2, mouseY = H / 2;
+let mouseDown = false;
+let dt = 1 / 60;
+let lastTime = 0;
+
+const WEAPONS = [
+  { name: 'GIANT LASER', icon: '/', color: '#f00', key: '1' },
+  { name: 'BLACK HOLE', icon: 'O', color: '#a0f', key: '2' },
+  { name: 'LIGHTNING', icon: '#', color: '#0ff', key: '3' },
+  { name: 'HAMMER', icon: 'T', color: '#fa0', key: '4' },
+  { name: 'TORNADO', icon: '@', color: '#0f0', key: '5' }
+];
+
+// --- Entities ---
+let enemies = [];
+let particles = [];
+let scorchMarks = [];
+let blackHoles = [];
+let tornadoes = [];
+let floatingEmojis = [];
+let lightningArcs = [];
+let hammerStrikes = [];
+let impactRings = [];
+
+const DEATH_EMOJIS = ['\u2620', '\u2B50', '\uD83D\uDCA5', '\uD83D\uDC80', '\uD83D\uDD25', '\u26A1', '\uD83C\uDF1F', '\uD83D\uDCAB'];
+
+// --- Enemy spawning ---
+let spawnTimer = 0;
+let spawnRate = 1.5; // seconds between spawns
+const MIN_SPAWN_RATE = 0.15;
+const SPAWN_ACCEL = 0.997; // multiply each frame
+
+function spawnEnemy() {
+  // Pick type
+  const r = Math.random();
+  let type, radius, speed, hp, color;
+  if (r < 0.6) { type = 'small'; radius = 12; speed = 120 + Math.random() * 60; hp = 1; color = '#4f4'; }
+  else if (r < 0.9) { type = 'medium'; radius = 22; speed = 70 + Math.random() * 30; hp = 3; color = '#48f'; }
+  else { type = 'big'; radius = 36; speed = 35 + Math.random() * 15; hp = 10; color = '#f44'; }
+
+  // Spawn from edge
+  let x, y;
+  const side = Math.floor(Math.random() * 4);
+  if (side === 0) { x = -radius; y = Math.random() * H; }
+  else if (side === 1) { x = W + radius; y = Math.random() * H; }
+  else if (side === 2) { x = Math.random() * W; y = -radius; }
+  else { x = Math.random() * W; y = H + radius; }
+
+  // Waddle phase
+  const waddle = Math.random() * Math.PI * 2;
+
+  enemies.push({ x, y, radius, speed, hp, maxHp: hp, color, type, waddle, waddleSpeed: 3 + Math.random() * 2, hitFlash: 0 });
+}
+
+// --- Particle system ---
+function spawnParticles(x, y, count, color, speed, life) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const spd = (Math.random() * 0.7 + 0.3) * speed;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * spd,
+      vy: Math.sin(angle) * spd,
+      life: life * (0.5 + Math.random() * 0.5),
+      maxLife: life,
+      color,
+      size: 2 + Math.random() * 4
+    });
+  }
+}
+
+function spawnDeathBurst(x, y, color) {
+  spawnParticles(x, y, 20, color, 250, 0.6);
+  spawnParticles(x, y, 10, '#ff0', 180, 0.4);
+  // Floating emoji
+  const emoji = DEATH_EMOJIS[Math.floor(Math.random() * DEATH_EMOJIS.length)];
+  floatingEmojis.push({ x, y, vy: -80 - Math.random() * 60, life: 1.2, emoji, size: 20 + Math.random() * 16 });
+}
+
+function killEnemy(enemy) {
+  spawnDeathBurst(enemy.x, enemy.y, enemy.color);
+  kills++;
+  killFlashTimer = 0.3;
+  killDisplaySize = Math.min(120, 32 + kills * 0.15);
+  if (enemy.type === 'big') {
+    screenFlashAlpha = 0.3;
+    addScreenShake(6, 0.2);
+    spawnParticles(enemy.x, enemy.y, 30, '#f80', 350, 0.8);
+  }
+  spawnRate = Math.max(MIN_SPAWN_RATE, spawnRate * SPAWN_ACCEL);
+}
+
+function addScreenShake(intensity, duration) {
+  screenShakeDur = Math.max(screenShakeDur, duration);
+  screenShakeX = (Math.random() - 0.5) * intensity * 2;
+  screenShakeY = (Math.random() - 0.5) * intensity * 2;
+}
+
+// --- Weapon logic ---
+
+// LASER
+let laserActive = false;
+function updateLaser() {
+  if (currentWeapon !== 0 || !mouseDown) { laserActive = false; return; }
+  laserActive = true;
+  // Direction from center to mouse
+  const cx = W / 2, cy = H / 2;
+  const dx = mouseX - cx, dy = mouseY - cy;
+  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+  const nx = dx / len, ny = dy / len;
+
+  // Check enemies along beam
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const e = enemies[i];
+    // Point-to-line distance from enemy center to laser line
+    const ex = e.x - cx, ey = e.y - cy;
+    const proj = ex * nx + ey * ny;
+    if (proj < 0) continue; // behind
+    const closestX = cx + nx * proj;
+    const closestY = cy + ny * proj;
+    const distSq = (e.x - closestX) ** 2 + (e.y - closestY) ** 2;
+    const beamWidth = 18;
+    if (distSq < (e.radius + beamWidth) ** 2) {
+      e.hp -= 30 * dt;
+      e.hitFlash = 0.1;
+      spawnParticles(e.x, e.y, 1, '#f80', 100, 0.2);
+      if (e.hp <= 0) {
+        killEnemy(e);
+        enemies.splice(i, 1);
+      }
+    }
+  }
+  // Scorch marks along beam
+  if (Math.random() < 0.3) {
+    const d = Math.random() * Math.max(W, H);
+    scorchMarks.push({
+      x: cx + nx * d + (Math.random() - 0.5) * 10,
+      y: cy + ny * d + (Math.random() - 0.5) * 10,
+      size: 4 + Math.random() * 8,
+      alpha: 0.5
+    });
+    if (scorchMarks.length > 200) scorchMarks.shift();
+  }
+}
+
+function drawLaser() {
+  if (!laserActive) return;
+  const cx = W / 2, cy = H / 2;
+  const dx = mouseX - cx, dy = mouseY - cy;
+  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+  const nx = dx / len, ny = dy / len;
+  const endX = cx + nx * 3000, endY = cy + ny * 3000;
+
+  // Glow layers
+  for (let w = 40; w >= 4; w -= 8) {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(endX, endY);
+    ctx.strokeStyle = w > 20 ? 'rgba(255,0,0,0.1)' : w > 10 ? 'rgba(255,100,0,0.3)' : 'rgba(255,255,200,0.9)';
+    ctx.lineWidth = w;
+    ctx.stroke();
+  }
+}
+
+// BLACK HOLE
+function fireBlackHole() {
+  blackHoles.push({
+    x: mouseX, y: mouseY,
+    life: 3, maxLife: 3,
+    radius: 0, maxRadius: 150,
+    rotation: 0
+  });
+}
+
+function updateBlackHoles() {
+  for (let i = blackHoles.length - 1; i >= 0; i--) {
+    const bh = blackHoles[i];
+    bh.life -= dt;
+    bh.rotation += 5 * dt;
+    bh.radius = bh.maxRadius * Math.min(1, (bh.maxLife - bh.life) * 3);
+    if (bh.life <= 0) { blackHoles.splice(i, 1); continue; }
+
+    // Suck in enemies
+    for (let j = enemies.length - 1; j >= 0; j--) {
+      const e = enemies[j];
+      const dx = bh.x - e.x, dy = bh.y - e.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < bh.radius) {
+        const force = (1 - dist / bh.radius) * 600;
+        const nx = dx / (dist || 1), ny = dy / (dist || 1);
+        e.x += nx * force * dt;
+        e.y += ny * force * dt;
+        // Swirl
+        e.x += -ny * force * 0.5 * dt;
+        e.y += nx * force * 0.5 * dt;
+        if (dist < 20) {
+          e.hp -= 20 * dt;
+          e.hitFlash = 0.1;
+          if (e.hp <= 0) {
+            killEnemy(e);
+            enemies.splice(j, 1);
+          }
+        }
+      }
+    }
+  }
+}
+
+function drawBlackHoles() {
+  for (const bh of blackHoles) {
+    ctx.save();
+    ctx.translate(bh.x, bh.y);
+    // Swirl rings
+    for (let r = 0; r < 5; r++) {
+      ctx.beginPath();
+      const ringR = bh.radius * (r / 5) * (bh.life / bh.maxLife);
+      ctx.arc(0, 0, ringR, bh.rotation + r * 0.5, bh.rotation + r * 0.5 + Math.PI * 1.5);
+      ctx.strokeStyle = `rgba(160,0,255,${0.4 - r * 0.07})`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+    // Center
+    const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, 25);
+    grad.addColorStop(0, 'rgba(0,0,0,1)');
+    grad.addColorStop(0.7, 'rgba(80,0,160,0.6)');
+    grad.addColorStop(1, 'rgba(80,0,160,0)');
+    ctx.beginPath();
+    ctx.arc(0, 0, 25, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// LIGHTNING CHAIN
+function fireLightning() {
+  // Find closest enemy to mouse
+  let closest = null, closestDist = Infinity;
+  for (const e of enemies) {
+    const d = Math.sqrt((e.x - mouseX) ** 2 + (e.y - mouseY) ** 2);
+    if (d < closestDist && d < 400) { closestDist = d; closest = e; }
+  }
+  if (!closest) return;
+
+  const chain = [closest];
+  closest.hp -= 5;
+  closest.hitFlash = 0.15;
+  if (closest.hp <= 0) { killEnemy(closest); enemies.splice(enemies.indexOf(closest), 1); }
+
+  // Chain to nearby
+  let last = closest;
+  for (let c = 0; c < 5; c++) {
+    let next = null, nd = Infinity;
+    for (const e of enemies) {
+      if (chain.includes(e)) continue;
+      const d = Math.sqrt((e.x - last.x) ** 2 + (e.y - last.y) ** 2);
+      if (d < nd && d < 250) { nd = d; next = e; }
+    }
+    if (!next) break;
+    chain.push(next);
+    next.hp -= 5;
+    next.hitFlash = 0.15;
+    if (next.hp <= 0) { killEnemy(next); const idx = enemies.indexOf(next); if (idx >= 0) enemies.splice(idx, 1); }
+    last = next;
+  }
+
+  // Create arc visuals
+  let prevX = mouseX, prevY = mouseY;
+  for (const e of chain) {
+    lightningArcs.push({ x1: prevX, y1: prevY, x2: e.x, y2: e.y, life: 0.3, maxLife: 0.3 });
+    prevX = e.x; prevY = e.y;
+  }
+  addScreenShake(3, 0.1);
+  screenFlashAlpha = 0.15;
+}
+
+function drawLightningArcs() {
+  for (const arc of lightningArcs) {
+    const alpha = arc.life / arc.maxLife;
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(0,255,255,${alpha})`;
+    ctx.lineWidth = 4;
+    // Jagged line
+    const dx = arc.x2 - arc.x1, dy = arc.y2 - arc.y1;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const segs = Math.max(3, Math.floor(dist / 30));
+    ctx.moveTo(arc.x1, arc.y1);
+    for (let s = 1; s < segs; s++) {
+      const t = s / segs;
+      const px = arc.x1 + dx * t + (Math.random() - 0.5) * 30;
+      const py = arc.y1 + dy * t + (Math.random() - 0.5) * 30;
+      ctx.lineTo(px, py);
+    }
+    ctx.lineTo(arc.x2, arc.y2);
+    ctx.stroke();
+    // Glow
+    ctx.strokeStyle = `rgba(200,255,255,${alpha * 0.3})`;
+    ctx.lineWidth = 12;
+    ctx.stroke();
+  }
+}
+
+// HAMMER
+function fireHammer() {
+  hammerStrikes.push({
+    x: mouseX, y: mouseY,
+    life: 0.6, maxLife: 0.6,
+    phase: 'down' // down then impact
+  });
+  addScreenShake(15, 0.3);
+  screenFlashAlpha = 0.2;
+
+  // Impact ring
+  impactRings.push({ x: mouseX, y: mouseY, radius: 0, maxRadius: 200, life: 0.5, maxLife: 0.5 });
+
+  // Damage + fling enemies in radius
+  const impactR = 180;
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const e = enemies[i];
+    const dx = e.x - mouseX, dy = e.y - mouseY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < impactR) {
+      e.hp -= 8;
+      e.hitFlash = 0.2;
+      // Fling
+      const nx = dx / (dist || 1), ny = dy / (dist || 1);
+      const flingForce = (1 - dist / impactR) * 800;
+      e.x += nx * flingForce * 0.3;
+      e.y += ny * flingForce * 0.3;
+      if (e.hp <= 0) {
+        killEnemy(e);
+        enemies.splice(i, 1);
+      }
+    }
+  }
+  spawnParticles(mouseX, mouseY, 40, '#fa0', 300, 0.5);
+  spawnParticles(mouseX, mouseY, 20, '#ff0', 200, 0.3);
+}
+
+function drawHammerStrikes() {
+  for (const h of hammerStrikes) {
+    const t = 1 - h.life / h.maxLife;
+    ctx.save();
+    ctx.translate(h.x, h.y);
+    if (t < 0.3) {
+      // Hammer coming down
+      const swingT = t / 0.3;
+      const hammerY = -300 * (1 - swingT * swingT);
+      const scale = 0.5 + swingT * 0.5;
+      ctx.translate(0, hammerY);
+      ctx.scale(scale, scale);
+      // Handle
+      ctx.fillStyle = '#864';
+      ctx.fillRect(-8, -20, 16, 100);
+      // Head
+      ctx.fillStyle = '#888';
+      ctx.fillRect(-50, -40, 100, 50);
+      ctx.fillStyle = '#aaa';
+      ctx.fillRect(-45, -35, 90, 20);
+    } else {
+      // Impact flash
+      const impactT = (t - 0.3) / 0.7;
+      ctx.globalAlpha = 1 - impactT;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(0, 0, 30 * (1 - impactT), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function drawImpactRings() {
+  for (const r of impactRings) {
+    const t = 1 - r.life / r.maxLife;
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, r.maxRadius * t, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(255,200,0,${1 - t})`;
+    ctx.lineWidth = 6 * (1 - t);
+    ctx.stroke();
+  }
+}
+
+// TORNADO
+function updateTornadoes() {
+  if (currentWeapon === 4 && mouseDown) {
+    // Keep one tornado at cursor
+    if (tornadoes.length === 0 || tornadoes[tornadoes.length - 1].following === false) {
+      tornadoes.push({ x: mouseX, y: mouseY, life: 999, rotation: 0, following: true });
+    }
+    const t = tornadoes[tornadoes.length - 1];
+    if (t.following) {
+      t.x += (mouseX - t.x) * 5 * dt;
+      t.y += (mouseY - t.y) * 5 * dt;
+    }
+  }
+
+  for (let i = tornadoes.length - 1; i >= 0; i--) {
+    const t = tornadoes[i];
+    t.rotation += 8 * dt;
+    if (currentWeapon !== 4 || !mouseDown) { t.following = false; }
+    if (!t.following) {
+      t.life -= dt;
+      if (t.life <= 0 || t.life < 997) {
+        t.life -= dt * 2;
+        if (t.life < -1) { tornadoes.splice(i, 1); continue; }
+      }
+    }
+
+    // Fling enemies
+    const tornadoR = 120;
+    for (let j = enemies.length - 1; j >= 0; j--) {
+      const e = enemies[j];
+      const dx = e.x - t.x, dy = e.y - t.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < tornadoR) {
+        // Spin them around
+        const angle = Math.atan2(dy, dx) + 4 * dt;
+        const pullDist = dist * 0.95;
+        e.x = t.x + Math.cos(angle) * pullDist;
+        e.y = t.y + Math.sin(angle) * pullDist;
+        e.hp -= 3 * dt;
+        e.hitFlash = 0.05;
+        // Fling outward when close enough or damaged enough
+        if (dist < 25 || e.hp < e.maxHp * 0.3) {
+          const flingAngle = angle + Math.PI * 0.5;
+          const flingForce = 600 + Math.random() * 400;
+          e.x += Math.cos(flingAngle) * flingForce * dt * 3;
+          e.y += Math.sin(flingAngle) * flingForce * dt * 3;
+        }
+        if (e.hp <= 0) {
+          killEnemy(e);
+          enemies.splice(j, 1);
+        }
+      }
+    }
+    // Debris particles
+    if (Math.random() < 0.5) {
+      const a = t.rotation + Math.random() * Math.PI * 2;
+      const r = Math.random() * 60;
+      spawnParticles(t.x + Math.cos(a) * r, t.y + Math.sin(a) * r, 1, '#8f8', 80, 0.3);
+    }
+  }
+}
+
+function drawTornadoes() {
+  for (const t of tornadoes) {
+    ctx.save();
+    ctx.translate(t.x, t.y);
+    const alpha = t.following ? 1 : Math.max(0, Math.min(1, t.life + 1));
+    ctx.globalAlpha = alpha;
+    // Funnel shape with rings
+    for (let ring = 0; ring < 8; ring++) {
+      const y = -ring * 18;
+      const r = 15 + ring * 12;
+      const a = t.rotation + ring * 0.8;
+      ctx.beginPath();
+      ctx.ellipse(Math.cos(a) * 5, y, r, r * 0.35, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(100,255,100,${0.6 - ring * 0.05})`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+// --- Enemy drawing ---
+function drawEnemy(e) {
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  // Waddle
+  const waddleAngle = Math.sin(e.waddle) * 0.15;
+  ctx.rotate(waddleAngle);
+
+  // Body
+  if (e.hitFlash > 0) {
+    ctx.fillStyle = '#fff';
+  } else {
+    ctx.fillStyle = e.color;
+  }
+  ctx.beginPath();
+  ctx.arc(0, 0, e.radius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Googly eyes - look toward center
+  const toCenterX = W / 2 - e.x, toCenterY = H / 2 - e.y;
+  const toCA = Math.atan2(toCenterY, toCenterX);
+  const eyeOff = e.radius * 0.3;
+  const eyeR = e.radius * 0.3;
+  const pupilR = eyeR * 0.5;
+  const pupilOff = eyeR * 0.35;
+  for (let side = -1; side <= 1; side += 2) {
+    const ex = side * eyeOff;
+    const ey = -e.radius * 0.15;
+    // White
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(ex, ey, eyeR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // Pupil
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(ex + Math.cos(toCA) * pupilOff, ey + Math.sin(toCA) * pupilOff, pupilR, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// --- UI Drawing ---
+const WEAPON_BAR_H = 60;
+const WEAPON_BTN_W = 90;
+
+function drawWeaponBar() {
+  const totalW = WEAPONS.length * WEAPON_BTN_W + (WEAPONS.length - 1) * 8;
+  const startX = (W - totalW) / 2;
+  const y = H - WEAPON_BAR_H - 10;
+
+  for (let i = 0; i < WEAPONS.length; i++) {
+    const w = WEAPONS[i];
+    const x = startX + i * (WEAPON_BTN_W + 8);
+    const active = i === currentWeapon;
+
+    // Button bg
+    ctx.fillStyle = active ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.5)';
+    ctx.strokeStyle = active ? w.color : 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = active ? 3 : 1;
+    roundRect(ctx, x, y, WEAPON_BTN_W, WEAPON_BAR_H, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    // Icon
+    ctx.fillStyle = w.color;
+    ctx.font = 'bold 24px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(w.icon, x + WEAPON_BTN_W / 2, y + 22);
+
+    // Key
+    ctx.fillStyle = '#888';
+    ctx.font = '12px monospace';
+    ctx.fillText(w.key, x + WEAPON_BTN_W / 2, y + WEAPON_BAR_H - 10);
+  }
+}
+
+function drawKillCounter() {
+  const size = Math.min(killDisplaySize, 120);
+  const flashScale = killFlashTimer > 0 ? 1 + killFlashTimer * 0.5 : 1;
+  ctx.save();
+  ctx.translate(W - 20, 40);
+  ctx.scale(flashScale, flashScale);
+  ctx.fillStyle = killFlashTimer > 0 ? '#f00' : '#fff';
+  ctx.font = `bold ${size}px Impact, sans-serif`;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'top';
+  ctx.fillText(kills, 0, 0);
+  ctx.fillStyle = '#888';
+  ctx.font = '16px Impact, sans-serif';
+  ctx.fillText('KILLS', 0, -18);
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// --- Crosshair ---
+function drawCrosshair() {
+  const col = WEAPONS[currentWeapon].color;
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(mouseX, mouseY, 20, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(mouseX - 28, mouseY); ctx.lineTo(mouseX - 12, mouseY);
+  ctx.moveTo(mouseX + 12, mouseY); ctx.lineTo(mouseX + 28, mouseY);
+  ctx.moveTo(mouseX, mouseY - 28); ctx.lineTo(mouseX, mouseY - 12);
+  ctx.moveTo(mouseX, mouseY + 12); ctx.lineTo(mouseX, mouseY + 28);
+  ctx.stroke();
+}
+
+// --- Main loop ---
+function update() {
+  // Spawn
+  spawnTimer -= dt;
+  if (spawnTimer <= 0) {
+    spawnTimer = spawnRate;
+    const count = 1 + Math.floor(kills / 50); // More enemies as kills rise
+    for (let i = 0; i < count; i++) spawnEnemy();
+  }
+
+  // Move enemies toward center
+  for (const e of enemies) {
+    const dx = W / 2 - e.x, dy = H / 2 - e.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    e.x += (dx / dist) * e.speed * dt;
+    e.y += (dy / dist) * e.speed * dt;
+    e.waddle += e.waddleSpeed * dt;
+    if (e.hitFlash > 0) e.hitFlash -= dt;
+  }
+
+  // Weapons
+  updateLaser();
+  updateBlackHoles();
+  updateTornadoes();
+
+  // Particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vy += 200 * dt; // gravity
+    p.life -= dt;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+
+  // Floating emojis
+  for (let i = floatingEmojis.length - 1; i >= 0; i--) {
+    const f = floatingEmojis[i];
+    f.y += f.vy * dt;
+    f.life -= dt;
+    if (f.life <= 0) floatingEmojis.splice(i, 1);
+  }
+
+  // Lightning arcs
+  for (let i = lightningArcs.length - 1; i >= 0; i--) {
+    lightningArcs[i].life -= dt;
+    if (lightningArcs[i].life <= 0) lightningArcs.splice(i, 1);
+  }
+
+  // Hammer strikes
+  for (let i = hammerStrikes.length - 1; i >= 0; i--) {
+    hammerStrikes[i].life -= dt;
+    if (hammerStrikes[i].life <= 0) hammerStrikes.splice(i, 1);
+  }
+
+  // Impact rings
+  for (let i = impactRings.length - 1; i >= 0; i--) {
+    impactRings[i].life -= dt;
+    if (impactRings[i].life <= 0) impactRings.splice(i, 1);
+  }
+
+  // Scorch marks fade
+  for (let i = scorchMarks.length - 1; i >= 0; i--) {
+    scorchMarks[i].alpha -= 0.05 * dt;
+    if (scorchMarks[i].alpha <= 0) scorchMarks.splice(i, 1);
+  }
+
+  // Timers
+  if (killFlashTimer > 0) killFlashTimer -= dt;
+  if (screenFlashAlpha > 0) screenFlashAlpha -= dt * 2;
+  if (screenShakeDur > 0) {
+    screenShakeDur -= dt;
+    screenShakeX = (Math.random() - 0.5) * screenShakeDur * 40;
+    screenShakeY = (Math.random() - 0.5) * screenShakeDur * 40;
+  } else {
+    screenShakeX = 0; screenShakeY = 0;
+  }
+
+  // Remove offscreen enemies (flung far away)
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const e = enemies[i];
+    if (e.x < -500 || e.x > W + 500 || e.y < -500 || e.y > H + 500) {
+      enemies.splice(i, 1);
+    }
+  }
+}
+
+function draw() {
+  ctx.save();
+  ctx.translate(screenShakeX, screenShakeY);
+
+  // Background
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(-20, -20, W + 40, H + 40);
+
+  // Grid lines for arena feel
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  const gridSize = 60;
+  for (let x = 0; x < W; x += gridSize) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let y = 0; y < H; y += gridSize) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Scorch marks
+  for (const s of scorchMarks) {
+    ctx.fillStyle = `rgba(40,20,0,${s.alpha})`;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Black holes (behind enemies)
+  drawBlackHoles();
+  drawTornadoes();
+
+  // Enemies
+  for (const e of enemies) drawEnemy(e);
+
+  // Weapon effects (in front)
+  drawLaser();
+  drawLightningArcs();
+  drawHammerStrikes();
+  drawImpactRings();
+
+  // Particles
+  for (const p of particles) {
+    const alpha = p.life / p.maxLife;
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = alpha;
+    ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+  }
+  ctx.globalAlpha = 1;
+
+  // Floating emojis
+  for (const f of floatingEmojis) {
+    ctx.globalAlpha = Math.min(1, f.life * 2);
+    ctx.font = `${f.size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(f.emoji, f.x, f.y);
+  }
+  ctx.globalAlpha = 1;
+
+  // Screen flash
+  if (screenFlashAlpha > 0) {
+    ctx.fillStyle = `rgba(255,255,255,${screenFlashAlpha})`;
+    ctx.fillRect(-20, -20, W + 40, H + 40);
+  }
+
+  ctx.restore();
+
+  // UI (not affected by shake)
+  drawCrosshair();
+  drawWeaponBar();
+  drawKillCounter();
+
+  // Weapon name display
+  ctx.fillStyle = WEAPONS[currentWeapon].color;
+  ctx.font = 'bold 18px Impact, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(WEAPONS[currentWeapon].name, W / 2, H - WEAPON_BAR_H - 24);
+}
+
+function gameLoop(time) {
+  if (!running) return;
+  dt = Math.min((time - lastTime) / 1000, 0.05);
+  lastTime = time;
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+// --- Input ---
+canvas.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+canvas.addEventListener('mousedown', e => {
+  mouseDown = true;
+  if (!running) return;
+  // Check weapon bar click
+  const totalBW = WEAPONS.length * WEAPON_BTN_W + (WEAPONS.length - 1) * 8;
+  const startBX = (W - totalBW) / 2;
+  const barY = H - WEAPON_BAR_H - 10;
+  if (e.clientY >= barY && e.clientY <= barY + WEAPON_BAR_H) {
+    for (let i = 0; i < WEAPONS.length; i++) {
+      const bx = startBX + i * (WEAPON_BTN_W + 8);
+      if (e.clientX >= bx && e.clientX <= bx + WEAPON_BTN_W) {
+        currentWeapon = i;
+        return;
+      }
+    }
+  }
+  // Fire one-shot weapons
+  if (currentWeapon === 1) fireBlackHole();
+  if (currentWeapon === 2) fireLightning();
+  if (currentWeapon === 3) fireHammer();
+});
+canvas.addEventListener('mouseup', () => { mouseDown = false; });
+
+// Touch support
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  mouseX = t.clientX; mouseY = t.clientY;
+  mouseDown = true;
+  if (!running) return;
+  const totalBW = WEAPONS.length * WEAPON_BTN_W + (WEAPONS.length - 1) * 8;
+  const startBX = (W - totalBW) / 2;
+  const barY = H - WEAPON_BAR_H - 10;
+  if (t.clientY >= barY && t.clientY <= barY + WEAPON_BAR_H) {
+    for (let i = 0; i < WEAPONS.length; i++) {
+      const bx = startBX + i * (WEAPON_BTN_W + 8);
+      if (t.clientX >= bx && t.clientX <= bx + WEAPON_BTN_W) {
+        currentWeapon = i;
+        return;
+      }
+    }
+  }
+  if (currentWeapon === 1) fireBlackHole();
+  if (currentWeapon === 2) fireLightning();
+  if (currentWeapon === 3) fireHammer();
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY;
+}, { passive: false });
+canvas.addEventListener('touchend', () => { mouseDown = false; });
+
+window.addEventListener('keydown', e => {
+  if (!running) return;
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= 5) currentWeapon = num - 1;
+});
+
+// Hide cursor over canvas during gameplay
+canvas.style.cursor = 'none';
+
+// --- Start ---
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('startScreen').style.display = 'none';
+  running = true;
+  lastTime = performance.now();
+  // Initial enemies
+  for (let i = 0; i < 8; i++) spawnEnemy();
+  requestAnimationFrame(gameLoop);
+});
+</script>
+</body>
+</html>

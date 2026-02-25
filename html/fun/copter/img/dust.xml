@@ -1,0 +1,14 @@
+<TextureAtlas imagePath="dust.png">
+	<SubTexture name="CopterDustEnd1" x="0" y="36" width="46" height="15"/>
+	<SubTexture name="CopterDustEnd2" x="0" y="86" width="35" height="16"/>
+	<SubTexture name="CopterDustEnd3" x="32" y="104" width="26" height="15"/>
+	<SubTexture name="CopterDustEnd4" x="0" y="104" width="30" height="16"/>
+	<SubTexture name="CopterDustEnd5" x="43" y="69" width="10" height="11"/>
+	<SubTexture name="CopterDustOn1" x="0" y="36" width="46" height="15"/>
+	<SubTexture name="CopterDustOn2" x="0" y="0" width="54" height="16"/>
+	<SubTexture name="CopterDustStart1" x="45" y="53" width="10" height="7"/>
+	<SubTexture name="CopterDustStart2" x="37" y="86" width="24" height="12"/>
+	<SubTexture name="CopterDustStart3" x="0" y="53" width="43" height="14"/>
+	<SubTexture name="CopterDustStart4" x="0" y="69" width="41" height="15"/>
+	<SubTexture name="CopterDustStart5" x="0" y="18" width="51" height="16"/>
+</TextureAtlas>

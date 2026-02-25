@@ -1,0 +1,22 @@
+{
+  "name": "Splice Sprint",
+  "slug": "splice_sprint",
+  "description": "Race forward on a procedural track that constantly splits into forking paths \u00e2\u20ac\u201d swipe to pick your lane before each fork, chaining the best route through speed boosts, jumps, and shortcuts while wrong picks dead-end or slow you down.",
+  "perspective": "behind-the-back pseudo-3D",
+  "core_loop": "Your runner auto-moves forward at increasing speed. Every 1-3 seconds the track visibly splits into 2-3 forking branches ahead of you. You swipe left/right (or tap lane buttons) to commit to a branch before the fork arrives. Good picks reward speed boosts, coin trails, or ramp jumps; bad picks hit mud patches, narrow wobbly bridges, or crumbling dead-ends that cost time. Forks come faster as speed increases, creating a frantic read-and-react rhythm. Collecting coins unlocks cosmetic trail effects between runs.",
+  "retention_hooks": [
+    "Escalating speed makes each run feel like a mounting personal challenge \u00e2\u20ac\u201d you always feel like you could have gone just a bit further",
+    "Forking paths are semi-random so memorization never fully works, but pattern recognition improves with play, giving a genuine skill curve",
+    "Post-run summary shows 'optimal route' ghost line overlaid on your choices, motivating a rematch to beat your decision accuracy percentage"
+  ],
+  "controls": "Swipe left/right on mobile (or left/right arrow keys on desktop) to pick a fork branch. Single-axis input only \u00e2\u20ac\u201d no jumping, no complex combos. One-finger play.",
+  "tags": [
+    "endless-runner",
+    "path-choice",
+    "reaction-speed",
+    "pseudo-3D",
+    "decision-making",
+    "arcade",
+    "one-finger"
+  ]
+}

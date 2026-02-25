@@ -1,0 +1,38 @@
+{
+	"comment": [
+		"// bend the image using trig effects",
+		"// NOTE: change clamp(xxx, 0.0, 1.0) to mod(xxx, 1.0) if wrap around at edges is preferred"
+		],
+
+	"fragment": [
+		" precision mediump float;",
+		" varying vec2 v_texcoord;",
+		" uniform sampler2D uImageSampler;",
+		" uniform float uOffsetX;",
+		" uniform float uOffsetY;",
+		" void main() {",
+		"   float ox = sin((v_texcoord.x + uOffsetX) * 3.1416 * 2.0) * 0.1;",
+		"   float oy = sin((v_texcoord.y + uOffsetY) * 3.1416 * 2.0) * 0.1;",
+		"   vec2 srcCoord = vec2(clamp(v_texcoord.x + ox, 0.0, 1.0), clamp(v_texcoord.y + oy, 0.0, 1.0));",
+		"   gl_FragColor = texture2D(uImageSampler, srcCoord);",
+		" }"
+		],
+
+	"vertex": [
+    	" attribute vec4 aPosition;",
+    	" varying vec2 v_texcoord;",
+		" void main() {",
+		"   gl_Position = aPosition;",
+		"   v_texcoord = aPosition.xy * 0.5 + 0.5;",
+		" }"
+		],
+		
+	"attributes":
+		[ "aPosition" ],
+
+	"uniforms":
+		[ "uOffsetX", "uOffsetY" ],
+
+	"samplers":
+		[ "uImageSampler" ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Fold Over",
+  "slug": "fold_over",
+  "description": "Fold a paper sheet along lines to stack colored layers, matching a target pattern in as few folds as possible.",
+  "perspective": "top-down",
+  "core_loop": "You see a flat square 'paper' divided into colored cells and a small target pattern. Drag a fold line across the paper to fold one half onto the other, layering colors. The top-visible color after each fold changes the pattern. Keep folding until your visible surface matches the target. Fewer folds = more stars. Misfolding covers wrong colors, forcing creative recovery folds or a quick undo.",
+  "retention_hooks": [
+    "Star rating (1-3) per puzzle with par-fold targets drives perfectionism and replay",
+    "Puzzles start trivially (one fold) and ramp to devious multi-fold problems that feel like aha-moment brainteasers",
+    "Daily challenge puzzle with a global leaderboard for fewest folds"
+  ],
+  "controls": "Drag across the paper to draw a fold line, then tap/drag the side you want to fold over. Tap undo button to reverse last fold. Fully touch-friendly, no keyboard needed.",
+  "tags": [
+    "puzzle",
+    "spatial-reasoning",
+    "paper-folding",
+    "minimalist",
+    "level-progression",
+    "brain-teaser"
+  ]
+}

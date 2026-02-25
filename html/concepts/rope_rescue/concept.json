@@ -1,0 +1,22 @@
+{
+  "name": "Rope Rescue",
+  "slug": "rope_rescue",
+  "description": "Fling rope lines between anchor points to build bouncy safety nets that catch falling survivors before they hit the ground.",
+  "perspective": "side-view",
+  "core_loop": "Survivors fall from the top of the screen at varying speeds and angles. You drag between two anchor points on walls, ledges, and platforms to stretch a rope line. Survivors bounce off your ropes and you must chain multiple rope lines to guide them into a rescue zone at the bottom. Ropes have limited elasticity \u00e2\u20ac\u201d after 3 bounces a rope snaps and disappears, so you're constantly laying new lines while managing which ropes are about to break. Mistime a rope and survivors splat. Each level sends faster, heavier, and more simultaneous survivors while giving you trickier anchor point layouts.",
+  "retention_hooks": [
+    "Combo multiplier for catching multiple survivors on a single rope before it snaps",
+    "Unlockable survivor types with unique physics (heavy, floaty, splitting twins) that demand new rope strategies",
+    "Star rating per level (all saved, no splats, under par ropes used) with increasingly devious layouts"
+  ],
+  "controls": "Touch/click-drag from one anchor point to another to stretch a rope between them. Tap an existing rope to cut it early. That's it \u00e2\u20ac\u201d two gestures.",
+  "tags": [
+    "rope-physics",
+    "rescue",
+    "drag-to-connect",
+    "timing",
+    "puzzle-action",
+    "level-progression",
+    "casual"
+  ]
+}

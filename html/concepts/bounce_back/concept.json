@@ -1,0 +1,20 @@
+{
+  "name": "Bounce Back",
+  "slug": "bounce_back",
+  "description": "Aim and release a bouncing ball into a pachinko-style arena of pegs, bumpers, and multiplier zones to rack up the highest score before running out of balls.",
+  "perspective": "front-facing orthographic",
+  "core_loop": "Player drags to aim an arc from the top of the screen, releases to drop a ball. The ball bounces off pegs (which light up and vanish), pinball bumpers, and spinning obstacles on its way down. Landing zones at the bottom award score multipliers (1x to 10x). Cleared pegs refill after each round with new randomized layouts and added hazards. Every few rounds a bonus ball or power-up peg appears (explosive peg clears neighbors, magnet peg curves the ball). You start with 5 balls; hitting enough pegs per shot earns extra balls. Game ends when balls run out.",
+  "retention_hooks": [
+    "Escalating peg layouts with rarer power-up pegs create 'one more round' tension",
+    "High-score chasing with visible multiplier zones and combo counter for consecutive peg clears",
+    "Lucky bounce moments \u00e2\u20ac\u201d the physics create unpredictable, thrilling chain reactions that feel different every shot"
+  ],
+  "controls": "Drag anywhere to aim (shows trajectory line), release to launch ball. Single touch/click \u00e2\u20ac\u201d fully mobile friendly. No other inputs needed.",
+  "tags": [
+    "peggle-like",
+    "aim-and-launch",
+    "physics",
+    "score-chaser",
+    "casual"
+  ]
+}

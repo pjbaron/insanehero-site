@@ -1,0 +1,190 @@
+{
+	"Strings": {
+		"String": [
+			{
+                "_id": "new_game_start_button_string",
+                "__text": "START"
+            },
+			{
+                "_id": "string_level_goal_title",
+                "__text": "OBJECTIVE"
+            },
+			{
+                "_id": "string_level_goal_protect",
+                "__text": "Protect the barrier"
+            },
+			{
+                "_id": "string_level_goal_crack_egg",
+                "__text": "Crack open the egg"
+            },
+			{
+                "_id": "string_level_goal_collect",
+                "__text": "Collect all fish"
+            },
+			{
+                "_id": "string_level_goal_protect_fail",
+                "__text": "You did not protect the barrier"
+            },
+			{
+                "_id": "string_level_goal_crack_egg_fail",
+                "__text": "You did not crack open the egg"
+            },
+			{
+                "_id": "string_level_goal_collect_fail",
+                "__text": "You did not collect enough fish"
+            },
+			{
+                "_id": "string_level_out_of_shots",
+                "__text": "You ran out of bubbles to shoot"
+            },
+			{
+                "_id": "string_level_complete",
+                "__text": "Level Complete"
+            },
+            {
+                "_id": "string_level_complete_carried1",
+                "__text": "You carried over"
+            },
+            {
+                "_id": "string_level_complete_carried2",
+                "__text": "bubbles to the next level"
+            },
+			{
+                "_id": "string_win",
+                "__text": "YOU WIN"
+            },
+            {
+                "_id": "string_lose",
+                "__text": "TRY AGAIN"
+            },
+			{
+                "_id": "string_score",
+                "__text": "SCORE"
+            },
+			{
+                "_id": "string_high_score",
+                "__text": "HIGH SCORE"
+            },
+			{
+                "_id": "level_number_ui",
+                "__text": "Level"
+            },
+			{
+                "_id": "game_quit_title",
+                "__text": "GAME EXIT"
+            },
+			{
+                "_id": "help_title_boost",
+                "__text": "Boost"
+            },
+			{
+                "_id": "help_title_special",
+                "__text": "Special"
+            },
+			{
+                "_id": "name_special_bomb",
+                "__text": "Bomb"
+            },
+			{
+                "_id": "desc_special_bomb",
+                "__text": "Bursts nearby bubbles in an explosion"
+            },
+			{
+                "_id": "name_special_rocket",
+                "__text": "Rocket"
+            },
+			{
+                "_id": "desc_special_rocket",
+                "__text": "Pops a line of bubbles in its trajectory"
+            },
+			{
+                "_id": "name_special_frozen_bubble",
+                "__text": "Frozen Bubble"
+            },
+			{
+                "_id": "desc_special_frozen_bubble",
+                "__text": "Conceals the color of the bubble until hit"
+            },
+			{
+                "_id": "name_special_carry_dragon",
+                "__text": "Greedy Dragon"
+            },
+			{
+                "_id": "desc_special_carry_dragon",
+                "__text": "Prevents bubbles from dropping"
+            },
+			{
+                "_id": "name_special_burst_dragon",
+                "__text": "Ember Dragon"
+            },
+			{
+                "_id": "desc_special_burst_dragon",
+                "__text": "Pops a random group of bubbles"
+            },
+			{
+                "_id": "name_special_convert_dragon",
+                "__text": "Sparky Dragon"
+            },
+			{
+                "_id": "desc_special_convert_dragon",
+                "__text": "Transmutes a bubble into a special bubble"
+            },
+			{
+                "_id": "name_boost_mine",
+                "__text": "Mine"
+            },
+			{
+                "_id": "desc_boost_mine",
+                "__text": "Bursts bubbles in a big explosion on impact"
+            },
+			{
+                "_id": "name_boost_wild",
+                "__text": "Wild"
+            },
+			{
+                "_id": "desc_boost_wild",
+                "__text": "Matches with bubbles of any color"
+            },
+			{
+                "_id": "name_boost_fireball",
+                "__text": "Fireball"
+            },
+			{
+                "_id": "desc_boost_fireball",
+                "__text": "Bursts bubbles along a straight path"
+            },
+			{
+                "_id": "name_boost_extra_moves",
+                "__text": "Extra Moves"
+            },
+			{
+                "_id": "desc_boost_extra_moves",
+                "__text": "Replenishes your bubble supply by 5"
+            },
+			{
+                "_id": "name_boost_burst_dragon",
+                "__text": "Ember Dragon"
+            },
+			{
+                "_id": "desc_boost_burst_dragon",
+                "__text": "Pops 3 random groups of bubbles"
+            },
+			{
+                "_id": "name_boost_convert_dragon",
+                "__text": "Sparky Dragon"
+            },
+			{
+                "_id": "desc_boost_convert_dragon",
+                "__text": "Transmutes 3 bubbles into special bubbles"
+            },
+            {
+                "_id": "string_retry",
+                "__text": "RETRY"
+            },
+            {
+                "_id": "string_quit",
+                "__text": "QUIT"
+            }
+		]
+	}
+}

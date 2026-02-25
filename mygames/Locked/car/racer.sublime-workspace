@@ -1,0 +1,1229 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"tre",
+				"tree1"
+			],
+			[
+				"DRAGON",
+				"DRAGON_ORANGE"
+			],
+			[
+				"LEVEL",
+				"LEVEL_SELECT"
+			],
+			[
+				"request",
+				"requestQuit"
+			],
+			[
+				"requestQ",
+				"requestQuitHandled"
+			],
+			[
+				"looseF",
+				"looseFallNow"
+			],
+			[
+				"lowest",
+				"lowestBubbleY"
+			],
+			[
+				"locekd",
+				"lockedLevels"
+			],
+			[
+				"played",
+				"playedThisFrame"
+			],
+			[
+				"bon",
+				"bonusShotsFired"
+			],
+			[
+				"prot",
+				"prototype"
+			],
+			[
+				"over",
+				"findOverrideSeed"
+			],
+			[
+				"difficu",
+				"difficultyMin"
+			],
+			[
+				"deve",
+				"devicePixelRatio"
+			],
+			[
+				"boostm",
+				"boostFullMultiplier"
+			],
+			[
+				"stan",
+				"standardBoostFull"
+			],
+			[
+				"standard",
+				"standardBoostGain"
+			],
+			[
+				"standardbo",
+				"standardBoostFull"
+			],
+			[
+				"maxboos",
+				"maxBoostFull"
+			],
+			[
+				"fish",
+				"goal_fish"
+			],
+			[
+				"goal",
+				"goal_fish"
+			],
+			[
+				"sur",
+				"survivalSpeed"
+			],
+			[
+				"CreateLeve",
+				"CreateLevelData"
+			],
+			[
+				"burst",
+				"special_burst_dragon"
+			],
+			[
+				"level",
+				"level_protect_barrier"
+			],
+			[
+				"sta",
+				"tweenStar"
+			],
+			[
+				"star",
+				"star1"
+			],
+			[
+				"challen",
+				"challengeMode"
+			],
+			[
+				"click",
+				"snd_clickPlay"
+			],
+			[
+				"num",
+				"numLevels"
+			],
+			[
+				"back",
+				"backgroundLayer"
+			],
+			[
+				"LE",
+				"LEVEL_START"
+			],
+			[
+				"bubble",
+				"bubbleToGameUi"
+			],
+			[
+				"maxim",
+				"maximumShots"
+			],
+			[
+				"min",
+				"minimumShots"
+			],
+			[
+				"boostTy",
+				"boostTypeMultiplier"
+			],
+			[
+				"adjust",
+				"adjustDifficulty"
+			],
+			[
+				"boo",
+				"boostScores"
+			],
+			[
+				"level_",
+				"level_protect_barrier"
+			],
+			[
+				"hatch",
+				"level_hatch_egg"
+			],
+			[
+				"boost_extra",
+				"boost_extra_moves"
+			],
+			[
+				"_para",
+				"_parameter2"
+			],
+			[
+				"pic",
+				"pickLevelType"
+			],
+			[
+				"adjut",
+				"adjustDifficulty"
+			],
+			[
+				"chall",
+				"challengeMode"
+			],
+			[
+				"boostIc",
+				"boostIcon_bluDrag"
+			],
+			[
+				"lowestBu",
+				"lowestBubbleY"
+			],
+			[
+				"launh",
+				"launcherLoc"
+			],
+			[
+				"highs",
+				"highestBubbleY"
+			],
+			[
+				"adju",
+				"adjustScroll"
+			],
+			[
+				"resiz",
+				"resizeChargeBlocker"
+			],
+			[
+				"reszie",
+				"resizeChargeBlocker"
+			],
+			[
+				"bubblea",
+				"bubbleAreaWidths"
+			],
+			[
+				"shotLoad",
+				"shotLoadedLocation"
+			],
+			[
+				"launcherM",
+				"launcherMeter"
+			],
+			[
+				"launc",
+				"launcherMeter"
+			],
+			[
+				"laun",
+				"launcherMask"
+			],
+			[
+				"la",
+				"launcherButton"
+			],
+			[
+				"mask",
+				"meterMask"
+			],
+			[
+				"launcher",
+				"launcherButton"
+			],
+			[
+				"margin",
+				"marginWidth"
+			],
+			[
+				"pup",
+				"purpleDragonLeave"
+			],
+			[
+				"descript",
+				"descriptions"
+			],
+			[
+				"click_",
+				"click_prevPage_event"
+			],
+			[
+				"nam",
+				"nameDesc"
+			],
+			[
+				"name",
+				"nameText"
+			],
+			[
+				"EFFECT",
+				"EFFECT_FAKE_BUBBLE"
+			],
+			[
+				"_effe",
+				"_effectSprite"
+			],
+			[
+				"shoo",
+				"shootingFlag"
+			],
+			[
+				"orag",
+				"orangeDragonFly"
+			],
+			[
+				"EFF",
+				"EFFECT_DROP_FISH"
+			],
+			[
+				"BUBBLE",
+				"FALL_BUBBLE"
+			],
+			[
+				"Sprite",
+				"SpriteData"
+			],
+			[
+				"FIREB",
+				"FIREBALL"
+			],
+			[
+				"Sprit",
+				"SpriteData"
+			],
+			[
+				"updat",
+				"updateCallback"
+			],
+			[
+				"be",
+				"beam"
+			],
+			[
+				"sig",
+				"launcherSigil"
+			],
+			[
+				"SPrite",
+				"SpriteData"
+			],
+			[
+				"Sp",
+				"SpriteData"
+			],
+			[
+				"anim",
+				"animNextTick"
+			],
+			[
+				"Bubble",
+				"BubbleTypes"
+			],
+			[
+				"Bu",
+				"BubbleTypes"
+			],
+			[
+				"hide",
+				"hideTrajectory"
+			],
+			[
+				"time",
+				"nowTime"
+			],
+			[
+				"top",
+				"gameUILayerTop"
+			],
+			[
+				"rem",
+				"rememberColours"
+			],
+			[
+				"queue",
+				"queuePositionX1"
+			],
+			[
+				"A",
+				"AIMING"
+			],
+			[
+				"respon",
+				"responsiveCallback"
+			],
+			[
+				"is",
+				"isPressed"
+			],
+			[
+				"boost",
+				"boostIcon"
+			],
+			[
+				"Infin",
+				"POSITIVE_INFINITY"
+			],
+			[
+				"under",
+				"under_key"
+			],
+			[
+				"bubbleTo",
+				"bubbleToGameUi"
+			],
+			[
+				"fake",
+				"fakeBubbleLogic"
+			],
+			[
+				"last",
+				"lastFrameNumber"
+			],
+			[
+				"rain",
+				"rainbowBubble"
+			],
+			[
+				"gam",
+				"gameUILayer"
+			],
+			[
+				"LEVE",
+				"LEVEL_INTRO"
+			],
+			[
+				"barrie",
+				"barrierHighlight"
+			],
+			[
+				"game",
+				"gridToGameUi"
+			],
+			[
+				"port",
+				"isPortrait"
+			],
+			[
+				"rotat",
+				"rotate"
+			],
+			[
+				"fir",
+				"fireBallLogic"
+			],
+			[
+				"orange",
+				"orange_fireBlow"
+			],
+			[
+				"grid",
+				"gridCollide"
+			],
+			[
+				"effect",
+				"effectOverlay"
+			],
+			[
+				"BOO",
+				"BOOST_BONUS5"
+			],
+			[
+				"shots",
+				"shotsText"
+			],
+			[
+				"scoreSpeic",
+				"scoreSpecialBadDrop"
+			],
+			[
+				"booster_",
+				"booster_button_skeptico"
+			],
+			[
+				"pick",
+				"pickABubble"
+			],
+			[
+				"remaining",
+				"remainingDelay"
+			],
+			[
+				"remain",
+				"remainingAngle"
+			],
+			[
+				"rema",
+				"remainingSpread"
+			],
+			[
+				"F",
+				"BOOST_FAIRY"
+			],
+			[
+				"ef",
+				"Effects"
+			],
+			[
+				"_game",
+				"_gameUiBubble"
+			],
+			[
+				"touch",
+				"touchEvent"
+			],
+			[
+				"bubb",
+				"bubbleToGrid"
+			],
+			[
+				"_gam",
+				"_gameUiBubble"
+			],
+			[
+				"meter",
+				"meterLevel"
+			],
+			[
+				"met",
+				"meterHeight"
+			],
+			[
+				"red",
+				"red_sigh"
+			],
+			[
+				"fro",
+				"frozen-frozen-ball"
+			],
+			[
+				"explosion",
+				"explosionList"
+			],
+			[
+				"rock",
+				"rocket_red"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "js/games/racer/common.js",
+			"settings":
+			{
+				"buffer_size": 28862,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "js/games/racer/images/sprites.json",
+			"settings":
+			{
+				"buffer_size": 21721,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "js/games/racer/racer.js",
+			"settings":
+			{
+				"buffer_size": 31441,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "js/main.js",
+			"settings":
+			{
+				"buffer_size": 2973,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "js/libs/underscore.js",
+			"settings":
+			{
+				"buffer_size": 41426,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "js/games/racer/humanPlayer.js",
+			"settings":
+			{
+				"buffer_size": 1563,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "js/games/racer/util.js",
+			"settings":
+			{
+				"buffer_size": 3268,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "Package Control: ",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				"",
+				"Package Control: List Packages"
+			],
+			[
+				"next",
+				"SublimeLinter: Next Error"
+			]
+		],
+		"width": 412.0
+	},
+	"console":
+	{
+		"height": 290.0,
+		"history":
+		[
+			"import urllib.request,os; pr='Preferences.sublime-settings'; ip='ignored_packages'; n='Package Control'; s=sublime.load_settings(pr); ig=s.get(ip); ig.append(n); s.set(ip,ig); sublime.save_settings('Preferences.sublime-settings'); pf=n+'.sublime-package'; urllib.request.install_opener(urllib.request.build_opener(urllib.request.ProxyHandler())); by=urllib.request.urlopen('https://packagecontrol.io/'+pf.replace(' ','%20')).read(); open(os.path.join(sublime.installed_packages_path(),pf),'wb').write(by); ig.remove(n); s.set(ip,ig); sublime.save_settings(pr); print('Package Control: 3.0.0 upgrade successful!')",
+			"jsl",
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/wamp64/www/game-racer-master",
+		"/C/wamp64/www/game-racer-master/js",
+		"/C/wamp64/www/game-racer-master/js/games",
+		"/C/wamp64/www/game-racer-master/js/games/racer",
+		"/C/wamp64/www/game-racer-master/js/games/racer/ai",
+		"/C/wamp64/www/game-racer-master/js/games/racer/images",
+		"/C/wamp64/www/game-racer-master/js/views"
+	],
+	"file_history":
+	[
+		"/C/wamp64/www/v8muscle_remaster/index.html",
+		"/C/wamp64/www/game-racer-master/js/libs/hardcore.js",
+		"/C/wamp64/www/game-racer-master/js/games/racer/playerModule.js",
+		"/C/wamp64/www/game-racer-master/js/views/sessionview.js",
+		"/C/wamp64/www/game-racer-master/js/games/racer/racer.core.js",
+		"/C/wamp64/www/game-racer-master/js/games/racer/humanPlayer.js",
+		"/C/wamp64/www/game-racer-master/js/games/racer/ai/basic_ai.js",
+		"/C/wamp64/www/id.net-multiplayer-framework/RealTimeTest/PHP_to_deploy/www/html/verify.php",
+		"/C/wamp64/www/_mp_jump-game/package.json",
+		"/C/wamp64/www/_mp_jump-game/src/game/Game.js",
+		"/C/Users/Pete/scp_multiplayer_rtt_gameserver.sh",
+		"/C/Users/Pete/AppData/Roaming/Sublime Text 3/Packages/User/HTMLBeautify.sublime-settings",
+		"/C/Users/Pete/AppData/Roaming/Sublime Text 3/Packages/HTMLBeautify/HTMLBeautify.sublime-settings",
+		"/C/Users/Pete/AppData/Roaming/Sublime Text 3/Packages/JsFormat/Default (Windows).sublime-keymap",
+		"/C/wamp64/www/id.net-multiplayer-framework/RealTimeTest/PHP_to_deploy/data/authentication.ini",
+		"/C/wamp64/www/id.net-multiplayer-framework/RealTimeTest/PHP_to_deploy/www/html/setToken.php",
+		"/C/wamp64/www/id.net-multiplayer-framework/RealTimeTest/PHP_to_deploy/www/html/dbc.php",
+		"/C/wamp64/www/id.net-multiplayer-framework/RealTimeTest/PHP_to_deploy/www/html/add.php",
+		"/C/wamp64/www/id.net-multiplayer-framework/RealTimeTest/PHP_to_deploy/www/html/add_mongo.php",
+		"/C/wamp64/www/id.net-multiplayer-framework/RealTimeTest/PHP_to_deploy/www/html/dbc_mongo.php",
+		"/C/wamp64/www/id.net-multiplayer-framework/RealTimeTest/PHP_to_deploy/www/html/verify_mongo.php",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/Main.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/Preloader.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_managers/AudioManager.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/PlayField.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/GameControl.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/Shooter.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/World.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/Game.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/Bubble.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_utils/Effects.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_utils/LooseBubbles.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/gulpfile.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/index.html",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_utils/CreateLevelData.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/data/levelData.json",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_ui/LevelSelect.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_ui/Sprite.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_ui/SpriteData.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/Titles.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_ui/BigMessage.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/data/levelDataSaga.json",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_utils/LoadSave.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_utils/GridCollide.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/data/symbol_offsets.json",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/data/levelDataNotes.json",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_utils/Utils.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/data/locale/en-US/strings.json",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/data/text_styles.json",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_ui/Button.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_ui/Options.js",
+		"/C/wamp64/www/bubble-boo-2-webgl_saga/src/source_code/_utils/Locale.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/BigMessage.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/CreateLevelData.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_managers/AudioManager.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/LevelSelect.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/Button.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/Preloader.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/Options.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/World.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/images/_HD/panelsAtlas.json",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/Utils.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/EventHandlers.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/Game.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/Titles.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/Main.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/lib/pixi_453pjb.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/Help.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/Confirm.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/SpriteData.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/Locale.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/LoadSave.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/GameControl.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/data/text_styles.json",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/Shooter.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/PlayField.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/index.html",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/data/levelData.json",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/Effects.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/GridCollide.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/gulpfile.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/build_configurations/phoenix/games.config.json",
+		"/C/wamp64/www/bubble-boo-2-webgl/build_configurations/phoenix/main.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/build_configurations/arena/main.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/build_configurations/arena/index.html",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/Sprite.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/Bubble.js",
+		"/E/Flash Backups/insanehero full website/insanehero/index.html",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/data/locale/en-US/strings.json",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/data/levelDataNotes.json",
+		"/Z/World of Warcraft/Interface/AddOns/PeteAddon/PeteAddon.toc",
+		"/C/wamp64/www/id.net-multiplayer-framework/FRAG/Assets/MasterServerKit/Core/Scripts/Common/Player.cs",
+		"/C/wamp64/www/id.net-multiplayer-framework/FRAG/BuildsLinux/extract.sh",
+		"/C/wamp64/www/id.net-multiplayer-framework/FRAG/BuildsLinux/start_x86_64.sh",
+		"/C/Users/Pete/scp_multiplayer_frag_servers.sh",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_ui/Text.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/LooseBubbles.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/data/locale/en-UK/strings.json",
+		"/C/wamp64/www/id.net-multiplayer-framework/FRAG/Builds/gameserver_log.out",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/images/_HD/gameAtlas.json",
+		"/C/wamp64/www/bubble-boo-2-webgl/build_configurations/phoenix/index.html",
+		"/C/wamp64/www/bubble-boo-2-webgl/connector/arenax-api.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/data/levelDataNotes.txt",
+		"/Z/World of Warcraft/Interface/AddOns/UIScale/UIScale.toc",
+		"/Z/World of Warcraft/Interface/AddOns/UIScale/UIScale.lua",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/images/_reduced/high/gameAtlas.json",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/source_code/_utils/Tweener.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/package.json",
+		"/C/wamp64/www/bubble-boo-2-webgl/docs/README.md",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/src/Main.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/src/Shooter.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/src/PlayField.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/src/_utils/GridCollide.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/src/_utils/Effects.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/src/_utils/LooseBubbles.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/data/levelData.json",
+		"/C/Users/Pete/scp_multiplayer_frag_webgl.sh",
+		"/C/Users/Pete/scp_multiplayer_frag.sh",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/Main.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/Shooter.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/World.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/_managers/AudioManager.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/_ui/LevelSelect.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/PlayField.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/_utils/LooseBubbles.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/_utils/Effects.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/Game.js",
+		"/C/wamp64/www/bubble-boo-2-webgl/src/_ui/BigMessage.js"
+	],
+	"find":
+	{
+		"height": 42.0
+	},
+	"find_in_files":
+	{
+		"height": 174.0,
+		"where_history":
+		[
+			"-*.dds,-*.eot,-*.gif,-*.ico,-*.jar,-*.jpeg,-*.jpg,-*.log,-*.map,-*.min.js,-*.pdf,-*.png,-*.swf,-*.tga,-*.ttf,-*.zip"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			".fog",
+			".segment(",
+			"fog",
+			"width",
+			"fog",
+			"segment:",
+			".segment",
+			"rumbleWidth",
+			"segment",
+			"drawImage",
+			"loadimage",
+			"road",
+			"background",
+			"road.png",
+			"background",
+			"drawImage",
+			"[ROAD]",
+			".png",
+			"road.png",
+			".SPRITES",
+			"stats",
+			"alpha",
+			"composite",
+			"blend",
+			"comp",
+			"composite",
+			"blend",
+			"alpha",
+			"segment",
+			"polygon",
+			"poly",
+			"ctx.draw",
+			"require",
+			"requires",
+			"faster",
+			"input.",
+			"car.dx",
+			"updown",
+			"player:",
+			"Render.player",
+			"getCarSprite",
+			"CAR_ORIENT",
+			"CAR_STRAIGHT",
+			"basic_ai",
+			"CAR_ORIENT",
+			"BILLBOARD",
+			"billboard",
+			"tps",
+			"sprites_new/billboard.png",
+			"tps",
+			"lineto",
+			"ctx.",
+			"line",
+			"lineto",
+			"Render",
+			"_z",
+			"numRacers"
+		],
+		"highlight": false,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": false,
+		"use_buffer2": false,
+		"whole_word": false,
+		"wrap": false
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "js/games/racer/common.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 28862,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3276,
+								3276
+							]
+						],
+						"settings":
+						{
+							"SL.14.region_keys":
+							[
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"sublime_linter.protected_regions"
+							],
+							"SL.15.region_keys":
+							[
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"sublime_linter.protected_regions"
+							],
+							"SL.28.region_keys":
+							[
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"sublime_linter.protected_regions"
+							],
+							"SL.33.region_keys":
+							[
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"sublime_linter.protected_regions",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32"
+							],
+							"syntax": "Packages/Better JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 920.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "js/games/racer/images/sprites.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 21721,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								21721
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Better JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 15619.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "js/games/racer/racer.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 31441,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								20292,
+								20292
+							]
+						],
+						"settings":
+						{
+							"SL.15.region_keys":
+							[
+								"sublime_linter.protected_regions",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot"
+							],
+							"SL.16.region_keys":
+							[
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"sublime_linter.protected_regions"
+							],
+							"SL.29.region_keys":
+							[
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"sublime_linter.protected_regions"
+							],
+							"SL.41.region_keys":
+							[
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"sublime_linter.protected_regions",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32"
+							],
+							"syntax": "Packages/Better JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 10394.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "js/main.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2973,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								964,
+								964
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Better JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 516.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "js/libs/underscore.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 41426,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2174,
+								2174
+							]
+						],
+						"settings":
+						{
+							"SL.35.region_keys":
+							[
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"sublime_linter.protected_regions"
+							],
+							"syntax": "Packages/Better JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 796.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "js/games/racer/humanPlayer.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1563,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								269,
+								269
+							]
+						],
+						"settings":
+						{
+							"SL.19.region_keys":
+							[
+							],
+							"SL.32.region_keys":
+							[
+								"sublime_linter.protected_regions"
+							],
+							"syntax": "Packages/Better JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "js/games/racer/util.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3268,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2805,
+								2805
+							]
+						],
+						"settings":
+						{
+							"SL.30.region_keys":
+							[
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"sublime_linter.protected_regions"
+							],
+							"SL.56.region_keys":
+							[
+								"SL.jshint.Highlights.|region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter|32",
+								"SL.jshint.Gutter.region.yellowish markup.changed.sublime_linter markup.warning.sublime_linter.dot",
+								"sublime_linter.protected_regions"
+							],
+							"syntax": "Packages/Better JavaScript/JavaScript.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 43.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.exec":
+	{
+		"height": 118.0
+	},
+	"output.find_results":
+	{
+		"height": 355.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 118.0
+	},
+	"pinned_build_system": "",
+	"project": "racer.sublime-project",
+	"replace":
+	{
+		"height": 52.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 328.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

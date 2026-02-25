@@ -1,0 +1,22 @@
+{
+  "name": "Hex Clash",
+  "slug": "hex_clash",
+  "description": "Place colored hex tiles to surround and capture enemy hexes, battling an AI opponent for board control in fast 60-second matches.",
+  "perspective": "top-down",
+  "core_loop": "You and an AI take rapid alternating turns placing hex tiles on a honeycomb grid. Placing a tile next to enemy tiles that are fully surrounded flips them to your color. Each turn you pick from 2-3 offered tiles with different shapes (single, double, L-shaped clusters) and tap where to place them. Rounds last 60 seconds with a shrinking playable border that forces confrontation. Score = tiles you control when time runs out or the board fills.",
+  "retention_hooks": [
+    "Chain captures \u00e2\u20ac\u201d surrounding one group can expose another to capture, triggering satisfying cascade flips with screen shake and color wash",
+    "Escalating AI difficulty across a league ladder with named rival characters, each with a distinct playstyle (aggressive, defensive, sneaky)",
+    "Unlockable tile skins and board themes every few wins, plus a daily challenge board with a fixed starting layout"
+  ],
+  "controls": "Tap/click to select a tile piece from the offer row at the bottom, then tap/click a valid hex on the board to place it. Tap the piece again to rotate it. One-finger mobile friendly, no dragging required.",
+  "tags": [
+    "strategy",
+    "territory-capture",
+    "hex-grid",
+    "turn-based",
+    "versus-AI",
+    "quick-match",
+    "board-game"
+  ]
+}

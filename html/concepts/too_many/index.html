@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Too Many Ragdolls</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a2e; }
+canvas { display: block; }
+
+#start-screen {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #1a1a2e; z-index: 100;
+}
+#start-btn {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 72px; font-weight: 900;
+  color: #ff2244; background: none; border: 4px solid #ff2244;
+  padding: 20px 60px; cursor: pointer;
+  text-shadow: 0 0 20px #ff2244, 0 0 40px #ff224488;
+  box-shadow: 0 0 20px #ff224444, inset 0 0 20px #ff224422;
+  transition: all 0.15s;
+  letter-spacing: 8px;
+}
+#start-btn:hover {
+  background: #ff2244; color: #fff;
+  box-shadow: 0 0 60px #ff224488;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+#ui {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: none; padding: 10px 16px;
+  background: linear-gradient(transparent, #0008);
+  z-index: 10;
+}
+#controls {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+}
+.ctrl-btn {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 14px; font-weight: 900;
+  padding: 8px 18px; border: 2px solid; background: #0006;
+  cursor: pointer; text-transform: uppercase;
+  letter-spacing: 2px; transition: all 0.1s;
+}
+.ctrl-btn:hover { transform: scale(1.05); }
+#explode-btn { color: #ff4444; border-color: #ff4444; }
+#explode-btn:hover { background: #ff4444; color: #fff; }
+#rain-btn { color: #44aaff; border-color: #44aaff; }
+#rain-btn.active { background: #44aaff; color: #000; }
+#clear-btn { color: #aaa; border-color: #aaa; }
+#clear-btn:hover { background: #aaa; color: #000; }
+
+#slider-wrap {
+  flex: 1; min-width: 200px; display: flex;
+  align-items: center; gap: 8px;
+}
+#slider-label {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 11px; color: #ffaa00;
+  white-space: nowrap; letter-spacing: 1px;
+}
+#spawn-slider {
+  flex: 1; height: 8px; -webkit-appearance: none;
+  appearance: none; background: #333; border-radius: 4px;
+  outline: none;
+}
+#spawn-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #ffaa00; cursor: pointer;
+  box-shadow: 0 0 10px #ffaa0088;
+}
+#spawn-slider::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #ffaa00; cursor: pointer; border: none;
+}
+#color-pick {
+  width: 36px; height: 36px; border: 2px solid #fff4;
+  border-radius: 4px; background: none; cursor: pointer;
+  padding: 0;
+}
+
+#hud {
+  position: fixed; top: 16px; right: 20px;
+  font-family: 'Arial Black', sans-serif;
+  text-align: right; z-index: 10; display: none;
+  pointer-events: none;
+}
+#count {
+  font-size: 80px; font-weight: 900;
+  color: #ff6600; line-height: 0.9;
+  text-shadow: 0 0 30px #ff660066;
+}
+#count-label {
+  font-size: 14px; color: #ff660088;
+  letter-spacing: 4px;
+}
+#fps {
+  font-size: 16px; color: #88ff88; margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<div id="start-screen">
+  <button id="start-btn">CHAOS!</button>
+</div>
+
+<div id="hud">
+  <div id="count">0</div>
+  <div id="count-label">RAGDOLLS</div>
+  <div id="fps">60 FPS</div>
+</div>
+
+<div id="ui">
+  <div id="controls">
+    <button class="ctrl-btn" id="explode-btn">EXPLODE</button>
+    <button class="ctrl-btn" id="rain-btn">RAIN</button>
+    <button class="ctrl-btn" id="clear-btn">CLEAR</button>
+    <div id="slider-wrap">
+      <span id="slider-label">SPAWN RATE</span>
+      <input type="range" id="spawn-slider" min="0" max="100" value="0">
+    </div>
+    <input type="color" id="color-pick" value="#ff6600" title="Ragdoll color">
+  </div>
+</div>
+
+<canvas id="c"></canvas>
+
+<script>
+const { Engine, Render, Runner, Bodies, Body, Composite, Constraint, Events, Vector, Mouse, MouseConstraint } = Matter;
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Engine
+const engine = Engine.create({
+  gravity: { x: 0, y: 1.8 },
+  positionIterations: 4,
+  velocityIterations: 3
+});
+
+// State
+let ragdolls = [];
+let statics = [];
+let isRaining = false;
+let autoSpawnRate = 0;
+let autoSpawnAccum = 0;
+let ragdollColor = '#ff6600';
+let shakeAmount = 0;
+let started = false;
+let spinnerAngle = 0;
+let spinnerBody = null;
+let seesawBody = null;
+
+// FPS tracking
+let fpsTimes = [];
+let currentFPS = 60;
+
+// Palette for random colors
+const COLORS = ['#ff4444','#ff8800','#ffcc00','#44ff44','#44aaff','#aa44ff','#ff44aa','#ffffff','#ff6600','#00ffcc'];
+
+function randomColor() {
+  return COLORS[Math.floor(Math.random() * COLORS.length)];
+}
+
+// Build scene
+function buildScene() {
+  const walls = [
+    // Floor
+    Bodies.rectangle(W / 2, H + 25, W + 100, 50, { isStatic: true, friction: 0.8 }),
+    // Left wall
+    Bodies.rectangle(-25, H / 2, 50, H + 100, { isStatic: true }),
+    // Right wall
+    Bodies.rectangle(W + 25, H / 2, 50, H + 100, { isStatic: true }),
+  ];
+
+  // Platforms at angles for tumbling
+  const platforms = [
+    // Top-left ramp (funnel left side)
+    Bodies.rectangle(W * 0.3, H * 0.18, W * 0.35, 14, {
+      isStatic: true, angle: 0.3, friction: 0.3,
+      chamfer: { radius: 4 }
+    }),
+    // Top-right ramp (funnel right side)
+    Bodies.rectangle(W * 0.7, H * 0.18, W * 0.35, 14, {
+      isStatic: true, angle: -0.3, friction: 0.3,
+      chamfer: { radius: 4 }
+    }),
+    // Mid-right platform
+    Bodies.rectangle(W * 0.75, H * 0.42, W * 0.3, 12, {
+      isStatic: true, angle: -0.2, friction: 0.4,
+      chamfer: { radius: 4 }
+    }),
+    // Mid-left platform
+    Bodies.rectangle(W * 0.25, H * 0.55, W * 0.3, 12, {
+      isStatic: true, angle: 0.25, friction: 0.4,
+      chamfer: { radius: 4 }
+    }),
+    // Lower right
+    Bodies.rectangle(W * 0.65, H * 0.7, W * 0.25, 12, {
+      isStatic: true, angle: -0.15, friction: 0.4,
+      chamfer: { radius: 4 }
+    }),
+  ];
+
+  // See-saw: a plank on a fulcrum
+  const fulcrum = Bodies.polygon(W * 0.4, H * 0.82, 3, 20, {
+    isStatic: true, angle: Math.PI,
+  });
+  seesawBody = Bodies.rectangle(W * 0.4, H * 0.8, 180, 10, {
+    friction: 0.6, density: 0.005,
+    chamfer: { radius: 3 }
+  });
+  const seesawConstraint = Constraint.create({
+    bodyA: seesawBody,
+    pointB: { x: W * 0.4, y: H * 0.8 },
+    length: 0, stiffness: 0.8
+  });
+
+  // Spinner (rotating wheel)
+  spinnerBody = Bodies.rectangle(W * 0.55, H * 0.55, 160, 10, {
+    friction: 0.5, density: 0.01,
+    chamfer: { radius: 3 }
+  });
+  const spinnerPin = Constraint.create({
+    bodyA: spinnerBody,
+    pointB: { x: W * 0.55, y: H * 0.55 },
+    length: 0, stiffness: 1
+  });
+
+  statics = [...walls, ...platforms, fulcrum];
+  Composite.add(engine.world, [...statics, seesawBody, seesawConstraint, spinnerBody, spinnerPin]);
+}
+
+// Create a simplified ragdoll: head, torso, legs (3 circles + constraints)
+function createRagdoll(x, y, color) {
+  const headR = 7;
+  const torsoR = 8;
+  const legR = 6;
+  const group = Body.nextGroup(true);
+
+  const head = Bodies.circle(x, y - 22, headR, {
+    collisionFilter: { group },
+    friction: 0.3, restitution: 0.3, density: 0.002,
+    frictionAir: 0.001
+  });
+  const torso = Bodies.circle(x, y, torsoR, {
+    collisionFilter: { group },
+    friction: 0.3, restitution: 0.2, density: 0.003,
+    frictionAir: 0.001
+  });
+  const legL = Bodies.circle(x - 6, y + 20, legR, {
+    collisionFilter: { group },
+    friction: 0.4, restitution: 0.2, density: 0.002,
+    frictionAir: 0.001
+  });
+  const legR2 = Bodies.circle(x + 6, y + 20, legR, {
+    collisionFilter: { group },
+    friction: 0.4, restitution: 0.2, density: 0.002,
+    frictionAir: 0.001
+  });
+
+  const neckStiff = 0.4;
+  const hipStiff = 0.3;
+
+  const neck = Constraint.create({
+    bodyA: head, bodyB: torso,
+    length: 14, stiffness: neckStiff,
+    render: { visible: false }
+  });
+  const hipL = Constraint.create({
+    bodyA: torso, bodyB: legL,
+    length: 16, stiffness: hipStiff,
+    render: { visible: false }
+  });
+  const hipR = Constraint.create({
+    bodyA: torso, bodyB: legR2,
+    length: 16, stiffness: hipStiff,
+    render: { visible: false }
+  });
+
+  const bodies = [head, torso, legL, legR2];
+  const constraints = [neck, hipL, hipR];
+
+  Composite.add(engine.world, [...bodies, ...constraints]);
+
+  // Give a small random impulse
+  const impulse = { x: (Math.random() - 0.5) * 0.01, y: Math.random() * 0.005 };
+  bodies.forEach(b => Body.applyForce(b, b.position, impulse));
+
+  return { bodies, constraints, color, time: performance.now() };
+}
+
+function removeRagdoll(r) {
+  r.constraints.forEach(c => Composite.remove(engine.world, c, true));
+  r.bodies.forEach(b => Composite.remove(engine.world, b, true));
+}
+
+function spawnAt(x, y) {
+  const useRandom = document.getElementById('spawn-slider').value > 50;
+  const color = useRandom ? randomColor() : ragdollColor;
+  ragdolls.push(createRagdoll(x, y, color));
+}
+
+function explode() {
+  const cx = W / 2, cy = H / 2;
+  ragdolls.forEach(r => {
+    r.bodies.forEach(b => {
+      const dx = b.position.x - cx;
+      const dy = b.position.y - cy;
+      const dist = Math.max(Math.sqrt(dx * dx + dy * dy), 50);
+      const force = 0.8 / dist;
+      Body.applyForce(b, b.position, { x: dx * force, y: dy * force - 0.3 });
+    });
+  });
+  shakeAmount = 15;
+}
+
+function clearAll() {
+  ragdolls.forEach(r => removeRagdoll(r));
+  ragdolls = [];
+}
+
+// Render
+function drawScene(offsetX, offsetY) {
+  // Background
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+
+  // Draw statics
+  ctx.strokeStyle = '#334';
+  ctx.lineWidth = 2;
+  statics.forEach(body => {
+    if (!body.vertices) return;
+    ctx.beginPath();
+    const v = body.vertices;
+    ctx.moveTo(v[0].x, v[0].y);
+    for (let i = 1; i < v.length; i++) ctx.lineTo(v[i].x, v[i].y);
+    ctx.closePath();
+    ctx.fillStyle = '#2a2a4a';
+    ctx.fill();
+    ctx.stroke();
+  });
+
+  // Draw see-saw
+  if (seesawBody) {
+    ctx.beginPath();
+    const v = seesawBody.vertices;
+    ctx.moveTo(v[0].x, v[0].y);
+    for (let i = 1; i < v.length; i++) ctx.lineTo(v[i].x, v[i].y);
+    ctx.closePath();
+    ctx.fillStyle = '#5a4a2a';
+    ctx.fill();
+    ctx.strokeStyle = '#8a7a4a';
+    ctx.stroke();
+  }
+
+  // Draw spinner
+  if (spinnerBody) {
+    ctx.beginPath();
+    const v = spinnerBody.vertices;
+    ctx.moveTo(v[0].x, v[0].y);
+    for (let i = 1; i < v.length; i++) ctx.lineTo(v[i].x, v[i].y);
+    ctx.closePath();
+    ctx.fillStyle = '#2a4a5a';
+    ctx.fill();
+    ctx.strokeStyle = '#4a8aaa';
+    ctx.stroke();
+    // Pin dot
+    ctx.beginPath();
+    ctx.arc(spinnerBody.position.x, spinnerBody.position.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#4a8aaa';
+    ctx.fill();
+  }
+
+  // Draw ragdolls as stick figures
+  ctx.lineWidth = 2.5;
+  for (let i = 0; i < ragdolls.length; i++) {
+    const r = ragdolls[i];
+    const [head, torso, legL, legR] = r.bodies;
+    const c = r.color;
+
+    // Limb lines
+    ctx.strokeStyle = c;
+    ctx.beginPath();
+    // Neck
+    ctx.moveTo(head.position.x, head.position.y);
+    ctx.lineTo(torso.position.x, torso.position.y);
+    // Left leg
+    ctx.moveTo(torso.position.x, torso.position.y);
+    ctx.lineTo(legL.position.x, legL.position.y);
+    // Right leg
+    ctx.moveTo(torso.position.x, torso.position.y);
+    ctx.lineTo(legR.position.x, legR.position.y);
+    // Arms (implied from torso angle)
+    const armAngle = torso.angle;
+    const armLen = 14;
+    const tx = torso.position.x, ty = torso.position.y - 2;
+    ctx.moveTo(tx - Math.cos(armAngle) * armLen, ty - Math.sin(armAngle) * armLen);
+    ctx.lineTo(tx, ty);
+    ctx.lineTo(tx + Math.cos(armAngle) * armLen, ty + Math.sin(armAngle) * armLen);
+    ctx.stroke();
+
+    // Head circle
+    ctx.beginPath();
+    ctx.arc(head.position.x, head.position.y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = c;
+    ctx.fill();
+
+    // Eyes (tiny dots for character)
+    ctx.fillStyle = '#000';
+    const hx = head.position.x, hy = head.position.y;
+    const ha = head.angle;
+    ctx.beginPath();
+    ctx.arc(hx + Math.cos(ha - 0.4) * 3, hy + Math.sin(ha - 0.4) * 3 - 1, 1.2, 0, Math.PI * 2);
+    ctx.arc(hx + Math.cos(ha + 0.4) * 3, hy + Math.sin(ha + 0.4) * 3 - 1, 1.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// Keep spinner spinning
+function tickSpinner() {
+  if (!spinnerBody) return;
+  Body.setAngularVelocity(spinnerBody, 0.08);
+}
+
+// Main loop
+let lastTime = performance.now();
+
+function gameLoop(now) {
+  requestAnimationFrame(gameLoop);
+
+  // FPS
+  fpsTimes.push(now);
+  while (fpsTimes.length > 0 && fpsTimes[0] <= now - 1000) fpsTimes.shift();
+  currentFPS = fpsTimes.length;
+
+  const dt = Math.min(now - lastTime, 33.33); // cap at ~30fps min
+  lastTime = now;
+
+  if (!started) return;
+
+  // Auto-spawn
+  if (autoSpawnRate > 0) {
+    autoSpawnAccum += autoSpawnRate * (dt / 1000);
+    while (autoSpawnAccum >= 1) {
+      autoSpawnAccum -= 1;
+      const x = isRaining
+        ? 50 + Math.random() * (W - 100)
+        : W * 0.35 + Math.random() * W * 0.3;
+      const y = isRaining
+        ? -20
+        : 20 + Math.random() * 30;
+      spawnAt(x, y);
+    }
+  }
+
+  // Rain mode extra spawns
+  if (isRaining && autoSpawnRate === 0) {
+    autoSpawnAccum += 3 * (dt / 1000);
+    while (autoSpawnAccum >= 1) {
+      autoSpawnAccum -= 1;
+      spawnAt(50 + Math.random() * (W - 100), -20);
+    }
+  }
+
+  // Cull oldest if too many
+  const MAX = 350;
+  while (ragdolls.length > MAX) {
+    removeRagdoll(ragdolls.shift());
+  }
+
+  // Remove ragdolls that fell way below screen
+  for (let i = ragdolls.length - 1; i >= 0; i--) {
+    const r = ragdolls[i];
+    if (r.bodies[0].position.y > H + 200) {
+      removeRagdoll(r);
+      ragdolls.splice(i, 1);
+    }
+  }
+
+  tickSpinner();
+
+  // Physics step
+  Engine.update(engine, dt);
+
+  // Screen shake decay
+  if (shakeAmount > 0) shakeAmount *= 0.9;
+  if (shakeAmount < 0.5) shakeAmount = 0;
+
+  // Also add subtle shake at high counts
+  let shake = shakeAmount;
+  if (ragdolls.length > 150) shake += (ragdolls.length - 150) * 0.005;
+
+  const sx = shake > 0 ? (Math.random() - 0.5) * shake * 2 : 0;
+  const sy = shake > 0 ? (Math.random() - 0.5) * shake * 2 : 0;
+
+  drawScene(sx, sy);
+
+  // Update HUD
+  document.getElementById('count').textContent = ragdolls.length;
+  document.getElementById('fps').textContent = currentFPS + ' FPS';
+
+  // Color the count based on amount
+  const countEl = document.getElementById('count');
+  if (ragdolls.length > 200) {
+    countEl.style.color = '#ff2244';
+    countEl.style.textShadow = '0 0 40px #ff224466';
+  } else if (ragdolls.length > 100) {
+    countEl.style.color = '#ff8800';
+    countEl.style.textShadow = '0 0 30px #ff880066';
+  } else {
+    countEl.style.color = '#ff6600';
+    countEl.style.textShadow = '0 0 30px #ff660066';
+  }
+
+  // Scale count size based on number
+  const baseSize = 80;
+  const extra = Math.min(ragdolls.length * 0.15, 40);
+  countEl.style.fontSize = (baseSize + extra) + 'px';
+}
+
+// Event listeners
+document.getElementById('start-btn').addEventListener('click', () => {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('ui').style.display = 'block';
+  document.getElementById('hud').style.display = 'block';
+  started = true;
+  buildScene();
+});
+
+canvas.addEventListener('click', (e) => {
+  if (!started) return;
+  spawnAt(e.clientX, e.clientY);
+});
+
+canvas.addEventListener('touchstart', (e) => {
+  if (!started) return;
+  e.preventDefault();
+  for (const touch of e.changedTouches) {
+    spawnAt(touch.clientX, touch.clientY);
+  }
+}, { passive: false });
+
+document.getElementById('explode-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  explode();
+});
+
+document.getElementById('rain-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  isRaining = !isRaining;
+  e.target.classList.toggle('active', isRaining);
+});
+
+document.getElementById('clear-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  clearAll();
+});
+
+const slider = document.getElementById('spawn-slider');
+const sliderLabel = document.getElementById('slider-label');
+slider.addEventListener('input', () => {
+  const v = parseInt(slider.value);
+  if (v === 0) {
+    autoSpawnRate = 0;
+    sliderLabel.textContent = 'SPAWN: CLICK';
+  } else if (v < 30) {
+    autoSpawnRate = v * 0.15;
+    sliderLabel.textContent = 'SPAWN: ' + autoSpawnRate.toFixed(1) + '/s';
+  } else if (v < 70) {
+    autoSpawnRate = v * 0.4;
+    sliderLabel.textContent = 'SPAWN: ' + Math.round(autoSpawnRate) + '/s';
+  } else {
+    autoSpawnRate = 5 + (v - 70) * 1.5;
+    if (v >= 95) {
+      sliderLabel.textContent = 'MAXIMUM CHAOS';
+      sliderLabel.style.color = '#ff2244';
+    } else {
+      sliderLabel.textContent = 'SPAWN: ' + Math.round(autoSpawnRate) + '/s';
+      sliderLabel.style.color = '#ffaa00';
+    }
+  }
+});
+
+document.getElementById('color-pick').addEventListener('input', (e) => {
+  ragdollColor = e.target.value;
+});
+
+// Prevent canvas clicks from triggering when clicking UI
+document.getElementById('ui').addEventListener('click', (e) => e.stopPropagation());
+document.getElementById('ui').addEventListener('touchstart', (e) => e.stopPropagation());
+
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>

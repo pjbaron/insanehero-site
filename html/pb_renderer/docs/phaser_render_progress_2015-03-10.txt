@@ -1,0 +1,27 @@
+Phaser 3 renderer progress.
+10/03/2015
+
+The WIP can be found here: https://github.com/photonstorm/phaser3/tree/master/renderer
+A recent online demo is here: http://www.insanehero.com/html/renderer/src/
+The project commit log is here: https://github.com/photonstorm/phaser3/commits?author=pjbaron
+
+This update:
+
+Added new 'scrollPoint' demo.  I did a test using Point Sprites for tile maps.  This created 72 parallax layers (vs 37 layers using regular Sprites) at 60fps on my desktop so this is a great practical use for them.
+
+Canvas support at last!  It's not yet optimised at all and the JS will need to be carefully examined for choke-points because we can't do anything about drawImage.  Currently almost all of the Canvas functions end up routing into one ugly pbCanvas drawing function, this will change as I find ways to optimise for each possible parameter set and use-case.  All generic demos should work in Canvas or WebGl now, just switch mode using the new drop-down menu option.  The demos which illustrate renderer specific features have been locked so you should see the renderer drop-down change to the appropriate renderer when you start those up.
+For easy recognition, I'm currently using the same dark green background for webGl but a dark blue background for Canvas.
+
+Q: why does canvas rotate in the opposite direction to webGl when both are using built in transforms?  I think it's because the coordinate system is inverted but can't see a good way to flip coordinates *and* rotation without the ugly pbMatrix3.turnDirection variable.  I still need to spend more time on this because I don't like that variable.
+
+3D tilting (new 'tilt' demo): I've added very basic support for tilting planes, it will be expanded but this is a 2D engine so it won't end up with full 3D capabilities.  The feature is intended for special effects and maybe 'billboard' style games (mario kart).  So far I've set it up so that pbSprite can be constructed using a new create3D function which will set extra parameters for 3D rotation.  pbImage has gained an is3D flag which is used to signal later systems that the surface contained by the image is to be treated as 3D.  The actual tilting is done by the shader transform in the new 3d shader (currently I've only created one for single image instances, batch processing will come later).  There's a new pbMatrix4 class to handle the 3D matrices required for this effect.  pbMatrix4 contains a fast multiply function that lets me combine 3x3 matrices with 4x4 ones - which is required to apply the global transform from the various 2D layer parents to a final 3D sprite image.
+I'm not happy about the branch I had to add into pbSprite.update to choose either 2d or 3d updates... I tried using a function pointer solution (as I have used in the layers previously) however pbSprite is the base class for pbBaseLayer and the technique I'm using to override the update function breaks if you try to use a function pointer variable instead.  I'll keep an eye out for a more robust override option, but I'm starting to feel like I should be embracing the prototype model more and that might entail some big changes to these base class derivations.
+
+Mode 7 (new 'road' demo): Again this is only a prototype so far.  Using some shader tricks I'm scaling a source image to give a perspective effect as if it's 3D and lying on the ground.  Unfortunately the 'offset' trick I'm using to make the background scroll in the Invaders demo doesn't have the same effect when applied to the road texture, so presently it's just a small flat section of stationary road.  I'm about to start on some new features which should permit this demo to scroll, and give us tons of new capabilities besides...
+
+Coming soon:
+
+Render-to-texture: I want to be able to switch rendering to go to a texture which can be grabbed from the GPU and used as a render source in its own right.  This will enable filtering effects in JS (render your scene, grab it, apply filters, upload it to display) and all manner of clever trickery involving scenes within scenes.  I'm hoping it will also greatly enhance the current 'camera' capabilities.
+
+- Pete
+

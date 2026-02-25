@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<ignoreMeContainer>
+	<config>
+		<nTimer type="Number">350</nTimer>
+		<nMaxLevels type="Number">3</nMaxLevels>
+		<nReshuffle type="Number">1</nReshuffle> <!-- for each level -->
+		<nShowSecondsMessageWindow type="Number">2</nShowSecondsMessageWindow> <!-- when show MessageWindow: GoodJob, NextLevel ... -->
+		<nPuzzleRotateSpeed type="Number">0.5</nPuzzleRotateSpeed>
+		
+		<nTimeBonus type="Number">100</nTimeBonus> <!-- when finish last level and add point if is time -->
+		<aLevelCompleteBonuses type="Array">1000,2000,3000,4000,5000,6000,7000,8000,9000,10000</aLevelCompleteBonuses>
+		<nSpeedMatchTime type="Number">2</nSpeedMatchTime> <!-- seconds between match -->
+		<nSpeedMatchValue type="Number">25</nSpeedMatchValue>
+		<nMultiMatchValue type="Number">250</nMultiMatchValue>
+		<aPreviewTileShow type="Array">570,115</aPreviewTileShow> <!-- coordinates x,y -->
+    </config>
+	
+	<tileTypes>
+		<tile id="0" presentation="game/presentation" base="game/base" hit="game/hit" symbols="game/basic_symbols"/>
+		<tile id="1" presentation="game/presentation" base="game/base" hit="game/hit" symbols="game/basic_symbols"/>
+		<!--<tile id="vip" presentation="game/presentation" base="game/vip" hit="game/hit" symbols="game/basic_symbols"/>-->
+		<tile id="time" presentation="game/timepresentation" base="game/timebase" hit="game/hit" symbols="game/basic_symbols"/> <!-- special="first value, timer speed, finish value"-->
+		<tile id="timeconstant" presentation="game/timecpresentation" base="game/timebase" hit="game/hit" symbols="game/basic_symbols"/>
+		<tile id="bomb" presentation="game/specialpresentation" base="game/base" hit="game/hit" symbols="game/basic_symbols"/>
+	</tileTypes>
+	
+	<levels>
+		<level id="puzzle_0" random="1" levellock="1" x = "320" y = "350">
+			<nScale>1</nScale>
+			<TileStructure x="4" y="4" z="4">
+				<layer id="0">
+					<row>1111</row>
+					<row>1111</row>
+					<row>1111</row>
+					<row>1111</row>
+				</layer>
+				<layer id="1">
+					<row>1111</row>
+					<row>1111</row>
+					<row>1111</row>
+					<row>1111</row>
+				</layer>
+				<layer id="2">
+					<row>1111</row>
+					<row>1111</row>
+					<row>1111</row>
+					<row>1111</row>
+				</layer>
+				<layer id="3">
+					<row>1111</row>
+					<row>1111</row>
+					<row>1111</row>
+					<row>1111</row>
+				</layer>
+			</TileStructure>
+			<TileImages>
+				<tile type="1" name="s1" url="s1" value="100" num="6"/>
+				<tile type="1" name="s22" url="s22" value="100" num="6"/>
+				<tile type="1" name="s13" url="s13" value="100" num="6"/>
+				<tile type="1" name="s43" url="s43" value="100" num="6"/>
+				<tile type="1" name="s38" url="s38" value="100" num="6"/>
+				<tile type="1" name="s42" url="s42" value="100" num="6"/>
+				<tile type="1" name="s20" url="s20" value="100" num="6"/>
+				<tile type="1" name="s14" url="s14" value="100" num="6"/>
+				<tile type="1" name="s24" url="s24" value="100" num="6"/>
+				<tile type="1" name="s5" url="s5" value="100" num="6"/>
+				<tile type="1" name="s3" url="s3" value="100" num="4"/>
+			</TileImages>
+		</level>
+	</levels>
+</ignoreMeContainer>

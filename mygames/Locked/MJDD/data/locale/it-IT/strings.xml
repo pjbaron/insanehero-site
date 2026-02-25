@@ -1,0 +1,65 @@
+<Strings>
+	<!-- Intro Panel -->
+	<String id="new_game_start_button_string">GIOCA</String>
+	<String id="play_mjdb_button_string">Giocare a Mahjongg Dimensions Blast</String>
+
+	<!-- Help window -->
+	<String id="help_header_string">GUIDA</String>
+	<String id="help_page1_text_string">STRUTTURA DI GIOCO</String>
+	<String id="help_page1_text1_string">Clicca e abbina qualunque tessera che abbia due lati adiacenti liberi per guadagnare punti.</String>
+	<String id="help_page1_text2_string">Abbina le tessere il più velocemente possibile per completare tutti i livelli prima che scada il tempo.</String>
+	<String id="help_page1_text3_string">Puoi ruotare il rompicapo per trovare altri abbinamenti dall'altro lato! Per ruotare, clicca sulle frecce sullo schermo o usa la tastiera.</String>
+	<String id="help_page1_text4_string">CONSIGLIO: Usa i tasti freccia destra/sinistra della tastiera per ruotare il rompicapo più velocemente.</String>
+	<String id="help_page2_text_string">BONUS</String>
+	<String id="help_page2_text1_string">COMBO ABBINAMENTO VELOCE: Se effettui un abbinamento entro tre secondi dal precedente attiverai un moltiplicatore di punti.</String>
+
+	<String id="help_page2_text2_string">COMBO ABBINAMENTO MULTIPLO: Otterrai punti bonus abbinando più immagini uguali di seguito.</String>
+
+	<String id="help_page2_text3_string">BONUS TEMPO: Ogni volta che completi un livello riceverai punti bonus in base al tempo a disposizione rimasto.</String>
+
+	<String id="help_page2_text4_string">Se non riesci a trovare abbinamenti puoi premere il pulsante Mischia di nuovo per mischiare le tessere - puoi farlo solo una volta per livello.</String>
+
+	<String id="help_page2_text5_string">Quando il tempo scade la partita termina. Divertiti e buona fortuna!</String>
+
+	<String id="help_multimatch_text_string">ABBINAMENTO MULTIPLO</String>
+	<String id="help_speedmatch_text_string">ABBINAMENTO VELOCE</String>
+
+	<String id="help_show_help_string">MOSTRA ALL'AVVIO</String>
+
+	<!-- Options window -->
+	<String id="options_header_string">OPZIONI</String>
+	<String id="options_sound_string">SUONI</String>
+	<String id="options_music_string">MUSICA</String>
+
+	<!-- Quit window -->
+	<String id="quit_header_string">Vuoi davvero uscire?</String>
+
+	<String id="quit_yes_button_string">SÌ</String>
+	<String id="quit_no_button_string">NO</String>
+
+	<!-- Game View Panel -->
+	<String id="gvp_level_time_indication_text_string">TEMPO:</String>
+	<String id="gvp_level_score_indication_text_string">PUNTEGGIO:</String>
+
+	<!-- GVP PopUp -->
+	<String id="gvp_level_good_job_text_string">BEN FATTO!</String>
+	<String id="gvp_level_next_level_text_string">LIVELLO SUCCESSIVO</String>
+	<!--<String id="gvp_level_reshuffle_text_string">MISCHIA DI NUOVO</String>-->
+	<String id="gvp_level_reshuffle_text_string">PERMUTAZIONE</String>
+	<String id="gvp_level_no_more_move_text_string">NON CI SONO PIÙ
+ABBINAMENTI!</String>
+	<String id="gvp_level_times_up_text_string">TEMPO SCADUTO!
+FINE DELLA PARTITA</String>
+
+	<!-- Buttons -->
+	<String id="gvp_level_reshuffle_button_text_string">MISCHIA DI NUOVO</String>
+
+	<!-- Game Over PopUp -->
+	<String id="game_over_lose_header_string">FINE DELLA PARTITA</String>
+	<String id="game_over_win_header_string">HAI VINTO</String>
+
+	<!-- Other files -->
+<String id="help_play_string">GIOCA</String>
+	<String id="options_quit_string">ABBANDONARE</String>
+	<String id="gvp_level_times_up_final_score_string">Punteggio finale</String>
+</Strings>

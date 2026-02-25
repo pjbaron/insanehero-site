@@ -1,0 +1,65 @@
+<Strings>
+	<!-- Intro Panel -->
+	<String id="new_game_start_button_string">INICIAR</String>
+	<String id="play_mjdb_button_string">Jugar Mahjongg Dimensions Blast</String>
+
+	<!-- Help window -->
+	<String id="help_header_string">AYUDA</String>
+	<String id="help_page1_text_string">INTRODUCCIÓN</String>
+	<String id="help_page1_text1_string">Haz clic y empareja cualquier casilla que tenga dos lados adyacentes libres para obtener puntos.</String>
+	<String id="help_page1_text2_string">Empareja las casillas lo más rápido posible para completar todos los niveles antes de que se agote el tiempo.</String>
+	<String id="help_page1_text3_string">¡Puedes rotar el puzle para encontrar más emparejamientos desde otro ángulo! Para rotarlo, haz clic en las flechas de la pantalla o usa el teclado.</String>
+	<String id="help_page1_text4_string">CONSEJO: usa las flechas de dirección izquierda y derecha para rotar el puzle más rápido.</String>
+	<String id="help_page2_text_string">BONIFICACION</String>
+	<String id="help_page2_text1_string">COMBO EMPAREJAMIENTO RÁPIDO: se activará un multiplicador de puntos si consigues un emparejamiento tres segundos después de otro. </String>
+
+	<String id="help_page2_text2_string">COMBO MULTIEMPAREJAMIENTO: ganarás puntos adicionales si emparejas varias fichas del mismo tipo seguidas.</String>
+
+	<String id="help_page2_text3_string">BONIFICACIÓN DE TIEMPO: conseguirás puntos adicionales al completar cada nivel según el tiempo restante.</String>
+
+	<String id="help_page2_text4_string">Si no encuentras ningún emparejamiento posible, usa el botón de barajar. Solo podrás hacerlo una vez por nivel.</String>
+
+	<String id="help_page2_text5_string">La partida acabará cuando el cronómetro marque el final del tiempo. Buena suerte ¡y a divertirse!</String>
+
+	<String id="help_multimatch_text_string">MULTI EMPAREJAMIENTO</String>
+	<String id="help_speedmatch_text_string">EMPAREJAMIENTO RÁPIDO</String>
+
+	<String id="help_show_help_string">MOSTRAR ESTO AL INICIO DEL JUEGO</String>
+
+	<!-- Options window -->
+	<String id="options_header_string">OPCIONES</String>
+	<String id="options_sound_string">SONIDO</String>
+	<String id="options_music_string">MÚSICA</String>
+
+	<!-- Quit window -->
+	<String id="quit_header_string">¿Seguro que quieres salir?</String>
+
+	<String id="quit_yes_button_string">SÍ</String>
+	<String id="quit_no_button_string">NO</String>
+
+	<!-- Game View Panel -->
+	<String id="gvp_level_time_indication_text_string">TIEMPO:</String>
+	<String id="gvp_level_score_indication_text_string">PUNTUACIÓN:</String>
+
+	<!-- GVP PopUp -->
+	<String id="gvp_level_good_job_text_string">¡BIEN HECHO!</String>
+	<String id="gvp_level_next_level_text_string">SIGUIENTE NIVEL</String>
+	<String id="gvp_level_reshuffle_text_string">BARAJAR</String>
+	<String id="gvp_level_no_more_move_text_string">¡NO QUEDAN
+EMPAREJAMIENTOS!</String>
+	<String id="gvp_level_times_up_text_string">¡SE ACABÓ EL TIEMPO!
+FIN DE LA PARTIDA</String>
+
+	<!-- Buttons -->
+	<String id="gvp_level_reshuffle_button_text_string">BARAJAR</String>
+
+	<!-- Game Over PopUp -->
+	<String id="game_over_lose_header_string">FIN DE LA PARTIDA</String>
+	<String id="game_over_win_header_string">HAS GANADO</String>
+
+	<!-- Other files -->
+	<String id="help_play_string">JUGAR</String>
+	<String id="options_quit_string">SALIR</String>
+	<String id="gvp_level_times_up_final_score_string">Resultado Final</String>
+
+</Strings>

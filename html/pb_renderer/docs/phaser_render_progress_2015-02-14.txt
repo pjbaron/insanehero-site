@@ -1,0 +1,22 @@
+Phaser 3 renderer progress.
+14/02/2015
+
+The WIP can be found here: https://github.com/photonstorm/phaser3/tree/master/renderer
+A recent online demo is here: http://www.insanehero.com/html/renderer/src/
+The project commit log is here: https://github.com/photonstorm/phaser3/commits?author=pjbaron
+
+This week:
+
+canvasToGl demo: Rich mentioned that being able to transfer Canvas to webGl textures is very important for a number of use cases, so I took a stab at wrapping it in a fairly accessible API call and did a few performance tests.  It seems like the bottleneck will be texture transfer, the rest of the code is relatively simple and isn't doing a lot of stuff that will likely stall the GPU.  The new demo has one Canvas texture (underneath the webGl window) with a constantly changing background colour and a once-per-second number increment.  In the webGl window you can see the same texture transferred onto 10 separate webgl textures, applied to pbSprites, and bouncing, scaling and rotating.  This demo seems to slow down oddly when the window is not focused... I need to look into that (but it'll be tough because it doesn't do it when focused).
+glToCanvas demo: In the same spirit, I investigated grabbing a webGl texture and putting it into a canvas.  Again this is wrapped in some simple API calls and it seems to work well.  This demo adds a 'source' canvas (as in the previous demo) and 10 'destination' canvases.  The source data is transferred to the webGl picture once per second (you can see that the smoothly changing background colour of the source is only updated in the gl texture when the number changes).  Then the webGl texture is being transferred back down to the 10 destination canvases every frame (and you can see those 10 canvases changing exactly in step with the webGl texture).  This has a couple of potential bottlenecks, including the texture transfer but also in the way things have to be set up... I'd only use this in a game if it was essential, and if I could find a good way to limit the frequency size of the transfers.
+
+I finally got around to looking at a bunch of other people's work in the area of WebGl and graphics APIs.  I was already familiar with several API projects from either using them or general research before I started this project, but I was very pleased to find quite a few new approaches.  There is a new docs folder in the repo and I added API_comparison_results.txt there with a summary of what I found.  I still have a couple more APIs to look into and am hopeful of finding some more cool ideas!
+
+The pbWebGl.js file had become quite unmanagable due to size and complexity, so I took some time to clean it up.  The shader programs and the texture handling are now in new files pbWebGlShaders and pbWebGlTextures and while I was copy/pasting code I made an effort to simplify the approach to both.
+
+While researching another webGl question I came across a reference to using webGl points as textured objects and that lead me to adding an alternative render mode for webgl.  By using GL_POINT we avoid sending triangles or vertex data, and with some streamlining in pbSimpleLayer it was possible to present the drawing function with a list of points in exactly the correct format required.  The end result is that for certain very simple sprite drawing operations, it's possible to eliminate the second processing loop (preparing the data to be drawn by webgl) and gain some remarkable speed advantages.  The new bunnyPoint demo illustrates this approach and reaches a quarter of a million bunnies on my desktop (I had to add a screenshot of that in docs because it's a good milestone!)
+Then I looked into adding some more functionality to the new demo and ended up with the bunnyPointAnim demo, which shows the same GL_POINT approach, but drawing from a specified texture area of a sprite sheet.  This makes the approach a lot more useful (and avoids people sending tons of small textures to the GPU).  That demo seems to top out at 220k bunnies so there is a small loss of speed, probably because we need to send Point and Texture Source coordinates which is twice as much data.
+
+Several of the changes this week temporarily broke one or more demos, but I think I've since fixed all issues and I believe all demos are running correctly again.  Drop me a line if you find anything that doesn't appear to work correctly!
+
+- Pete

@@ -1,0 +1,407 @@
+/* board.css - Board and list styles with separate list and card drag-and-drop */
+
+.board-container {
+    position: relative;
+    height: calc(100vh - 120px);
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.board {
+    position: relative;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: flex-start;
+}
+
+.list {
+    background: #ebecf0;
+    border-radius: 8px;
+    width: 300px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    max-height: calc(100vh - 160px);
+    /* Remove draggable and cursor from list - only header should be draggable */
+}
+
+/* List header specific drag styling */
+.list-header {
+    padding: 12px 16px;
+    font-weight: 600;
+    color: #172b4d;
+    background: #ebecf0;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    flex-shrink: 0;
+    /* Only the header should be draggable for lists */
+    cursor: grab;
+}
+
+.list-header:active {
+    cursor: grabbing;
+}
+
+.list-header.draggable-header[draggable="true"] {
+    cursor: grab;
+}
+
+.list-header.draggable-header[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+/* List drag states - only apply when header is being dragged */
+.list.dragging {
+    opacity: 0.6;
+    transform: rotate(2deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.list.dragging .list-header {
+    cursor: grabbing;
+}
+
+/* Drop zones for gaps between lists */
+.drop-zone {
+    width: 20px;
+    min-width: 20px;
+    height: 100%;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.drop-zone.drag-over {
+    width: 40px;
+    min-width: 40px;
+}
+
+.drop-zone.drag-over::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    background: #0079bf;
+    border-radius: 2px;
+    animation: pulse 1s infinite;
+}
+
+/* Hide drop zones when not dragging lists */
+.board:not(.drag-active) .drop-zone {
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* Drop indicators for lists */
+.list.drag-over-left::before,
+.list.drag-over-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #0079bf;
+    border-radius: 2px;
+    z-index: 10;
+    animation: pulse 1s infinite;
+}
+
+.list.drag-over-left::before {
+    left: -10px;
+}
+
+.list.drag-over-right::after {
+    right: -10px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scaleY(0.95);
+    }
+}
+
+/* Board state during list drag */
+.board.drag-active {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.board.drag-active .list:not(.dragging) {
+    transition: transform 0.2s ease;
+}
+
+.board.drag-active .list:not(.dragging):hover {
+    transform: scale(1.02);
+}
+
+.list-header input {
+    background: none;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    flex: 1;
+    color: #172b4d;
+    cursor: text;
+}
+
+.list-header input:focus {
+    outline: 2px solid #0079bf;
+    background: white;
+    padding: 4px;
+    border-radius: 3px;
+}
+
+/* List Settings */
+.list-settings {
+    position: relative;
+    margin-left: 8px;
+}
+
+.list-settings-btn {
+    background: none;
+    border: none;
+    color: #5e6c84;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: background-color 0.2s ease;
+}
+
+.list-settings-btn:hover {
+    background: rgba(9, 30, 66, 0.08);
+    color: #172b4d;
+}
+
+.list-settings-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    padding: 12px 0;
+    margin-top: 4px;
+}
+
+.list-settings-menu.hidden {
+    display: none;
+}
+
+.settings-section {
+    padding: 0 16px 12px 16px;
+}
+
+.settings-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5e6c84;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.color-palette {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.color-option {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+    border-color: #0079bf;
+}
+
+.color-option.selected {
+    border-color: #0079bf;
+    box-shadow: 0 0 0 2px rgba(0, 121, 191, 0.2);
+}
+
+.color-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #0079bf;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.settings-divider {
+    height: 1px;
+    background: #e4e6ea;
+    margin: 8px 0;
+}
+
+.settings-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    color: #172b4d;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.settings-option:hover {
+    background: #f4f5f7;
+}
+
+.settings-option:hover .settings-icon {
+    transform: scale(1.1);
+}
+
+.delete-option {
+    color: #eb5a46;
+}
+
+.delete-option:hover {
+    background: #ffebe6;
+}
+
+.settings-icon {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+/* Prevent dragging when input is focused */
+.list-header input:focus {
+    pointer-events: auto;
+}
+
+.list:has(.list-header input:focus) .list-header {
+    cursor: default;
+    pointer-events: none;
+}
+
+.list:has(.list-header input:focus) .list-header input {
+    pointer-events: auto;
+}
+
+.list:has(.list-header input:focus) .list-settings {
+    pointer-events: auto;
+}
+
+/* Cards container - enable card drag and drop */
+.cards-container {
+    overflow-y: auto;
+    padding: 0 8px 8px 8px;
+    flex-shrink: 1;
+    min-height: 20px;
+    /* Cards container should allow normal interaction */
+    pointer-events: auto;
+}
+
+/* Ensure cards container allows drops */
+.cards-container:empty::before {
+    content: '';
+    display: block;
+    height: 20px;
+}
+
+.add-list-btn {
+    background: rgba(255, 255, 255, 0.24);
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 300px;
+    min-width: 300px;
+    height: fit-content;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.add-list-btn:hover {
+    background: rgba(255, 255, 255, 0.32);
+}
+
+/* Add card button should also not shrink */
+.add-card-btn {
+    background: none;
+    border: none;
+    color: #5e6c84;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 8px;
+    margin: 8px;
+    flex-shrink: 0;
+}
+
+.add-card-btn:hover {
+    background: #e4e6ea;
+    color: #172b4d;
+}
+
+/* Smooth scrolling for horizontal overflow */
+.board {
+    scroll-behavior: smooth;
+}
+
+/* Better touch support */
+@media (hover: none) and (pointer: coarse) {
+    .list-header {
+        cursor: default;
+    }
+    
+    .list-header:active {
+        cursor: default;
+    }
+}
+
+/* Prevent settings menu from being cut off at board edges */
+.board {
+    overflow: visible;
+}
+
+.board-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/* Ensure settings menu appears above other elements */
+.list-settings-menu {
+    z-index: 1001;
+}

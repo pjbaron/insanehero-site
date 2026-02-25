@@ -1,0 +1,20 @@
+{
+  "name": "Lava Rise",
+  "slug": "lava_rise",
+  "description": "Wall-jump between two narrowing walls to outrun rising lava, dodging obstacles and grabbing coins as the climb gets faster and tighter.",
+  "perspective": "side-view",
+  "core_loop": "Tap or click to jump from one wall to the opposite wall, timing each leap to avoid spikes, moving platforms, and crumbling ledges while the lava rises faster and faster beneath you. Collect coins mid-air for bonus score and brief slow-motion. Miss a jump or hesitate too long and the lava catches you.",
+  "retention_hooks": [
+    "Lava speed increases create escalating tension and 'one more try' moments",
+    "Coin multiplier streaks reward risky mid-air collection paths",
+    "Unlockable character skins at score milestones give visible progression"
+  ],
+  "controls": "One-touch/click: tap anywhere to wall-jump to the opposite side. Hold briefly for a higher jump. No other controls needed.",
+  "tags": [
+    "endless-climber",
+    "wall-jump",
+    "reflexes",
+    "one-button",
+    "arcade"
+  ]
+}

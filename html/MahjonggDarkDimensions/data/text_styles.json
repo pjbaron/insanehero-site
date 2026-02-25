@@ -1,0 +1,105 @@
+{
+	"comment": {
+			"c0":"// text_styles.json",
+			"c1":"//",
+			"c2":"// contains the parameters for each of the text styles used in Mahjongg Dark Dimensions game",
+			"c3":"// for information about these parameters please see the Pixi documentation:",
+			"c4":"// http://pixijs.download/v4.2.2/docs/PIXI.TextStyle.html",
+			"c5":"//",
+			"c6":"// to see how a font is used in the game, search on the name string in this file with loose",
+			"c7":"// matching.  You will see the same name in the game code prefixed with Main."
+		},
+
+	"textStyleBold": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "mjd_font1",
+			"fontSize": 80,
+			"fontWeight": "normal"
+		},
+	"textStyleBoldHugeCentered": {
+			"align": "center",
+			"fill": "white",
+			"fontFamily": "mjd_font1",
+			"fontSize": 110,
+			"fontWeight": "normal"
+		},
+	"textStyleBoldButtons": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "mjd_font1",
+			"fontSize": 40,
+			"fontWeight": "normal",
+			"letterSpacing": 0.5,
+			"padding": 5
+		},
+	"textStyleBoldButtonsLarge": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "mjd_font1",
+			"fontSize": 50,
+			"fontWeight": "normal",
+			"letterSpacing": 0.5,
+			"padding": 5
+		},
+	"textStyleBoldButtonTitles": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "mjd_font1",
+			"fontSize": 60,
+			"fontWeight": "normal",
+			"letterSpacing": 0.5,
+			"padding": 5
+		},
+	"textStyleBoldLargeCentered": {
+			"align": "center",
+			"fill": "white",
+			"fontFamily": "mjd_font1",
+			"fontSize": 80,
+			"fontWeight": "normal"
+		},
+	"textStyleMedium": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "mjd_font2",
+			"fontSize": 38,
+			"fontWeight": "normal"
+		},
+	"textStyleMedium2": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "mjd_font2",
+			"fontSize": 34,
+			"fontWeight": "normal"
+		},
+	"textStyleMediumTiny": {
+			"align": "left",
+			"fill": "#7fffff",
+			"fontFamily": "mjd_font2",
+			"fontSize": 20,
+			"fontWeight": "normal"
+		},
+	"textStyleVersionTiny": {
+			"align": "left",
+			"fill": "#ffffff",
+			"fontFamily": "mjd_font2",
+			"fontSize": 23,
+			"fontWeight": "normal"
+		},
+	"textStyleLarge": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "mjd_font3",
+			"fontSize": 50,
+			"fontWeight": "normal",
+			"letterSpacing": 0.5,
+			"padding": 5
+		},
+	"textStyleSemiBold": {
+			"align": "left",
+			"fill": "white",
+			"fontFamily": "mjd_font3",
+			"fontSize": 75,
+			"fontWeight": "normal"
+		}
+}

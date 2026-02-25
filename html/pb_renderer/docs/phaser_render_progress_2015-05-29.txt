@@ -1,0 +1,78 @@
+Phaser 3 renderer progress.
+2015-05-29
+
+The WIP can be found here: https://github.com/photonstorm/phaser3/tree/master/renderer
+A recent online demo is here: http://www.insanehero.com/html/renderer/src/
+The project commit log is here: https://github.com/photonstorm/phaser3/commits?author=pjbaron
+
+This update:
+
+22nd, 25th, 26th, 27th, 28th, 29th May
+
+I learned about the Cocoon system today and spent the morning reading up on it's capabilities and things to watch out for.  It's a bespoke browser graphics engine written in high-speed c++ and compiled to native for a variety of platforms.  This means it produces significantly faster drawing results than a regular browser, and it can be used to wrap HTML5 projects and make them into apps for the various mobile stores.  Cool stuff indeed!  I need to do some tests to see if the Phaser 3 renderer works with it already, fix anything that might be broken, optimise anything that might be slow, and maintain future developments to continue to support it.
+
+I've been corresponding with the creator of the lovely "creature" animation system and asked him about the separation of classes he's using.  There's a bunch of good reasons for doing it this way but he suggested I could just wrap them all in a class of my own to make it simpler for Phaser 3 users.  Cue pbCreatureHandler, which allows you to specify a variety of creature types, then add multiple instances of each type.  The only thing it doesn't do is actually render the instances to the screen - because I figure that bit is likely to change a lot and each user will have their own requirements like the fake 'depth' effect I'm using.
+
+Jiayi sent me a link to a new Creature demo and I couldn't resist testing my system with two entirely different breeds of dino.  "Flock" now has large "Coel" dinos and tiny "Utah Raptor" types.
+
+Spent far too long adjusting the settings for the Creature flock demo, and realised that I would need a visual tool in order to conveniently fit them into textures without loads of wasted space (they were rendering into whole-screen textures of 800x600... not efficient for memory or rendering!)
+"creatureAssist" is listed with the demos but is a utility to help with this.
+Usage:
+- Click the < and > text next to the various labels and you can instantly see the animating creature change it's display parameters.  The destination texture bounds are always displayed so it's easy to make the creature fit neatly and at an appropriate offset in the texture (the dinosaurs feet should be near the bottom to make the fake perspective based on y coordinate sorting work).
+- Note the numbers for each parameter then pass them into the new Creature transform when defining each creature type.
+I used this tool to shrink the textures for the two dinosaur types in the 'flock' demo and it all worked perfectly.  Added an anchor point for the drawTextureWithTransform function and changed the flock 'depth' sorting to use their feet rather than their heads with a hacked y offset.
+
+I've adjusted a number of base classes and drawing functions to support render-to-texture as a regular graphics source through pbSurface and pbBaseLayer support.  The new demo "spriteRTT" shows these features by rendering the "transforms" sphere image to a texture, embedding that texture into a pbSurface, then using the pbSurface (in exactly the same way as the old demo) to draw the 'transforms' demo graphics.  I've added batch processing support and single sprite support to pbBaseLayer and pbWebGl.
+
+Wrote a wrapper object pbPhaserRender to contain the pbLoader, pbRenderer and pbRootTimer more elegantly.  This required updates to all of the demos, fortunately search & replace did most of it and I just had to hunt through for the unique bits :)  It has slightly reduced the size of the demos, removed the need for the tricky callback "allLoaded", reduced the number of objects the user needs to instanciate for basic functionality, and generally it's just nicer to code!  NOTE: 'pbPhaserRender' will be replaced by the name of this rendering system, when we eventually come up with one... suggestions welcomed!  Broke the RAF timer out of pbRenderer into pbPhaserRender.
+
+Made a lot of changes to simplify each demos code, and make the API more powerful and useful.
+
+
+
+
+Coming soon / TODO:
+
+Explore features of SpriteDLight, add a shader to support their bump mapping/lighting effects.  Write a demo to show-case the new abilities.
+
+Fix all canvas demos (they got left behind during the recent API changes).
+Improve canvas implementation to use faster, cleaner classes and interfaces.
+
+Clean up webgl and gltextures files again... they're sprawling.
+
+Provide api function to permit async processing before allLoaded fires (Timer?)... for preloaders etc.
+
+Make texture dictionary handle GPU textures transparently to pbSurface etc. Assign a key when adding it then forget about the source.
+
+TODO: make a more impressive render-to-texture sprite demo... the distinguishing feature of this ability is the pre-render (otherwise it's just like cameras again... only transparent backgrounds ie. sprites...)  Maybe extend the rtt camera demo to use sprites??
+
+TODO: add API to simplify drawing to the texture.
+
+TODO: try to find alternative to setting gl.viewport to the texture size... it requires everything else to be scaled by (screen size / texture size) to draw at the correct sizes.
+
+TODO: make sure the image works in the pbSprite class too.
+Add capability for sprites to use the render-to-texture as a source but otherwise display as currently.
+
+Update rttCamera and/or multiCamera demo to use new rtt sprites.
+
+Test the demos in Cocoon.
+
+Integrate the 'creature' drawing tricks into the primary render system with a few new API calls and a "drawing queue" system to allow the user to schedule a complicated series of drawings and system changes.
+
+The bump shader needs some work to permit a tile-map of different bump textures, currently it just tiles a single one for the whole ground area.
+
+Explore replacing the current "super" implementation with simple prototype declarations... for derived classes specify exactly and only the functions that are derived using the prototype syntax... is it possible to call super functions this way?  If this can work it'll reduce call overhead in the crucial drawing stack loops considerably.
+
+Research into "how to build shaders dynamically" (find a good structure) so we can have several shader effects in a single shader program and avoid the overhead of running them sequentially.
+
+Add modification tools to the bump map editor so it's possible to edit the pseudo-3D image of the bump surface and generate the bump data image.  Extend the bump map editor to use the 'b' colour component to carry further information (height or reflectivity) to improve the power of this approach.  Carry those changes over into the shader code.
+
+The bump shader needs to handle different bump textures for different tiles... probably the best way to do this is to have a bump texture which parallels the tile texture (all tiles in the same positions in both textures).  I need to decide if I want bump mapping for wall tops (currently when it's on top of a wall it's using a flat shader for the lighting effect over-spill).
+
+Fix the in-game bump shader (it's still shading the vertical component reversed - already fixed in the editor c# code).
+
+
+Find all 'TODO' code and commit comments and: make a full list in one place; prioritise the list; start knocking things off until it's all dealt with.
+
+- Pete
+

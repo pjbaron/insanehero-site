@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Chopper SAR</title>
+    <style> body { margin: 0; background: #1D1E54; } </style>
+    <script type="text/javascript" src="Algorithms.js"></script>
+    <script type="text/javascript" src="phaser.js"></script>
+    <script type="text/javascript" src="Boot.js"></script>
+    <script type="text/javascript" src="Preloader.js"></script>
+    <script type="text/javascript" src="Main.js"></script>
+    <script type="text/javascript" src="Game.js"></script>
+    <script type="text/javascript" src="Audio.js"></script>
+    <script type="text/javascript" src="MissionControl.js"></script>
+    <script type="text/javascript" src="Person.js"></script>
+    <script type="text/javascript" src="Chopper.js"></script>
+    <script type="text/javascript" src="Building.js"></script>
+    <script type="text/javascript" src="Explosion.js"></script>
+    <script type="text/javascript" src="Fire.js"></script>
+    <script type="text/javascript" src="Dust.js"></script>
+    <script type="text/javascript" src="Effects.js"></script>
+    <script type="text/javascript" src="NinePatchSprite.js"></script>
+<body>
+
+<script type="text/javascript">
+
+    var game = new Phaser.Game(800, 480, Phaser.WEBGL, 'game', { create:create });
+
+    function create()
+    {
+        game.state.add('Boot', Boot);
+        game.state.add('Preloader', Preloader);
+        game.state.add('Main', Main);
+        game.state.add('Game', Game);
+        game.state.start('Boot');
+    }
+
+</script>
+</body>
+</html>
+

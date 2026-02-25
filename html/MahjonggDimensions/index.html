@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width,user-scalable=no,minimum-scale=1.0,minimal-ui=1" />  <!-- request GPU rasterization from Chrome browsers, where available -->
+	<!-- http://www.html5rocks.com/en/mobile/fullscreen/ -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="msapplication-tap-highlight" content="no" />  <!-- disable built-in tap highlight on windows phone ie10 and ie11 -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- http://stackoverflow.com/questions/1695376/msie-and-addeventlistener-problem-in-javascript/1695383#1695383 -->
+	<meta charset="utf-8" />
+
+	<title>Mahjongg Dimensions</title>
+
+	<style type="text/css">
+
+		@font-face {
+			font-family: "mjd_font1";
+			src: url("images/_reduced/fonts/AdventPro-Bold.eot");
+			src: url("images/_reduced/fonts/AdventPro-Bold.otf");
+			src: url("images/_reduced/fonts/AdventPro-Bold.woff");
+			src: url("images/_reduced/fonts/AdventPro-Bold.ttf");
+		}
+		@font-face {
+			font-family: "mjd_font2";
+			src: url("images/_reduced/fonts/AdventPro-Medium.eot");
+			src: url("images/_reduced/fonts/AdventPro-Medium.otf");
+			src: url("images/_reduced/fonts/AdventPro-Medium.woff");
+			src: url("images/_reduced/fonts/AdventPro-Medium.ttf");
+		}
+		@font-face {
+			font-family: "mjd_font3";
+			src: url("images/_reduced/fonts/AdventPro-SemiBold.eot");
+			src: url("images/_reduced/fonts/AdventPro-SemiBold.otf");
+			src: url("images/_reduced/fonts/AdventPro-SemiBold.woff");
+			src: url("images/_reduced/fonts/AdventPro-SemiBold.ttf");
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+			background: #111;
+			border: none;
+			overflow: hidden;
+
+			user-select: none;
+			-moz-user_select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+
+		@-webkit-keyframes fontfix {
+			from { opacity: 1; }
+			to { opacity: 1; }
+		}
+
+	</style>
+
+    <script type="text/javascript" src="lib/pixi.min.js"></script>
+    <script type="text/javascript" src="lib/howler.min.js"></script>
+    <script type="text/javascript" src="lib/Shifty.min.js"></script>
+    <script type="text/javascript" src="lib/mobile-detect.min.js"></script>
+    <script type="text/javascript" src="lib/stats.min.js"></script>
+	<script type="text/javascript" src="connector/arena-api-1.2.2.js"></script>
+	<script type="text/javascript" src="connector/riveted.min.js"></script>
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','_gameGATracker');
+	</script>
+
+	<!-- Riveted Analytics - helps measure visit duration more accurately -->
+	<script>riveted.init();</script>
+
+</head>
+
+
+<body>
+<div id="gamePlace"></div>
+	<!--<script type="text/javascript">
+		ARK_game_arena_connector.init();
+	</script>-->
+    <script type="text/javascript" src="mjd.min.js"></script>
+
+</body>
+</html>

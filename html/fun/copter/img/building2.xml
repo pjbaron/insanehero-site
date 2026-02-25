@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:5abfe580c274b1d04d2a7c21360027ed:f02f9063cf690407e4ddf30f61dbfd95:9f48b6cd575d5baa48585cfed9817f00$ -->
+<TextureAtlas imagePath="building2.png">
+    <SubTexture name="building_left" x="32" y="2" width="8" height="96"/>
+    <SubTexture name="building_mid_1" x="2" y="348" width="48" height="96"/>
+    <SubTexture name="building_mid_2" x="2" y="100" width="48" height="96"/>
+    <SubTexture name="building_mid_3" x="2" y="446" width="48" height="96"/>
+    <SubTexture name="building_mid_4" x="2" y="594" width="48" height="96"/>
+    <SubTexture name="building_mid_5" x="2" y="790" width="48" height="96"/>
+    <SubTexture name="building_mid_6" x="2" y="692" width="48" height="96"/>
+    <SubTexture name="building_right" x="22" y="2" width="8" height="96"/>
+    <SubTexture name="building_top_right" x="12" y="2" width="8" height="48"/>
+    <SubTexture name="buildings_top_left" x="2" y="2" width="8" height="48"/>
+    <SubTexture name="roof_mid_1" x="2" y="198" width="48" height="48"/>
+    <SubTexture name="roof_mid_2" x="2" y="298" width="48" height="48"/>
+    <SubTexture name="roof_mid_3" x="2" y="248" width="48" height="48"/>
+    <SubTexture name="roof_mid_4" x="2" y="544" width="48" height="48"/>
+</TextureAtlas>

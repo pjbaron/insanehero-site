@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Power Wash</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #111; }
+canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+let W, H;
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); if (state === 'play') initLevel(); });
+
+// --- State ---
+let state = 'start'; // start, play, nice, win
+let level = 0;
+let mouseX = -999, mouseY = -999;
+let spraying = false;
+let cleanPercent = 0;
+let niceTimer = 0;
+let winTimer = 0;
+let confetti = [];
+let sparkles = [];
+let splashes = [];
+let lastTime = 0;
+
+// --- Grid-based dirt tracking ---
+const CELL = 8;
+let gridW, gridH, dirtGrid;
+let totalCells, cleanedCells;
+
+// --- Offscreen canvases ---
+let cleanCanvas, cleanCtx;
+let dirtyCanvas, dirtyCtx;
+let maskCanvas, maskCtx;
+
+// --- Level definitions ---
+const levels = [
+  { name: 'White Wall', bgColor: '#f0f0f0', dirtColor: [140,130,115], dirtAlpha: 0.45, detail: 'wall' },
+  { name: 'Brick Wall', bgColor: '#c4613a', dirtColor: [60,55,45], dirtAlpha: 0.55, detail: 'brick' },
+  { name: 'Wooden Fence', bgColor: '#b8883a', dirtColor: [40,80,30], dirtAlpha: 0.6, detail: 'fence' },
+  { name: 'Car', bgColor: '#3366cc', dirtColor: [90,70,40], dirtAlpha: 0.65, detail: 'car' },
+  { name: 'Stone Patio', bgColor: '#aaa89a', dirtColor: [30,28,22], dirtAlpha: 0.75, detail: 'patio' },
+];
+
+// --- Seeded random for reproducible textures ---
+let seed = 1;
+function srand(s) { seed = s; }
+function rand() { seed = (seed * 16807 + 0) % 2147483647; return (seed - 1) / 2147483646; }
+
+function initLevel() {
+  const lv = levels[level];
+
+  // Grid
+  gridW = Math.ceil(W / CELL);
+  gridH = Math.ceil(H / CELL);
+  totalCells = gridW * gridH;
+  cleanedCells = 0;
+  dirtGrid = new Uint8Array(totalCells); // 0=dirty, 1=clean
+
+  // Clean surface
+  cleanCanvas = document.createElement('canvas');
+  cleanCanvas.width = W; cleanCanvas.height = H;
+  cleanCtx = cleanCanvas.getContext('2d');
+  drawCleanSurface(cleanCtx, lv);
+
+  // Dirty overlay
+  dirtyCanvas = document.createElement('canvas');
+  dirtyCanvas.width = W; dirtyCanvas.height = H;
+  dirtyCtx = dirtyCanvas.getContext('2d');
+  drawDirtLayer(dirtyCtx, lv);
+
+  // Mask (white = cleaned, starts black = all dirty)
+  maskCanvas = document.createElement('canvas');
+  maskCanvas.width = W; maskCanvas.height = H;
+  maskCtx = maskCanvas.getContext('2d');
+  maskCtx.fillStyle = '#000';
+  maskCtx.fillRect(0, 0, W, H);
+
+  cleanPercent = 0;
+  sparkles = [];
+  splashes = [];
+}
+
+function drawCleanSurface(c, lv) {
+  c.fillStyle = lv.bgColor;
+  c.fillRect(0, 0, W, H);
+
+  srand(level * 777 + 42);
+
+  if (lv.detail === 'wall') {
+    // Subtle plaster texture
+    for (let i = 0; i < 3000; i++) {
+      let x = rand() * W, y = rand() * H;
+      c.fillStyle = `rgba(200,200,200,${rand()*0.15})`;
+      c.fillRect(x, y, rand()*3+1, rand()*3+1);
+    }
+  } else if (lv.detail === 'brick') {
+    c.strokeStyle = '#8a4025';
+    c.lineWidth = 2;
+    const bw = 60, bh = 28, gap = 3;
+    for (let row = 0; row * (bh+gap) < H; row++) {
+      let off = (row % 2) * (bw/2 + gap/2);
+      for (let col = -1; col * (bw+gap) < W + bw; col++) {
+        let bx = col * (bw+gap) + off, by = row * (bh+gap);
+        let r = 170 + rand()*40, g = 80 + rand()*30, b = 50 + rand()*20;
+        c.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
+        c.fillRect(bx, by, bw, bh);
+        c.strokeRect(bx, by, bw, bh);
+      }
+    }
+    // Mortar
+    c.globalCompositeOperation = 'destination-over';
+    c.fillStyle = '#d4c8b8';
+    c.fillRect(0, 0, W, H);
+    c.globalCompositeOperation = 'source-over';
+  } else if (lv.detail === 'fence') {
+    const pw = 50, gap = 3;
+    for (let i = -1; i * (pw+gap) < W + pw; i++) {
+      let bx = i * (pw+gap);
+      let r = 160 + rand()*40, g = 120 + rand()*30, b = 50 + rand()*15;
+      c.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
+      c.fillRect(bx, 0, pw, H);
+      // Wood grain
+      c.strokeStyle = `rgba(80,60,20,0.2)`;
+      c.lineWidth = 1;
+      for (let j = 0; j < 15; j++) {
+        let gy = rand() * H;
+        c.beginPath(); c.moveTo(bx+2, gy); c.lineTo(bx+pw-2, gy + (rand()-0.5)*10); c.stroke();
+      }
+    }
+  } else if (lv.detail === 'car') {
+    // Car body
+    c.fillStyle = lv.bgColor;
+    c.fillRect(0, 0, W, H);
+    // Metallic sheen
+    let grd = c.createLinearGradient(0, 0, W, H);
+    grd.addColorStop(0, 'rgba(255,255,255,0.15)');
+    grd.addColorStop(0.5, 'rgba(255,255,255,0)');
+    grd.addColorStop(1, 'rgba(255,255,255,0.1)');
+    c.fillStyle = grd;
+    c.fillRect(0, 0, W, H);
+    // Panel lines
+    c.strokeStyle = 'rgba(0,0,0,0.15)';
+    c.lineWidth = 2;
+    c.beginPath(); c.moveTo(0, H*0.4); c.lineTo(W, H*0.4); c.stroke();
+    c.beginPath(); c.moveTo(W*0.3, 0); c.lineTo(W*0.3, H); c.stroke();
+    c.beginPath(); c.moveTo(W*0.7, 0); c.lineTo(W*0.7, H); c.stroke();
+  } else if (lv.detail === 'patio') {
+    const sz = 80, gap = 4;
+    for (let row = 0; row * (sz+gap) < H + sz; row++) {
+      for (let col = 0; col * (sz+gap) < W + sz; col++) {
+        let bx = col * (sz+gap), by = row * (sz+gap);
+        let v = 150 + rand()*40;
+        c.fillStyle = `rgb(${v|0},${(v-5)|0},${(v-15)|0})`;
+        c.fillRect(bx, by, sz, sz);
+        // Stone texture spots
+        for (let s = 0; s < 8; s++) {
+          let sv = v - 20 + rand()*40;
+          c.fillStyle = `rgba(${sv|0},${sv|0},${(sv-10)|0},0.3)`;
+          c.beginPath();
+          c.arc(bx + rand()*sz, by + rand()*sz, rand()*8+2, 0, Math.PI*2);
+          c.fill();
+        }
+      }
+    }
+    c.globalCompositeOperation = 'destination-over';
+    c.fillStyle = '#888';
+    c.fillRect(0, 0, W, H);
+    c.globalCompositeOperation = 'source-over';
+  }
+
+  // Add sparkle-ready highlight to clean surface
+  let sheen = c.createRadialGradient(W*0.3, H*0.3, 0, W*0.5, H*0.5, W*0.7);
+  sheen.addColorStop(0, 'rgba(255,255,255,0.06)');
+  sheen.addColorStop(1, 'rgba(255,255,255,0)');
+  c.fillStyle = sheen;
+  c.fillRect(0, 0, W, H);
+}
+
+function drawDirtLayer(c, lv) {
+  srand(level * 999 + 13);
+  const [dr, dg, db] = lv.dirtColor;
+  const da = lv.dirtAlpha;
+
+  // Base dirt
+  c.fillStyle = `rgba(${dr},${dg},${db},${da})`;
+  c.fillRect(0, 0, W, H);
+
+  // Noise texture - splotches and variation
+  for (let i = 0; i < 8000; i++) {
+    let x = rand() * W, y = rand() * H;
+    let size = rand() * 12 + 2;
+    let av = da * (0.3 + rand() * 0.7);
+    let rv = dr + (rand()-0.5)*40, gv = dg + (rand()-0.5)*40, bv = db + (rand()-0.5)*30;
+    c.fillStyle = `rgba(${rv|0},${gv|0},${bv|0},${av.toFixed(2)})`;
+    c.beginPath();
+    c.ellipse(x, y, size, size * (0.5+rand()*1), rand()*Math.PI, 0, Math.PI*2);
+    c.fill();
+  }
+
+  // Heavier grime patches
+  for (let i = 0; i < 30; i++) {
+    let x = rand() * W, y = rand() * H;
+    let r = rand() * 80 + 30;
+    let grd = c.createRadialGradient(x, y, 0, x, y, r);
+    grd.addColorStop(0, `rgba(${(dr-20)|0},${(dg-20)|0},${(db-15)|0},${(da*0.5).toFixed(2)})`);
+    grd.addColorStop(1, 'rgba(0,0,0,0)');
+    c.fillStyle = grd;
+    c.fillRect(x-r, y-r, r*2, r*2);
+  }
+
+  // Drip streaks
+  for (let i = 0; i < 15; i++) {
+    let x = rand() * W, y = rand() * H * 0.3;
+    let len = rand() * H * 0.5 + 50;
+    c.strokeStyle = `rgba(${dr},${dg},${db},${(da*0.4).toFixed(2)})`;
+    c.lineWidth = rand() * 4 + 1;
+    c.beginPath();
+    c.moveTo(x, y);
+    for (let j = 0; j < 6; j++) {
+      x += (rand()-0.5) * 15;
+      y += len / 6;
+      c.lineTo(x, y);
+    }
+    c.stroke();
+  }
+}
+
+// --- Spray mechanics ---
+function spray(x, y, dt) {
+  const sprayRadius = Math.min(W, H) * 0.04;
+  const jitter = sprayRadius * 0.3;
+
+  // Clear dirt in an organic pattern using the mask
+  maskCtx.globalCompositeOperation = 'source-over';
+
+  // Multiple spray dots for organic shape
+  const dots = 12;
+  for (let i = 0; i < dots; i++) {
+    let angle = (i / dots) * Math.PI * 2 + (Math.sin(performance.now()*0.003 + i) * 0.3);
+    let dist = Math.random() * sprayRadius * 0.9;
+    let dx = x + Math.cos(angle) * dist + (Math.random()-0.5) * jitter;
+    let dy = y + Math.sin(angle) * dist + (Math.random()-0.5) * jitter;
+    let r = sprayRadius * (0.2 + Math.random() * 0.4);
+
+    maskCtx.fillStyle = '#fff';
+    maskCtx.beginPath();
+    maskCtx.arc(dx, dy, r, 0, Math.PI*2);
+    maskCtx.fill();
+  }
+
+  // Central clean area
+  maskCtx.fillStyle = '#fff';
+  maskCtx.beginPath();
+  maskCtx.arc(x, y, sprayRadius * 0.6, 0, Math.PI*2);
+  maskCtx.fill();
+
+  // Update grid
+  const cellR = Math.ceil(sprayRadius / CELL) + 1;
+  const cx = Math.floor(x / CELL), cy = Math.floor(y / CELL);
+  for (let gy = cy - cellR; gy <= cy + cellR; gy++) {
+    for (let gx = cx - cellR; gx <= cx + cellR; gx++) {
+      if (gx < 0 || gx >= gridW || gy < 0 || gy >= gridH) continue;
+      let idx = gy * gridW + gx;
+      if (dirtGrid[idx] === 0) {
+        let dx = (gx + 0.5) * CELL - x, dy = (gy + 0.5) * CELL - y;
+        if (dx*dx + dy*dy < (sprayRadius*1.1)*(sprayRadius*1.1)) {
+          dirtGrid[idx] = 1;
+          cleanedCells++;
+        }
+      }
+    }
+  }
+
+  cleanPercent = Math.min(100, (cleanedCells / totalCells) * 100);
+
+  // Spawn splash particles
+  for (let i = 0; i < 4; i++) {
+    let angle = Math.random() * Math.PI * 2;
+    let speed = Math.random() * 150 + 80;
+    splashes.push({
+      x: x + (Math.random()-0.5) * sprayRadius,
+      y: y + (Math.random()-0.5) * sprayRadius,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 60,
+      life: 0.3 + Math.random() * 0.3,
+      size: Math.random() * 3 + 1,
+    });
+  }
+
+  // Sparkles on cleaned areas
+  if (Math.random() < 0.3) {
+    sparkles.push({
+      x: x + (Math.random()-0.5) * sprayRadius * 2,
+      y: y + (Math.random()-0.5) * sprayRadius * 2,
+      life: 0.5 + Math.random() * 0.8,
+      maxLife: 0.5 + Math.random() * 0.8,
+      size: Math.random() * 4 + 2,
+    });
+  }
+}
+
+// --- Drawing ---
+function drawSprayJet(x, y) {
+  // Nozzle position - bottom center of screen
+  const nzX = W * 0.5;
+  const nzY = H + 20;
+
+  const dx = x - nzX, dy = y - nzY;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const angle = Math.atan2(dy, dx);
+
+  // Spray cone
+  const coneWidth = 0.08;
+  const particleCount = 30;
+  const wobble = Math.sin(performance.now() * 0.008) * 0.015;
+
+  ctx.save();
+  for (let i = 0; i < particleCount; i++) {
+    let t = (i + 0.5) / particleCount;
+    let spread = (t * t) * coneWidth + wobble * t;
+    let a = angle + (Math.random()-0.5) * spread * 2;
+    let d = dist * (0.1 + t * 0.9) + (Math.random()-0.5) * 8;
+    let px = nzX + Math.cos(a) * d;
+    let py = nzY + Math.sin(a) * d;
+    let alpha = 0.2 + (1 - t) * 0.5;
+    let size = 1 + t * 2.5;
+
+    // Blue-white water color
+    let b = 200 + Math.random() * 55;
+    ctx.fillStyle = `rgba(${180+Math.random()*75|0},${210+Math.random()*45|0},${b|0},${alpha.toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(px, py, size, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Bright core line
+  ctx.strokeStyle = 'rgba(220,240,255,0.25)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(nzX, nzY);
+  ctx.lineTo(x + (Math.random()-0.5)*4, y + (Math.random()-0.5)*4);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function render(t) {
+  const dt = Math.min((t - lastTime) / 1000, 0.05);
+  lastTime = t;
+
+  ctx.clearRect(0, 0, W, H);
+
+  if (state === 'start') {
+    drawStartScreen();
+  } else if (state === 'play') {
+    renderPlay(dt);
+  } else if (state === 'nice') {
+    renderNice(dt);
+  } else if (state === 'win') {
+    renderWin(dt);
+  }
+
+  requestAnimationFrame(render);
+}
+
+function renderPlay(dt) {
+  // 1) Draw clean surface as base
+  ctx.drawImage(cleanCanvas, 0, 0);
+
+  // 2) Composite remaining dirt (dirt minus cleaned mask) on temp canvas
+  const tmpCvs = getTempCanvas();
+  const tmpCtx = tmpCvs.getContext('2d');
+  tmpCtx.clearRect(0, 0, W, H);
+  tmpCtx.drawImage(dirtyCanvas, 0, 0);
+  tmpCtx.globalCompositeOperation = 'destination-out';
+  tmpCtx.drawImage(maskCanvas, 0, 0);
+  tmpCtx.globalCompositeOperation = 'source-over';
+
+  // 3) Draw remaining dirt over clean surface
+  ctx.drawImage(tmpCvs, 0, 0);
+
+  // Spray if active
+  if (spraying && mouseX > 0 && mouseY > 0 && mouseX < W && mouseY < H) {
+    spray(mouseX, mouseY, dt);
+    drawSprayJet(mouseX, mouseY);
+  }
+
+  // Splash particles
+  updateAndDrawSplashes(dt);
+
+  // Sparkles
+  updateAndDrawSparkles(dt);
+
+  // HUD
+  drawHUD();
+
+  // Check completion
+  if (cleanPercent >= 97) {
+    if (level < levels.length - 1) {
+      state = 'nice';
+      niceTimer = 0;
+    } else {
+      state = 'win';
+      winTimer = 0;
+      spawnConfetti();
+    }
+  }
+}
+
+let _tempCanvas = null;
+function getTempCanvas() {
+  if (!_tempCanvas || _tempCanvas.width !== W || _tempCanvas.height !== H) {
+    _tempCanvas = document.createElement('canvas');
+    _tempCanvas.width = W;
+    _tempCanvas.height = H;
+  }
+  return _tempCanvas;
+}
+
+function updateAndDrawSplashes(dt) {
+  for (let i = splashes.length - 1; i >= 0; i--) {
+    let p = splashes[i];
+    p.life -= dt;
+    if (p.life <= 0) { splashes.splice(i, 1); continue; }
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vy += 400 * dt; // gravity
+    let alpha = p.life / 0.5;
+    ctx.fillStyle = `rgba(180,220,255,${Math.min(1,alpha).toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+function updateAndDrawSparkles(dt) {
+  for (let i = sparkles.length - 1; i >= 0; i--) {
+    let s = sparkles[i];
+    s.life -= dt;
+    if (s.life <= 0) { sparkles.splice(i, 1); continue; }
+    let t = 1 - s.life / s.maxLife;
+    let alpha = t < 0.5 ? t * 2 : (1 - t) * 2;
+    let sz = s.size * (0.5 + alpha * 0.5);
+
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.rotate(performance.now() * 0.003 + i);
+    ctx.fillStyle = `rgba(255,255,240,${(alpha*0.9).toFixed(2)})`;
+    // 4-point star
+    ctx.beginPath();
+    ctx.moveTo(0, -sz);
+    ctx.lineTo(sz*0.2, -sz*0.2);
+    ctx.lineTo(sz, 0);
+    ctx.lineTo(sz*0.2, sz*0.2);
+    ctx.lineTo(0, sz);
+    ctx.lineTo(-sz*0.2, sz*0.2);
+    ctx.lineTo(-sz, 0);
+    ctx.lineTo(-sz*0.2, -sz*0.2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawHUD() {
+  const barW = 160, barH = 20;
+  const bx = W - barW - 20, by = 20;
+
+  // Background
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.roundRect(bx - 8, by - 8, barW + 16, barH + 36, 8);
+  ctx.fill();
+
+  // Bar background
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  ctx.beginPath();
+  ctx.roundRect(bx, by, barW, barH, 4);
+  ctx.fill();
+
+  // Bar fill
+  let pct = cleanPercent / 100;
+  let r = Math.floor(100 - pct * 100), g = Math.floor(150 + pct * 105), b = Math.floor(100);
+  ctx.fillStyle = `rgb(${r},${g},${b})`;
+  ctx.beginPath();
+  ctx.roundRect(bx, by, barW * pct, barH, 4);
+  ctx.fill();
+
+  // Percentage text
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 14px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${cleanPercent.toFixed(0)}%`, bx + barW/2, by + barH + 20);
+
+  // Level name
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 16px monospace';
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillText(levels[level].name, 22, 32);
+  ctx.fillStyle = '#fff';
+  ctx.fillText(levels[level].name, 20, 30);
+}
+
+function drawStartScreen() {
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(0, 0, W, H);
+
+  // Water droplet decorations
+  srand(77);
+  for (let i = 0; i < 40; i++) {
+    let x = rand() * W, y = rand() * H;
+    let s = rand() * 20 + 5;
+    ctx.fillStyle = `rgba(100,180,255,${(rand()*0.15).toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(x, y, s, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Title
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  ctx.font = `bold ${Math.min(80, W*0.12)|0}px monospace`;
+  ctx.fillStyle = 'rgba(100,200,255,0.3)';
+  ctx.fillText('POWER WASH', W/2 + 3, H*0.32 + 3);
+  ctx.fillStyle = '#88ddff';
+  ctx.fillText('POWER WASH', W/2, H*0.32);
+
+  // Spray button
+  const btnW = 220, btnH = 70;
+  const btnX = W/2 - btnW/2, btnY = H*0.52;
+
+  let hover = mouseX > btnX && mouseX < btnX+btnW && mouseY > btnY && mouseY < btnY+btnH;
+
+  ctx.fillStyle = hover ? '#44aaee' : '#2288cc';
+  ctx.beginPath();
+  ctx.roundRect(btnX, btnY, btnW, btnH, 12);
+  ctx.fill();
+
+  if (hover) {
+    ctx.strokeStyle = '#88ddff';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${Math.min(36, W*0.06)|0}px monospace`;
+  ctx.fillText('SPRAY!', W/2, btnY + btnH/2);
+
+  // Cursor style
+  canvas.style.cursor = hover ? 'pointer' : 'default';
+}
+
+function renderNice(dt) {
+  niceTimer += dt;
+
+  // Flash white
+  ctx.fillStyle = `rgba(255,255,255,${Math.max(0, 1 - niceTimer * 2).toFixed(2)})`;
+  ctx.fillRect(0, 0, W, H);
+
+  // Show clean surface briefly
+  if (niceTimer > 0.2) {
+    ctx.drawImage(cleanCanvas, 0, 0);
+  }
+
+  // "Nice!" text
+  if (niceTimer > 0.3) {
+    let scale = Math.min(1, (niceTimer - 0.3) * 4);
+    let bounce = 1 + Math.sin(niceTimer * 8) * 0.05 * Math.max(0, 1 - niceTimer);
+    ctx.save();
+    ctx.translate(W/2, H/2);
+    ctx.scale(scale * bounce, scale * bounce);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `bold ${Math.min(90, W*0.15)|0}px monospace`;
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillText('Nice!', 3, 3);
+    ctx.fillStyle = '#44ff88';
+    ctx.fillText('Nice!', 0, 0);
+    ctx.restore();
+  }
+
+  if (niceTimer > 2) {
+    level++;
+    state = 'play';
+    initLevel();
+  }
+}
+
+function renderWin(dt) {
+  winTimer += dt;
+
+  // Show clean surface
+  ctx.drawImage(cleanCanvas, 0, 0);
+
+  // Confetti
+  updateAndDrawConfetti(dt);
+
+  // "Squeaky Clean!" text
+  let scale = Math.min(1, winTimer * 2);
+  let wobble = Math.sin(winTimer * 3) * 3;
+  ctx.save();
+  ctx.translate(W/2, H*0.35);
+  ctx.scale(scale, scale);
+  ctx.rotate(Math.sin(winTimer * 2) * 0.03);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `bold ${Math.min(60, W*0.09)|0}px monospace`;
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillText('Squeaky Clean!', 3, 3 + wobble);
+  ctx.fillStyle = '#ffdd44';
+  ctx.fillText('Squeaky Clean!', 0, wobble);
+  ctx.restore();
+
+  // Play again button
+  if (winTimer > 1.5) {
+    const btnW = 240, btnH = 60;
+    const btnX = W/2 - btnW/2, btnY = H*0.55;
+    let hover = mouseX > btnX && mouseX < btnX+btnW && mouseY > btnY && mouseY < btnY+btnH;
+
+    ctx.fillStyle = hover ? '#44aaee' : '#2288cc';
+    ctx.beginPath();
+    ctx.roundRect(btnX, btnY, btnW, btnH, 12);
+    ctx.fill();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.min(28, W*0.05)|0}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText('SPRAY AGAIN!', W/2, btnY + btnH/2);
+
+    canvas.style.cursor = hover ? 'pointer' : 'default';
+  }
+}
+
+function spawnConfetti() {
+  confetti = [];
+  for (let i = 0; i < 150; i++) {
+    confetti.push({
+      x: W/2 + (Math.random()-0.5) * 100,
+      y: H*0.35,
+      vx: (Math.random()-0.5) * 600,
+      vy: -Math.random() * 500 - 200,
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random()-0.5) * 10,
+      size: Math.random() * 8 + 4,
+      color: ['#ff4466','#44ff88','#4488ff','#ffdd44','#ff88ff','#44ffff'][Math.random()*6|0],
+      life: 3 + Math.random() * 2,
+    });
+  }
+}
+
+function updateAndDrawConfetti(dt) {
+  for (let i = confetti.length - 1; i >= 0; i--) {
+    let c = confetti[i];
+    c.life -= dt;
+    if (c.life <= 0) { confetti.splice(i, 1); continue; }
+    c.x += c.vx * dt;
+    c.y += c.vy * dt;
+    c.vy += 500 * dt;
+    c.vx *= 0.99;
+    c.rot += c.rotV * dt;
+
+    let alpha = Math.min(1, c.life);
+    ctx.save();
+    ctx.translate(c.x, c.y);
+    ctx.rotate(c.rot);
+    ctx.fillStyle = c.color;
+    ctx.globalAlpha = alpha;
+    ctx.fillRect(-c.size/2, -c.size/4, c.size, c.size/2);
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// --- Input ---
+function getPos(e) {
+  if (e.touches && e.touches.length > 0) {
+    return [e.touches[0].clientX, e.touches[0].clientY];
+  }
+  return [e.clientX, e.clientY];
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  [mouseX, mouseY] = getPos(e);
+  handleClick(mouseX, mouseY);
+  spraying = true;
+});
+canvas.addEventListener('mousemove', (e) => {
+  [mouseX, mouseY] = getPos(e);
+});
+canvas.addEventListener('mouseup', () => { spraying = false; });
+canvas.addEventListener('mouseleave', () => { spraying = false; mouseX = -999; mouseY = -999; });
+
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  [mouseX, mouseY] = getPos(e);
+  handleClick(mouseX, mouseY);
+  spraying = true;
+}, { passive: false });
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  [mouseX, mouseY] = getPos(e);
+}, { passive: false });
+canvas.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  spraying = false;
+}, { passive: false });
+canvas.addEventListener('touchcancel', () => { spraying = false; });
+
+function handleClick(x, y) {
+  if (state === 'start') {
+    const btnW = 220, btnH = 70;
+    const btnX = W/2 - btnW/2, btnY = H*0.52;
+    if (x > btnX && x < btnX+btnW && y > btnY && y < btnY+btnH) {
+      state = 'play';
+      level = 0;
+      initLevel();
+      canvas.style.cursor = 'none';
+    }
+  } else if (state === 'win' && winTimer > 1.5) {
+    const btnW = 240, btnH = 60;
+    const btnX = W/2 - btnW/2, btnY = H*0.55;
+    if (x > btnX && x < btnX+btnW && y > btnY && y < btnY+btnH) {
+      state = 'play';
+      level = 0;
+      initLevel();
+      canvas.style.cursor = 'none';
+    }
+  }
+}
+
+// Hide cursor during gameplay
+canvas.addEventListener('mouseenter', () => {
+  if (state === 'play') canvas.style.cursor = 'none';
+});
+
+// --- Start ---
+requestAnimationFrame(render);
+</script>
+</body>
+</html>

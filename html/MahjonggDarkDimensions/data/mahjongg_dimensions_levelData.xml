@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mahjongg-dimensions>
+  <nTimer type="Number">120</nTimer>
+  <nShuffles type="Number">1000</nShuffles>
+  <bIsRandom type="Boolean">false</bIsRandom>
+  <nMaxLevels type="Number">9</nMaxLevels>
+  <nTimeBonus type="Number">100</nTimeBonus>
+  <aLevelCompleteBonuses type="Array">500,1000,2000,2500,3000,3500,4000,4500,5000</aLevelCompleteBonuses>
+  <nSpeedBonusTime type="Number">2</nSpeedBonusTime>
+  <nSpeedBonusValue type="Number">25</nSpeedBonusValue>
+  <n4MatchValue type="Number">250</n4MatchValue>
+  <nTimeBonusCountDownStep type="Number">1</nTimeBonusCountDownStep>
+  <nPointBonusCountDownStep type="Number">1</nPointBonusCountDownStep>
+  <nCountDownTimeShuffle type="Number">0</nCountDownTimeShuffle>
+
+<levels>
+ <level id="smallest square">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="4" y="4" z="4">
+        <layer id="0">
+          <row>1111</row>
+          <row>1111</row>
+          <row>1111</row>
+          <row>1111</row>
+        </layer>
+        <layer id="1">
+          <row>1111</row>
+          <row>1111</row>
+          <row>1112</row>
+          <row>1111</row>
+        </layer>
+        <layer id="2">
+          <row>1111</row>
+          <row>1112</row>
+          <row>1111</row>
+          <row>1111</row>
+        </layer>
+        <layer id="3">
+          <row>1111</row>
+          <row>1111</row>
+          <row>1111</row>
+          <row>1111</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+        <tile type="time" name="0" url="images/time.png" value="90" num="2" />
+        <tile type="normal1" name="1" url="images/1.png" value="100" num="2" />
+        <tile type="normal2" name="2" url="images/2.png" value="100" num="4" />
+        <tile type="normal3" name="3" url="images/3.png" value="100" num="4" />
+        <tile type="normal4" name="4" url="images/4.png" value="100" num="4" />
+        <tile type="normal5" name="5" url="images/5.png" value="100" num="4" />
+        <tile type="normal6" name="6" url="images/6.png" value="100" num="4" />
+        <tile type="normal7" name="7" url="images/7.png" value="100" num="4" />
+        <tile type="normal8" name="8" url="images/8.png" value="100" num="4" />
+        <tile type="normal9" name="9" url="images/9.png" value="100" num="4" />
+        <tile type="normal10" name="10" url="images/10.png" value="100" num="4" />
+        <tile type="normal11" name="11" url="images/11.png" value="100" num="4" />
+        <tile type="normal12" name="12" url="images/12.png" value="100" num="4" />
+        <tile type="normal13" name="13" url="images/13.png" value="100" num="4" />
+        <tile type="normal14" name="14" url="images/14.png" value="100" num="4" />
+        <tile type="normal15" name="15" url="images/15.png" value="100" num="4" />
+        <tile type="normal16" name="16" url="images/16.png" value="100" num="4" /> 
+      </TileImages>
+    </level>
+
+<level id="branches 46 tiles">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="5" y="5" z="6">
+        <layer id="0">
+          <row>00100</row>
+          <row>00100</row>
+          <row>11211</row>
+          <row>00100</row>
+          <row>00100</row>
+        </layer>
+        <layer id="1">
+          <row>00000</row>
+          <row>01110</row>
+          <row>01110</row>
+          <row>01110</row>
+          <row>00000</row>
+        </layer>
+        <layer id="2">
+          <row>00100</row>
+          <row>00100</row>
+          <row>11211</row>
+          <row>00100</row>
+          <row>00100</row>
+        </layer>
+        <layer id="3">
+          <row>00000</row>
+          <row>01110</row>
+          <row>01110</row>
+          <row>01110</row>
+          <row>00000</row>
+        </layer>
+        <layer id="4">
+          <row>00100</row>
+          <row>00100</row>
+          <row>11211</row>
+          <row>00100</row>
+          <row>00100</row>
+        </layer>
+        <layer id="5">
+          <row>00000</row>
+          <row>00000</row>
+          <row>00200</row>
+          <row>00000</row>
+          <row>00000</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+        <tile type="time" name="1" url="images/time.png" value="50" rolloverMessage="this is a ..." num="4" /> 
+        <tile type="normal5" name="5" url="images/5.png" value="100" num="2" />
+        <tile type="normal6" name="6" url="images/6.png" value="100" num="2" />
+        <tile type="normal7" name="7" url="images/7.png" value="100" num="2" />
+        <tile type="normal8" name="8" url="images/8.png" value="100" num="2" />
+        <tile type="normal9" name="9" url="images/9.png" value="100" num="2" />
+        <tile type="normal10" name="10" url="images/10.png" value="100" num="4" />
+        <tile type="normal11" name="11" url="images/11.png" value="100" num="4" />
+        <tile type="normal12" name="12" url="images/12.png" value="100" num="4" />
+        <tile type="normal13" name="13" url="images/13.png" value="100" num="4" />
+        <tile type="normal14" name="14" url="images/14.png" value="100" num="4" />
+        <tile type="normal15" name="15" url="images/15.png" value="100" num="4" />
+        <tile type="normal16" name="16" url="images/16.png" value="100" num="4" />  
+	<tile type="normal17" name="17" url="images/17.png" value="100" num="4"/>
+      </TileImages>
+    </level>
+
+    <level id="Medium Cube 80 Tiles">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="5" y="4" z="5">
+        <layer id="0">
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+        </layer>
+        <layer id="1">
+          <row>11211</row>
+          <row>11111</row>
+          <row>11111</row>
+          <row>11211</row>
+        </layer>
+        <layer id="2">
+          <row>00000</row>
+          <row>00000</row>
+          <row>00000</row>
+          <row>00000</row>
+        </layer>
+        <layer id="3">
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+        </layer>
+        <layer id="4">
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+        <tile type="time" name="1" url="images/time.png" value="100" rolloverMessage="this is a ..." num="2"/>
+        <tile type="normal1" name="1" url="images/1.png" value="100" num="2" />
+        <tile type="normal10" name="10" url="images/10.png" value="100" num="4" />
+        <tile type="normal11" name="11" url="images/11.png" value="100" num="4" />
+        <tile type="normal12" name="12" url="images/12.png" value="100" num="4" />
+        <tile type="normal13" name="13" url="images/13.png" value="100" num="4" />
+        <tile type="normal14" name="14" url="images/14.png" value="100" num="4" />
+        <tile type="normal15" name="15" url="images/15.png" value="100" num="4" />
+        <tile type="normal16" name="16" url="images/16.png" value="100" num="4" />  
+   	  <tile type="normal17" name="17" url="images/17.png" value="100" num="4"/>
+	  <tile type="normal18" name="18" url="images/18.png" value="100" num="4"/>
+	  <tile type="normal19" name="19" url="images/19.png" value="100" num="4"/>
+	  <tile type="normal20" name="20" url="images/20.png" value="100" num="4"/>
+	  <tile type="normal21" name="21" url="images/21.png" value="100" num="4"/>
+	  <tile type="normal22" name="22" url="images/22.png" value="100" num="4"/>
+	  <tile type="normal23" name="23" url="images/23.png" value="100" num="4"/>
+	  <tile type="normal24" name="24" url="images/24.png" value="100" num="4"/>
+	  <tile type="normal25" name="25" url="images/25.png" value="100" num="4"/>
+	  <tile type="normal26" name="26" url="images/26.png" value="100" num="4"/>
+	  <tile type="normal27" name="27" url="images/27.png" value="100" num="4"/>
+	  <tile type="normal28" name="28" url="images/28.png" value="100" num="4"/>
+   </TileImages>
+  </level>
+
+  <level id="Magnetic strips 72">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="8" y="3" z="5">
+        <layer id="0">
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="1">
+          <row>00000000</row>
+          <row>00000000</row>
+          <row>00000000</row>
+        </layer>
+        <layer id="2">
+          <row>11122111</row>
+          <row>11111111</row>
+          <row>11122111</row>
+        </layer>
+        <layer id="3">
+          <row>00000000</row>
+          <row>00000000</row>
+          <row>00000000</row>
+        </layer>
+        <layer id="4">
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+        <tile type="time" name="1" url="images/time.png" value="80" rolloverMessage="this is a ..." num="4" />
+        <tile type="normal16" name="16" url="images/16.png" value="100" num="4" />  
+   	  <tile type="normal17" name="17" url="images/17.png" value="100" num="4"/>
+	  <tile type="normal18" name="18" url="images/18.png" value="100" num="4"/>
+	  <tile type="normal19" name="19" url="images/19.png" value="100" num="4"/>
+	  <tile type="normal20" name="20" url="images/20.png" value="100" num="4"/>
+	  <tile type="normal21" name="21" url="images/21.png" value="100" num="4"/>
+	  <tile type="normal22" name="22" url="images/22.png" value="100" num="4"/>
+	  <tile type="normal23" name="23" url="images/23.png" value="100" num="4"/>
+	  <tile type="normal24" name="24" url="images/24.png" value="100" num="4"/>
+	  <tile type="normal25" name="25" url="images/25.png" value="100" num="4"/>
+	  <tile type="normal26" name="26" url="images/26.png" value="100" num="4"/>
+	  <tile type="normal27" name="27" url="images/27.png" value="100" num="4"/>
+	  <tile type="normal28" name="28" url="images/28.png" value="100" num="4"/>
+	  <tile type="normal29" name="29" url="images/29.png" value="100" num="4"/>
+	  <tile type="normal30" name="30" url="images/30.png" value="100" num="4"/>
+	  <tile type="normal31" name="31" url="images/31.png" value="100" num="4"/>
+	  <tile type="normal32" name="32" url="images/32.png" value="100" num="4"/>
+      </TileImages>
+   </level>
+
+   <level id="tree bonus round 48">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="4" y="4" z="7">
+        <layer id="0">
+          <row>0001</row>
+          <row>0011</row>
+          <row>1100</row>
+          <row>1000</row>
+        </layer>
+        <layer id="1">
+          <row>1000</row>
+          <row>1100</row>
+          <row>0010</row>
+          <row>0011</row>
+        </layer>
+        <layer id="2">
+          <row>0001</row>
+          <row>0121</row>
+          <row>1210</row>
+          <row>1000</row>
+        </layer>
+        <layer id="3">
+          <row>1000</row>
+          <row>1210</row>
+          <row>0121</row>
+          <row>0001</row>
+        </layer>
+        <layer id="4">
+          <row>0001</row>
+          <row>0121</row>
+          <row>1210</row>
+          <row>1000</row>
+        </layer>
+        <layer id="5">
+          <row>1000</row>
+          <row>1100</row>
+          <row>0010</row>
+          <row>0011</row>
+        </layer>
+        <layer id="6">
+          <row>0001</row>
+          <row>0011</row>
+          <row>1100</row>
+          <row>1000</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+	  <tile type="time" name="1" url="images/time.png" value="50" rolloverMessage="this is a ..." num="6" />
+	  <tile type="normal21" name="21" url="images/21.png" value="100" num="2"/>
+	  <tile type="normal22" name="22" url="images/22.png" value="100" num="2"/>
+	  <tile type="normal23" name="23" url="images/23.png" value="100" num="2"/>
+	  <tile type="normal24" name="24" url="images/24.png" value="100" num="2"/>
+	  <tile type="normal25" name="25" url="images/25.png" value="100" num="2"/>
+	  <tile type="normal26" name="26" url="images/26.png" value="100" num="2"/>
+	  <tile type="normal27" name="27" url="images/27.png" value="100" num="2"/>
+	  <tile type="normal28" name="28" url="images/28.png" value="100" num="2"/>
+	  <tile type="normal29" name="29" url="images/29.png" value="100" num="2"/>
+	  <tile type="normal30" name="30" url="images/30.png" value="100" num="2"/>
+	  <tile type="normal31" name="31" url="images/31.png" value="100" num="2"/>
+	  <tile type="normal32" name="32" url="images/32.png" value="100" num="2"/> 	  
+	  <tile type="normal33" name="33" url="images/33.png" value="100" num="2"/> 
+	  <tile type="normal34" name="34" url="images/34.png" value="100" num="2"/>
+	  <tile type="normal35" name="35" url="images/35.png" value="100" num="2"/>
+	  <tile type="normal36" name="36" url="images/36.png" value="100" num="2"/>
+	  <tile type="normal37" name="37" url="images/37.png" value="100" num="2"/>
+	  <tile type="normal38" name="38" url="images/38.png" value="100" num="2"/> 
+	  <tile type="normal39" name="39" url="images/39.png" value="100" num="2"/> 
+	  <tile type="normal40" name="40" url="images/40.png" value="100" num="2"/> 	  
+	  <tile type="normal41" name="41" url="images/41.png" value="100" num="2"/>
+      </TileImages>
+    </level>
+
+    <level id="hollow brick 98 tiles ">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="5" y="5" z="5">
+        <layer id="0">
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+        </layer>
+        <layer id="1">
+          <row>11111</row>
+          <row>10001</row>
+          <row>10001</row>
+          <row>10001</row>
+          <row>11111</row>
+        </layer>
+        <layer id="2">
+          <row>11211</row>
+          <row>10001</row>
+          <row>20002</row>
+          <row>10001</row>
+          <row>11211</row>
+        </layer>
+        <layer id="3">
+          <row>11111</row>
+          <row>10001</row>
+          <row>10001</row>
+          <row>10001</row>
+          <row>11111</row>
+        </layer>
+        <layer id="4">
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+          <row>11111</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+       <tile type="time" name="1" url="images/time.png" value="90" rolloverMessage="this is a ..." num="4" /> 
+          <tile type="normal1" name="1" url="images/1.png" value="100" num="2" /> 
+	  <tile type="normal21" name="21" url="images/21.png" value="100" num="4"/>
+	  <tile type="normal22" name="22" url="images/22.png" value="100" num="4"/>
+	  <tile type="normal23" name="23" url="images/23.png" value="100" num="4"/>
+	  <tile type="normal24" name="24" url="images/24.png" value="100" num="4"/>
+	  <tile type="normal25" name="25" url="images/25.png" value="100" num="4"/>
+	  <tile type="normal26" name="26" url="images/26.png" value="100" num="4"/>
+	  <tile type="normal27" name="27" url="images/27.png" value="100" num="4"/>
+	  <tile type="normal28" name="28" url="images/28.png" value="100" num="4"/>
+	  <tile type="normal29" name="29" url="images/29.png" value="100" num="4"/>
+	  <tile type="normal30" name="30" url="images/30.png" value="100" num="4"/>
+	  <tile type="normal31" name="31" url="images/31.png" value="100" num="4"/>
+	  <tile type="normal32" name="32" url="images/32.png" value="100" num="4"/>
+	  <tile type="normal33" name="33" url="images/33.png" value="100" num="4"/> 
+	  <tile type="normal34" name="34" url="images/34.png" value="100" num="4"/>
+	  <tile type="normal35" name="35" url="images/35.png" value="100" num="4"/>
+	  <tile type="normal36" name="36" url="images/36.png" value="100" num="4"/>
+	  <tile type="normal37" name="37" url="images/37.png" value="100" num="4"/>
+	  <tile type="normal38" name="38" url="images/38.png" value="100" num="4"/>
+	  <tile type="normal39" name="39" url="images/39.png" value="100" num="4"/>
+	  <tile type="normal40" name="40" url="images/40.png" value="100" num="4"/>
+	  <tile type="normal41" name="41" url="images/41.png" value="100" num="4"/>
+	  <tile type="normal42" name="42" url="images/42.png" value="100" num="4"/>
+	  <tile type="normal43" name="43" url="images/43.png" value="100" num="4"/> 
+      </TileImages>
+    </level>
+
+<level id="Easy Wall, 4 time tiles, med bonus 28*4">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="8" y="2" z="7">
+        <layer id="0">
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="1">
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="2">
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="3">
+          <row>11122111</row>
+          <row>11122111</row>
+        </layer>
+        <layer id="4">
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="5">
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="6">
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+        <tile type="time" name="1" url="images/time.png" value="110" rolloverMessage="this is a ..." num="4" /> 
+        <tile type="normal6" name="6" url="images/6.png" value="100" num="4" />
+        <tile type="normal7" name="7" url="images/7.png" value="100" num="4" />
+        <tile type="normal8" name="8" url="images/8.png" value="100" num="4" />
+        <tile type="normal9" name="9" url="images/9.png" value="100" num="4" /> 
+        <tile type="normal10" name="10" url="images/10.png" value="100" num="4" />
+        <tile type="normal11" name="11" url="images/11.png" value="100" num="4" /> 
+	  <tile type="normal29" name="29" url="images/29.png" value="100" num="4"/>
+	  <tile type="normal30" name="30" url="images/30.png" value="100" num="4"/>
+	  <tile type="normal31" name="31" url="images/31.png" value="100" num="4"/>
+	  <tile type="normal32" name="32" url="images/32.png" value="100" num="4"/>
+	  <tile type="normal33" name="33" url="images/33.png" value="100" num="4"/> 
+	  <tile type="normal34" name="34" url="images/34.png" value="100" num="4"/>
+	  <tile type="normal35" name="35" url="images/35.png" value="100" num="4"/>
+	  <tile type="normal36" name="36" url="images/36.png" value="100" num="4"/>
+	  <tile type="normal37" name="37" url="images/37.png" value="100" num="4"/>
+	  <tile type="normal38" name="38" url="images/38.png" value="100" num="4"/>
+	  <tile type="normal39" name="39" url="images/39.png" value="100" num="4"/>
+	  <tile type="normal40" name="40" url="images/40.png" value="100" num="4"/>
+	  <tile type="normal41" name="41" url="images/41.png" value="100" num="4"/>
+	  <tile type="normal42" name="42" url="images/42.png" value="100" num="4"/>
+	  <tile type="normal43" name="43" url="images/43.png" value="100" num="4"/> 
+	  <tile type="normal44" name="44" url="images/44.png" value="100" num="4"/>
+	  <tile type="normal45" name="47" url="images/47.png" value="100" num="4"/>
+	  <tile type="normal46" name="48" url="images/48.png" value="100" num="4"/>
+	  <tile type="normal47" name="49" url="images/49.png" value="100" num="4"/> 
+  	  <tile type="normal48" name="45" url="images/45.png" value="100" num="4"/>
+	  <tile type="normal49" name="46" url="images/46.png" value="100" num="4"/>
+      </TileImages>
+    </level>
+
+ <level id="diamond, t time bonus, med time  21X4 tiles">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="6" y="6" z="5">
+        <layer id="0">
+          <row>000000</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>000000</row>
+        </layer>
+        <layer id="1">
+          <row>000000</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>000000</row>
+        </layer>
+        <layer id="2">
+          <row>111111</row>
+          <row>121121</row>
+          <row>111111</row>
+          <row>111111</row>
+          <row>121121</row>
+          <row>111111</row>
+        </layer>
+        <layer id="3">
+          <row>000000</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>000000</row>
+        </layer>
+        <layer id="4">
+          <row>000000</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>011110</row>
+          <row>000000</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+               <tile type="time" name="1" url="images/time.png" value="100" rolloverMessage="this is a ..." num="4" />
+        <tile type="normal2" name="2" url="images/2.png" value="100" num="4" />
+        <tile type="normal3" name="3" url="images/3.png" value="100" num="4" />
+        <tile type="normal4" name="4" url="images/4.png" value="100" num="4" /> 
+        <tile type="normal5" name="5" url="images/5.png" value="100" num="4" /> 
+        <tile type="normal6" name="6" url="images/6.png" value="100" num="4" />
+        <tile type="normal7" name="7" url="images/7.png" value="100" num="4" />
+        <tile type="normal8" name="8" url="images/8.png" value="100" num="4" />
+        <tile type="normal9" name="9" url="images/9.png" value="100" num="4" /> 
+        <tile type="normal10" name="10" url="images/10.png" value="100" num="4" />
+        <tile type="normal11" name="11" url="images/11.png" value="100" num="4" /> 
+        <tile type="normal12" name="12" url="images/12.png" value="100" num="4" /> 
+	  <tile type="normal38" name="38" url="images/38.png" value="100" num="4"/>
+	  <tile type="normal39" name="39" url="images/39.png" value="100" num="4"/>
+	  <tile type="normal40" name="40" url="images/40.png" value="100" num="4"/> 
+	  <tile type="normal41" name="41" url="images/41.png" value="100" num="4"/>
+	  <tile type="normal42" name="42" url="images/42.png" value="100" num="4"/>
+	  <tile type="normal43" name="43" url="images/43.png" value="100" num="4"/> 
+	  <tile type="normal44" name="44" url="images/44.png" value="100" num="4"/>
+	  <tile type="normal49" name="45" url="images/45.png" value="100" num="4"/>
+	  <tile type="normal50" name="46" url="images/46.png" value="100" num="4"/>
+	  <tile type="normal45" name="47" url="images/47.png" value="100" num="4"/>
+	  <tile type="normal46" name="48" url="images/48.png" value="100" num="4"/>
+	  <tile type="normal47" name="49" url="images/49.png" value="100" num="4"/> 
+	  <tile type="normal48" name="50" url="images/50.png" value="100" num="4"/> 
+       </TileImages>
+    </level>
+
+ <level id="big bad wall, many small time bonuses 32X4">
+      <BackgroundImage>images/bg1.swf</BackgroundImage>
+      <nScale>1</nScale>
+      <TileStructure x="8" y="4" z="7">
+        <layer id="0">
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="1">
+          <row>00000000</row>
+          <row>00000000</row>
+          <row>00000000</row>
+          <row>00000000</row>
+        </layer>
+        <layer id="2">
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="3">
+          <row>00000000</row>
+          <row>00000000</row>
+          <row>00000000</row>
+          <row>00000000</row>
+        </layer>
+        <layer id="4">
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+        <layer id="5">
+          <row>00000000</row>
+          <row>00000000</row>
+          <row>00000000</row>
+          <row>00000000</row>
+        </layer>
+        <layer id="6">
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+          <row>11111111</row>
+        </layer>
+      </TileStructure>
+      <TileImages>
+        <tile type="time" name="1" url="images/time.png" value="100" rolloverMessage="this is a ..." num="8" /> 
+        <tile type="normal6" name="6" url="images/6.png" value="100" num="4" />
+        <tile type="normal7" name="7" url="images/7.png" value="100" num="4" />
+        <tile type="normal8" name="8" url="images/8.png" value="100" num="4" />
+        <tile type="normal9" name="9" url="images/9.png" value="100" num="4" /> 
+        <tile type="normal10" name="10" url="images/10.png" value="100" num="4" />
+        <tile type="normal11" name="11" url="images/11.png" value="100" num="4" /> 
+        <tile type="normal12" name="12" url="images/12.png" value="100" num="4" /> 
+        <tile type="normal13" name="13" url="images/13.png" value="100" num="4" />
+        <tile type="normal14" name="14" url="images/14.png" value="100" num="4" /> 
+	  <tile type="normal29" name="29" url="images/29.png" value="100" num="4"/> 
+	  <tile type="normal30" name="30" url="images/30.png" value="100" num="4"/>
+	  <tile type="normal31" name="31" url="images/31.png" value="100" num="4"/> 
+	  <tile type="normal32" name="32" url="images/32.png" value="100" num="4"/>
+	  <tile type="normal33" name="33" url="images/33.png" value="100" num="4"/> 
+	  <tile type="normal34" name="34" url="images/34.png" value="100" num="4"/>
+	  <tile type="normal35" name="35" url="images/35.png" value="100" num="4"/>
+	  <tile type="normal36" name="36" url="images/36.png" value="100" num="4"/>
+	  <tile type="normal37" name="37" url="images/37.png" value="100" num="4"/> 
+	  <tile type="normal38" name="38" url="images/38.png" value="100" num="4"/>
+	  <tile type="normal39" name="39" url="images/39.png" value="100" num="4"/>
+	  <tile type="normal40" name="40" url="images/40.png" value="100" num="4"/> 
+	  <tile type="normal41" name="41" url="images/41.png" value="100" num="4"/>
+	  <tile type="normal42" name="42" url="images/42.png" value="100" num="4"/>
+	  <tile type="normal43" name="43" url="images/43.png" value="100" num="4"/> 
+	  <tile type="normal44" name="44" url="images/44.png" value="100" num="4"/>
+	  <tile type="normal45" name="45" url="images/45.png" value="100" num="4"/>
+	  <tile type="normal46" name="46" url="images/46.png" value="100" num="4"/>
+	  <tile type="normal47" name="47" url="images/47.png" value="100" num="4"/>
+	  <tile type="normal48" name="48" url="images/48.png" value="100" num="4"/>
+	  <tile type="normal49" name="49" url="images/49.png" value="100" num="4"/> 
+	</TileImages>
+    </level>
+  
+  </levels>
+</mahjongg-dimensions>

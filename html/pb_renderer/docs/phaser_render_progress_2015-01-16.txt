@@ -1,0 +1,49 @@
+Phaser 3 renderer progress.
+16/01/2015
+
+The WIP can be found here (https://github.com/photonstorm/phaser3/tree/master/renderer).
+
+Previously:
+
+I researched webgl, shaders, canvas, and dom sprites.  Concluded that dom sprites are cool but we need to support webgl+canvas, webgl for the power users and canvas for it's accurate drawing API.  If possible I'd like to include dom sprites as a third alternative but that can be put in later so I won't be including it initially.
+
+My first tests with shaders were expectedly disappointing (<3000 quads), however when I managed to get a tri-strip sprite batch going the performance was impressive (> 100k quads).
+
+This week:
+
+I've hooked up a few higher level objects to form the shell of the eventual API and make constructing demos much easier.
+(All class names are prefixed with my initials, 'pb' - this is not an attempt at fame and glory, it just makes it much easier to do global search and replace when I decide a class is incorrectly named... "Layer" would be dodgy s&r, but pbLayer is much safer.  Towards the end of the project I expect to have a long chat with Rich and rename pretty much everything).
+
+pbLoader loads images into HTML.Image objects and has a callback when complete (TODO: load a list of resources).
+pbSurface holds the HTML.Image object and information about how it is divided (assuming it's a sprite sheet).
+pbImage holds a pbSurface and other useful information that doesn't belong in pbSprite because it can be reused.
+pbSprite is a hierarchical logical transform object with a children list and an optional pbImage attached.  This is the bottom line, expected to be one instance per on-screen object.
+pbDictionary is a very basic, non-optimal dictionary which stores multiple values per key.
+pbLayer extends pbSprite and adds a new list and a dictionary for batching surfaces together.  More on this separation below...
+
+The other classes are support or hardware interface: pbMatrix3, pbRenderer, pbGraphics (ugly and needs attention), pbWebGl, and pbRootTimer.
+
+
+I extended pbSprite into pbLayer because I see two great requirements which happily seems to be compatible:
+
+- webgl (and possibly canvas?) really really needs to batch sprites using a common surface or the performance is horrible.
+- developers should be encouraged to present data to the system in a way the permits batching, without needing to worry about the details of the actual batching processes.
+
+pbLayer is using the inherited (is that the correct term for a prototypical language?) abilities of pbSprite as a logical hierarchical transform.  This lets us use layers both as cameras and visually separate layers in the games (eg. a UI layer, a foreground layer, a player layer, a background layer and a parallax layer... for a scrolling game).  The content of each layer is highly likely to contain multiple resources that draw from the same surface (multiple aliens, explosions, bullets, repeating tiles, character sets...), so the in-built sprite batching system using the pbDictionary will be able to optimise the draw functions without any deep analysis.
+I could just use pbSprite for this, but that would add confusion for many devs (who will tend to want to think of a pbSprite as a drawing object), and involve extra methods on pbSprite that don't really belong on either a drawing object or a logical transform holder.
+I'm still debating the utility of the second list in pbLayer.  I wanted to create combined units within a single leaf of the hierarchy tree which are effectively all at the same depth - I have a gut feeling this could lead to further batch type optimisation down the line... but I can't see what it currently adds over the children list already available.
+
+
+The demos:
+
+'soldiers' illustrates sprite batching using multiple source textures within a single layer.  Performance on my desktop exceeds the maximum (~14k soldiers) so I need to make some new demos that push the system harder.
+'transforms' illustrates the hierarchical nature of the logical transforms.  When the (large ball) parent sprite is rotated and moved, it's children orbit and move with it.  This is repeated down through four levels of children.  Scale transforms are also inherited.
+'wobble' illustrates the setCorners offset capability (this will be webgl only, canvas can skew against x or y... a generic API function will support both by limiting the webgl abilities to the canvas restrictions, but setCorners will still be available for anyone who is only targeting webgl).
+
+Next up:
+
+I'll be continuing to refine the exposed methods (I hesitate to call it an API yet, it's horribly crude so far).
+A 'game like' demo seems like a worthwhile stress-test so I'll make an 'automated invaders'... this will show me what functionality is missing, and also test the webgl implementation and shaders in a more real-world show case.
+At some point soon I need to clean up the pbGraphics class (which is supposed to redirect high level drawing methods to the appropriate webgl/canvas/future-expansion implementations) so I can begin to experiment with canvas performance.  I doubt there is a great deal of optimisation available to canvas users beyond the support code, but there are probably one or two tricks worth investigating.
+
+- Pete

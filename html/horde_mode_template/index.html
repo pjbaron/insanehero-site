@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zombie Horde Wave Attack</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.90.0/phaser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=B612+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Frijole&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <script type="module">
+        (async () => {
+            const waitForFonts = async () => {
+                try {
+                    if (document.fonts && typeof document.fonts.load === 'function') {
+                        await Promise.all([
+                            document.fonts.load('72px "Frijole"'),
+                            document.fonts.load('48px "B612 Mono"'),
+                            document.fonts.load('20px "B612 Mono"'),
+                            document.fonts.load('18px "B612 Mono"'),
+                            document.fonts.load('16px "B612 Mono"')
+                        ]);
+                        console.log('Fonts loaded via document.fonts.load');
+                    }
+                    if (document.fonts && typeof document.fonts.ready?.then === 'function') {
+                        await document.fonts.ready;
+                        console.log('document.fonts.ready resolved');
+                    }
+                } catch (e) {
+                    console.warn('Font load error:', e);
+                }
+            };
+    
+            const waitForDom = new Promise((resolve) => {
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    resolve();
+                } else {
+                    window.addEventListener('DOMContentLoaded', () => resolve(), { once: true });
+                }
+            });
+    
+            await waitForDom;
+            await waitForFonts();
+            console.log('Starting game');
+            await import('./app.js');
+        })();
+    </script>
+</body>
+</html>

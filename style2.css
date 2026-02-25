@@ -1,0 +1,298 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: top;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+
+body {
+    overflow-x:hidden;
+    background-color: #282725;
+    font-family: calibre, arial;
+}
+
+/* full background image */
+@media only screen and (min-width: 1281px) {
+    body {
+        background-image: url('background.jpg');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-position: 0px 0px;
+        background-attachment: fixed;
+    }
+    .sidebar_lft {
+        position: fixed;
+        left: 5%;
+        margin-top: 50px;
+        width: 160px;
+        height: auto;    
+    }
+    .sidebar_rgt {
+        position: fixed;
+        right: 5%;
+        margin-top: 50px;
+        width: 160px;
+        height: auto;    
+    }
+}
+
+/* full background, move sidebar ads to edges to prevent overlapping by central panel */
+@media only screen and (max-width: 1375px) {
+    body {
+        background-image: url('background.jpg');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-position: 0px 0px;
+        background-attachment: fixed;
+    }
+    .sidebar_lft {
+        position: fixed;
+        left: 2%;
+        margin-top: 50px;
+        width: 160px;
+        height: auto;    
+    }
+    .sidebar_rgt {
+        position: fixed;
+        right: 2%;
+        margin-top: 50px;
+        width: 160px;
+        height: auto;    
+    }
+}
+
+/* smaller background image for many mobile devices or small desktop windows */
+@media only screen and (max-width: 1280px) {
+    body {
+        background-image: url('background_1280.jpg');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+        background-position: 0px 0px;
+        background-attachment: fixed;
+    }
+    .sidebar_lft {
+        position: fixed;
+        left: 0px;
+        margin-top: 50px;
+        width: 160px;
+        height: auto;    
+    }
+    .sidebar_rgt {
+        position: fixed;
+        right: 0px;
+        margin-top: 50px;
+        width: 160px;
+        height: auto;    
+    }
+}
+
+/* smaller background image for many mobile devices or small desktop windows */
+@media only screen and (max-width: 1024px) {
+    body {
+        background-image: url('background_1024.jpg');
+        background-size: 1024px auto;
+        background-repeat: no-repeat;
+        background-position: 0px 0px;
+        background-attachment: fixed;
+    }
+    .sidebar_lft {
+        visibility: hidden;
+    }
+    .sidebar_rgt {
+        visibility: hidden;
+    }
+
+}
+
+/* disable background image if screen width <= centre panel width */
+@media only screen and (max-width: 900px) {
+    body {
+        background-image: none;
+    }
+    .sidebar_lft {
+        visibility: hidden;
+    }
+    .sidebar_rgt {
+        visibility: hidden;
+    }
+}
+
+.twocolordiv  {
+    margin: 0px auto;
+    padding: 0px;
+    width:900px;
+    min-height: 100%;
+/*    height:1350px;*/
+    height: auto;
+    position: relative;
+    z-index: 9;
+    background-color: #373634;
+    box-shadow: 0px 0px 50px 5px #000000;
+}
+
+.twocolordiv:before {
+    content: "";
+    position: absolute;
+    top: 210px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #444442;
+}
+
+.bottom-ad {
+    text-align: center;
+}
+
+.googleplus {
+    top: 80px;
+}
+
+.statcounter {
+    position: relative;
+    text-align: center;
+    top: 0px;
+}
+
+.feature-square {
+    position: relative;
+    margin-left: 20px;
+    margin-top: 0px;
+    width: 300px;
+    height: 250px;
+}
+
+.game-square {
+    position: relative;
+    margin-left: 20px;
+    margin-top: 0px;
+    width: 860px;
+    height: auto;
+}
+
+.textbox-square {
+    position: relative;
+    margin-left: 20px;
+    margin-top: 0px;
+    margin-right: 40px;
+}
+
+.google-square {
+    position: relative;
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.icon-square {
+    position: relative;
+    margin-left: 20px;
+    margin-top: 20px;
+    min-width: 150px;
+}
+
+.banner {
+    position: relative;
+}
+
+.img1 {
+    position: relative;
+    margin-left: 20px;
+    width: 30%;
+    height: 30%;
+    z-index: 2;
+    -webkit-filter: drop-shadow(0px 0px 5px rgba(0,0,0,0.5));
+    filter: url(#drop-shadow);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=0, OffY=0, Color='#444')";
+    filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=0, OffY=0, Color='#444')";
+}
+
+.img2 {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    z-index: 1;
+    top: -45px;
+}
+
+.enclose-gallery {
+    text-align: center;
+    min-width: 800px;
+}
+
+.gallery-offset {
+    margin-left: 20px;
+}
+
+#gallery {
+	padding-left: 0px;
+}
+
+#gallery a:hover
+{
+    opacity:0.6;
+}
+
+#gallery .thumbnail {
+    background: #444442;
+    padding: 0;
+	width : 110px;
+	height : 110px;
+    float: left;
+    display: block;
+}
+
+#gallery .end {
+    float: none;
+    clear: both;
+}
+
+.ts1 {
+	text-shadow: 0px 0px 8px #000, 0px 0px 8px #000, 0px 0px 8px #000, 0px 0px 8px #000;
+	filter: glow(color=black,strength=4);
+}
+
+
+

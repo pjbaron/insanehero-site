@@ -1,0 +1,13 @@
+{
+"companyName": "DefaultCompany",
+"productName": "UnityWebGL",
+"dataUrl": "BuildGL.data.unityweb",
+"wasmCodeUrl": "BuildGL.wasm.code.unityweb",
+"wasmFrameworkUrl": "BuildGL.wasm.framework.unityweb",
+"TOTAL_MEMORY": 268435456,
+"graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": true},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20",
+"cacheControl": {"default": "must-revalidate"}
+}

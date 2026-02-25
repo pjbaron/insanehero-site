@@ -1,0 +1,213 @@
+/* card.css - Card styles with drag & drop support */
+
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 12px 12px 12px 32px;
+    margin: 8px 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    position: relative;
+    /* Enable dragging */
+    user-select: none;
+}
+
+.card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Card drag states */
+.card.dragging {
+    opacity: 0.7;
+    transform: rotate(1deg) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    cursor: grabbing;
+    background: #f8f9fa;
+}
+
+/* Ensure links within cards remain clickable */
+.card a {
+    pointer-events: auto;
+    position: relative;
+    z-index: 10;
+}
+
+/* Prevent dragging when interacting with links */
+.card a:hover {
+    cursor: pointer;
+}
+
+.card-title {
+    font-size: 14px;
+    color: #172b4d;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    pointer-events: none; /* Prevent interference with drag */
+}
+
+.card-description {
+    font-size: 13px;
+    color: #5e6c84;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.card-description a {
+    color: #0079bf;
+    text-decoration: none;
+    pointer-events: auto; /* Ensure links are clickable */
+    position: relative;
+    z-index: 10;
+}
+
+.card-description a:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.card-progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #5e6c84;
+    pointer-events: none; /* Prevent interference with drag */
+}
+
+.progress-badge {
+    background: #ddd;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.progress-badge.complete {
+    background: #61bd4f;
+    color: white;
+}
+
+/* Cards container drag over state */
+.cards-container {
+    min-height: 20px;
+    transition: background-color 0.2s ease;
+}
+
+.cards-container.drag-over {
+    background: rgba(0, 121, 191, 0.1);
+    border: 2px dashed #0079bf;
+    border-radius: 8px;
+}
+
+/* Add card button */
+.add-card-btn {
+    background: none;
+    border: none;
+    color: #5e6c84;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 8px;
+    margin: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.add-card-btn:hover {
+    background: #e4e6ea;
+    color: #172b4d;
+}
+
+/* Drag placeholder styling */
+.card-drag-placeholder {
+    background: rgba(0, 121, 191, 0.1);
+    border: 2px dashed #0079bf;
+    border-radius: 8px;
+    height: 40px;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0079bf;
+    font-size: 12px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Ensure proper touch support for mobile */
+@media (hover: none) and (pointer: coarse) {
+    .card {
+        cursor: default;
+    }
+    
+    .card:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Accessibility improvements */
+.card:focus {
+    outline: 2px solid #0079bf;
+    outline-offset: 2px;
+}
+
+/* Ensure dragging works well with different card heights */
+.card[draggable="true"] {
+    cursor: grab;
+}
+
+.card[draggable="true"]:active {
+    cursor: grabbing;
+}
+
+/* Card completion checkbox */
+.card-completion-checkbox {
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border: 3px solid #ddd;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    background: white;
+    z-index: 10;
+}
+
+.card-completion-checkbox:hover {
+    border-color: #61bd4f;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.card-completion-checkbox.checked {
+    background: #61bd4f;
+    border-color: #61bd4f;
+    color: white;
+}
+
+
+/* Style for completed cards */
+.card-completed {
+    opacity: 0.7;
+}
+
+.card-completed .card-title {
+    color: #999;
+}

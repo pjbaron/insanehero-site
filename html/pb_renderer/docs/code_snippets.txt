@@ -1,0 +1,37 @@
+This file contains working, but no longer used code snippets, that might save me time in the future...
+8th April 2015
+
+
+/*
+how to: transfer a texture from the GPU to a RAM pbSurface
+no longer used because: cameraRTT demo changed to leave the texture on the GPU after the render-to-texture drawing
+
+	//
+	// init code
+	//
+
+	// create a RAM surface to download the texture to
+	this.textureSurface = new pbSurface();
+	// _wide, _high, _numWide, _numHigh, _image
+	this.textureSurface.create(this.rttTexture.width, this.rttTexture.height, 1, 1, null);
+	this.textureSurface.isNPOT = true;
+	// create an image to hold the surface
+	this.textureImage = new imageClass();
+	// _surface, _cellFrame, _anchorX, _anchorY, _tiling, _fullScreen
+	this.textureImage.create(this.textureSurface, 0, 0.5, 0.5, false, false);
+	// create a sprite to hold the image
+	this.textureSprite = new pbSprite();
+	// _image, _x, _y, _z, _angleInRadians, _scaleX, _scaleY
+	this.textureSprite.create(this.textureImage, 0, 0, 1.0, 0, 1.0, 1.0);
+
+	//
+	// post-update
+	//
+
+	// get the scene we just drew to the rttTexture into the prepared RAM surface
+	pbPhaserRender.renderer.graphics.textures.prepareTextureForAccess(this.rttTexture);
+	pbPhaserRender.renderer.graphics.textures.getSurfaceFromTexture(this.textureSurface);
+	// make sure the new surface contents are uploaded to the GPU when it's time to draw
+	this.textureSurface.image.isDirty = true;
+*/		
+

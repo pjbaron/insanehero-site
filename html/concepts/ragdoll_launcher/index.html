@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ragdoll Launcher</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #1a1a2e; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; }
+canvas { display: block; }
+#startScreen {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #1a1a2e; z-index: 10;
+}
+#startBtn {
+  font-size: 48px; font-weight: bold; padding: 20px 60px;
+  background: #e94560; color: #fff; border: none; border-radius: 12px;
+  cursor: pointer; letter-spacing: 3px;
+  box-shadow: 0 6px 0 #a31545, 0 8px 20px rgba(0,0,0,0.5);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+#startBtn:hover { transform: translateY(2px); box-shadow: 0 4px 0 #a31545, 0 6px 15px rgba(0,0,0,0.5); }
+#startBtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #a31545, 0 3px 10px rgba(0,0,0,0.5); }
+#ui {
+  position: fixed; top: 10px; left: 10px; z-index: 5;
+  color: #fff; font-size: 18px; pointer-events: none;
+}
+#score { font-size: 32px; font-weight: bold; color: #ffd700; }
+#combo { font-size: 20px; color: #ff6b6b; }
+#resetBtn {
+  position: fixed; bottom: 20px; right: 20px; z-index: 5;
+  font-size: 20px; padding: 10px 30px;
+  background: #533483; color: #fff; border: none; border-radius: 8px;
+  cursor: pointer; letter-spacing: 1px;
+}
+#resetBtn:hover { background: #6b44a0; }
+</style>
+</head>
+<body>
+<div id="startScreen"><button id="startBtn">LAUNCH!</button></div>
+<div id="ui">
+  <div id="score">0</div>
+  <div id="combo"></div>
+</div>
+<button id="resetBtn" style="display:none;">RESET</button>
+<canvas id="c"></canvas>
+
+<script>
+const { Engine, Render, Runner, Bodies, Body, Composite, Constraint, Events, Mouse, Vector } = Matter;
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Game state
+let engine, runner;
+let ragdoll = null;
+let obstacles = [];
+let targets = [];
+let particles = [];
+let floatingTexts = [];
+let score = 0;
+let combo = 0;
+let comboTimer = 0;
+let lastBreakTime = 0;
+let dragging = false;
+let dragStart = null;
+let dragEnd = null;
+let launched = false;
+let shakeAmount = 0;
+let slingOrigin = { x: 150, y: 0 };
+let gameStarted = false;
+let brokenBodies = new Set();
+
+// Categories for collision filtering
+const CAT_DEFAULT = 0x0001;
+const CAT_RAGDOLL = 0x0002;
+const CAT_OBSTACLE = 0x0004;
+const CAT_GROUND = 0x0008;
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('resetBtn').style.display = 'block';
+  gameStarted = true;
+  init();
+});
+
+document.getElementById('resetBtn').addEventListener('click', resetGame);
+
+function init() {
+  engine = Engine.create({ gravity: { x: 0, y: 1.5 } });
+  runner = Runner.create();
+
+  slingOrigin.y = H - 180;
+  score = 0;
+  combo = 0;
+  comboTimer = 0;
+  launched = false;
+  dragging = false;
+  brokenBodies.clear();
+  particles = [];
+  floatingTexts = [];
+  obstacles = [];
+  targets = [];
+  shakeAmount = 0;
+
+  // Ground
+  const ground = Bodies.rectangle(W / 2, H - 20, W + 200, 40, {
+    isStatic: true,
+    friction: 0.8,
+    render: { fillStyle: '#2d2d4e' },
+    label: 'ground',
+    collisionFilter: { category: CAT_GROUND }
+  });
+
+  // Left wall
+  const leftWall = Bodies.rectangle(-10, H / 2, 20, H, {
+    isStatic: true, label: 'wall',
+    collisionFilter: { category: CAT_GROUND }
+  });
+
+  // Right wall
+  const rightWall = Bodies.rectangle(W + 10, H / 2, 20, H, {
+    isStatic: true, label: 'wall',
+    collisionFilter: { category: CAT_GROUND }
+  });
+
+  Composite.add(engine.world, [ground, leftWall, rightWall]);
+
+  buildScene();
+  createRagdoll(slingOrigin.x, slingOrigin.y);
+
+  // Collision events
+  Events.on(engine, 'collisionStart', handleCollision);
+
+  Runner.run(runner, engine);
+  requestAnimationFrame(gameLoop);
+}
+
+function resetGame() {
+  if (runner) Runner.stop(runner);
+  if (engine) {
+    Events.off(engine);
+    Engine.clear(engine);
+  }
+  init();
+}
+
+// --- Ragdoll ---
+function createRagdoll(x, y) {
+  const parts = [];
+  const constraints = [];
+
+  const headRadius = 12;
+  const torsoW = 16, torsoH = 30;
+  const limbW = 8, limbH = 22;
+
+  const opts = {
+    friction: 0.3,
+    restitution: 0.4,
+    collisionFilter: { category: CAT_RAGDOLL, mask: CAT_GROUND | CAT_OBSTACLE },
+    label: 'ragdoll'
+  };
+
+  // Head
+  const head = Bodies.circle(x, y - 40, headRadius, { ...opts, label: 'ragdoll_head', restitution: 0.6 });
+
+  // Torso
+  const torso = Bodies.rectangle(x, y - 10, torsoW, torsoH, { ...opts, label: 'ragdoll_torso' });
+
+  // Upper arms
+  const lArm = Bodies.rectangle(x - 20, y - 18, limbW, limbH, { ...opts, label: 'ragdoll_limb' });
+  const rArm = Bodies.rectangle(x + 20, y - 18, limbW, limbH, { ...opts, label: 'ragdoll_limb' });
+
+  // Forearms
+  const lForearm = Bodies.rectangle(x - 20, y - 0, limbW - 2, limbH - 4, { ...opts, label: 'ragdoll_limb' });
+  const rForearm = Bodies.rectangle(x + 20, y - 0, limbW - 2, limbH - 4, { ...opts, label: 'ragdoll_limb' });
+
+  // Upper legs
+  const lLeg = Bodies.rectangle(x - 8, y + 16, limbW, limbH + 4, { ...opts, label: 'ragdoll_limb' });
+  const rLeg = Bodies.rectangle(x + 8, y + 16, limbW, limbH + 4, { ...opts, label: 'ragdoll_limb' });
+
+  // Lower legs
+  const lShin = Bodies.rectangle(x - 8, y + 40, limbW - 2, limbH, { ...opts, label: 'ragdoll_limb' });
+  const rShin = Bodies.rectangle(x + 8, y + 40, limbW - 2, limbH, { ...opts, label: 'ragdoll_limb' });
+
+  parts.push(head, torso, lArm, rArm, lForearm, rForearm, lLeg, rLeg, lShin, rShin);
+
+  const stiffness = 0.3;
+  const damping = 0.05;
+  const cOpts = { stiffness, damping, render: { visible: false } };
+
+  // Neck
+  constraints.push(Constraint.create({ bodyA: head, bodyB: torso,
+    pointA: { x: 0, y: headRadius }, pointB: { x: 0, y: -torsoH / 2 },
+    length: 4, ...cOpts }));
+
+  // Shoulders
+  constraints.push(Constraint.create({ bodyA: torso, bodyB: lArm,
+    pointA: { x: -torsoW / 2, y: -torsoH / 2 + 4 }, pointB: { x: 0, y: -limbH / 2 },
+    length: 2, ...cOpts }));
+  constraints.push(Constraint.create({ bodyA: torso, bodyB: rArm,
+    pointA: { x: torsoW / 2, y: -torsoH / 2 + 4 }, pointB: { x: 0, y: -limbH / 2 },
+    length: 2, ...cOpts }));
+
+  // Elbows
+  constraints.push(Constraint.create({ bodyA: lArm, bodyB: lForearm,
+    pointA: { x: 0, y: limbH / 2 }, pointB: { x: 0, y: -limbH / 2 + 2 },
+    length: 2, ...cOpts }));
+  constraints.push(Constraint.create({ bodyA: rArm, bodyB: rForearm,
+    pointA: { x: 0, y: limbH / 2 }, pointB: { x: 0, y: -limbH / 2 + 2 },
+    length: 2, ...cOpts }));
+
+  // Hips
+  constraints.push(Constraint.create({ bodyA: torso, bodyB: lLeg,
+    pointA: { x: -4, y: torsoH / 2 }, pointB: { x: 0, y: -(limbH + 4) / 2 },
+    length: 2, ...cOpts }));
+  constraints.push(Constraint.create({ bodyA: torso, bodyB: rLeg,
+    pointA: { x: 4, y: torsoH / 2 }, pointB: { x: 0, y: -(limbH + 4) / 2 },
+    length: 2, ...cOpts }));
+
+  // Knees
+  constraints.push(Constraint.create({ bodyA: lLeg, bodyB: lShin,
+    pointA: { x: 0, y: (limbH + 4) / 2 }, pointB: { x: 0, y: -limbH / 2 },
+    length: 2, ...cOpts }));
+  constraints.push(Constraint.create({ bodyA: rLeg, bodyB: rShin,
+    pointA: { x: 0, y: (limbH + 4) / 2 }, pointB: { x: 0, y: -limbH / 2 },
+    length: 2, ...cOpts }));
+
+  Composite.add(engine.world, [...parts, ...constraints]);
+  ragdoll = { parts, constraints, head, torso };
+}
+
+// --- Scene building ---
+function buildScene() {
+  const baseY = H - 40;
+  const startX = W * 0.4;
+
+  // Helper to add a box obstacle
+  function addBox(x, y, w, h, type) {
+    const colors = { wood: '#8B6914', glass: '#88ccee', stone: '#777' };
+    const hp = { wood: 60, glass: 15, stone: 120 };
+    const rest = { wood: 0.2, glass: 0.05, stone: 0.1 };
+    const dens = { wood: 0.002, glass: 0.001, stone: 0.004 };
+
+    const body = Bodies.rectangle(x, y, w, h, {
+      friction: 0.6,
+      restitution: rest[type],
+      density: dens[type],
+      collisionFilter: { category: CAT_OBSTACLE, mask: CAT_RAGDOLL | CAT_OBSTACLE | CAT_GROUND },
+      label: 'obstacle'
+    });
+    body.obstacleType = type;
+    body.color = colors[type];
+    body.hp = hp[type];
+    body.maxHp = hp[type];
+    body.width = w;
+    body.height = h;
+    obstacles.push(body);
+    Composite.add(engine.world, body);
+    return body;
+  }
+
+  function addTarget(x, y) {
+    const body = Bodies.circle(x, y, 14, {
+      friction: 0.3,
+      restitution: 0.5,
+      density: 0.003,
+      collisionFilter: { category: CAT_OBSTACLE, mask: CAT_RAGDOLL | CAT_OBSTACLE | CAT_GROUND },
+      label: 'target'
+    });
+    body.color = '#e94560';
+    body.hp = 30;
+    body.maxHp = 30;
+    body.obstacleType = 'target';
+    targets.push(body);
+    obstacles.push(body);
+    Composite.add(engine.world, body);
+    return body;
+  }
+
+  // Structure 1: Tower with glass windows
+  const t1x = startX;
+  addBox(t1x - 25, baseY - 20, 20, 40, 'wood');
+  addBox(t1x + 25, baseY - 20, 20, 40, 'wood');
+  addBox(t1x, baseY - 44, 80, 8, 'wood'); // plank
+  addBox(t1x, baseY - 52, 50, 8, 'glass'); // glass window
+  addBox(t1x - 25, baseY - 72, 20, 32, 'wood');
+  addBox(t1x + 25, baseY - 72, 20, 32, 'wood');
+  addBox(t1x, baseY - 92, 80, 8, 'wood'); // plank
+  addTarget(t1x, baseY - 60); // hidden target
+
+  // Structure 2: Glass pyramid
+  const t2x = startX + 180;
+  addBox(t2x - 30, baseY - 12, 25, 25, 'stone');
+  addBox(t2x, baseY - 12, 25, 25, 'stone');
+  addBox(t2x + 30, baseY - 12, 25, 25, 'stone');
+  addBox(t2x - 15, baseY - 36, 60, 6, 'glass');
+  addBox(t2x - 15, baseY - 50, 25, 25, 'glass');
+  addBox(t2x + 15, baseY - 50, 25, 25, 'glass');
+  addBox(t2x, baseY - 70, 50, 6, 'glass');
+  addBox(t2x, baseY - 84, 20, 20, 'glass');
+  addTarget(t2x, baseY - 36);
+
+  // Structure 3: Tall stack
+  const t3x = startX + 360;
+  for (let i = 0; i < 5; i++) {
+    const type = i % 2 === 0 ? 'wood' : 'glass';
+    addBox(t3x, baseY - 15 - i * 30, 40, 28, type);
+  }
+  addTarget(t3x, baseY - 170);
+
+  // Structure 4: Wide wall
+  const t4x = startX + 120;
+  for (let row = 0; row < 3; row++) {
+    for (let col = 0; col < 3; col++) {
+      const offset = row % 2 === 0 ? 0 : 15;
+      addBox(t4x + col * 32 + offset - 30, baseY - 130 - row * 22, 30, 20, 'glass');
+    }
+  }
+
+  // Loose boxes on ground for extra carnage
+  addBox(startX + 80, baseY - 12, 22, 22, 'wood');
+  addBox(startX + 260, baseY - 12, 22, 22, 'wood');
+  addBox(startX + 300, baseY - 12, 22, 22, 'glass');
+}
+
+// --- Collision handling ---
+function handleCollision(event) {
+  for (const pair of event.pairs) {
+    const a = pair.bodyA;
+    const b = pair.bodyB;
+
+    // Calculate impact force from relative velocity
+    const relVel = Math.sqrt(
+      Math.pow((a.velocity.x - b.velocity.x), 2) +
+      Math.pow((a.velocity.y - b.velocity.y), 2)
+    );
+
+    // Ragdoll hitting obstacle
+    if ((a.label.startsWith('ragdoll') && (b.label === 'obstacle' || b.label === 'target')) ||
+        (b.label.startsWith('ragdoll') && (a.label === 'obstacle' || a.label === 'target'))) {
+      const obs = a.label === 'obstacle' || a.label === 'target' ? a : b;
+      damageObstacle(obs, relVel * 3, pair.collision);
+    }
+
+    // Obstacle hitting obstacle (chain reactions)
+    if (a.label === 'obstacle' && b.label === 'obstacle') {
+      if (relVel > 3) {
+        damageObstacle(a, relVel * 1.5, pair.collision);
+        damageObstacle(b, relVel * 1.5, pair.collision);
+      }
+    }
+
+    // Obstacle hitting ground hard
+    if ((a.label === 'obstacle' && b.label === 'ground') ||
+        (b.label === 'obstacle' && a.label === 'ground')) {
+      const obs = a.label === 'obstacle' ? a : b;
+      if (relVel > 5) {
+        damageObstacle(obs, relVel * 2, pair.collision);
+      }
+    }
+
+    // Screen shake on hard impacts
+    if (relVel > 8) {
+      shakeAmount = Math.min(shakeAmount + relVel * 0.5, 15);
+    }
+  }
+}
+
+function damageObstacle(body, damage, collision) {
+  if (brokenBodies.has(body.id)) return;
+  if (!body.hp) return;
+
+  body.hp -= damage;
+
+  if (body.hp <= 0) {
+    breakObstacle(body, collision);
+  }
+}
+
+function breakObstacle(body, collision) {
+  if (brokenBodies.has(body.id)) return;
+  brokenBodies.add(body.id);
+
+  const now = performance.now();
+  if (now - lastBreakTime < 1500) {
+    combo++;
+    comboTimer = 120;
+  } else {
+    combo = 1;
+    comboTimer = 120;
+  }
+  lastBreakTime = now;
+
+  let points = 0;
+  if (body.obstacleType === 'glass') points = 50;
+  else if (body.obstacleType === 'wood') points = 100;
+  else if (body.obstacleType === 'stone') points = 200;
+  else if (body.obstacleType === 'target') points = 500;
+
+  points *= combo;
+  score += points;
+
+  // Floating text
+  const col = body.obstacleType === 'target' ? '#ff4466' : '#ffd700';
+  const text = combo > 1 ? `${points} x${combo}` : `${points}`;
+  floatingTexts.push({
+    x: body.position.x, y: body.position.y,
+    text, color: col, life: 90, vy: -2, size: combo > 1 ? 22 + combo * 2 : 18
+  });
+
+  // Particles
+  const cx = body.position.x;
+  const cy = body.position.y;
+  const pColor = body.color;
+  const count = body.obstacleType === 'glass' ? 20 : 12;
+
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 1 + Math.random() * 5;
+    particles.push({
+      x: cx + (Math.random() - 0.5) * 20,
+      y: cy + (Math.random() - 0.5) * 20,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      life: 40 + Math.random() * 40,
+      maxLife: 80,
+      size: 2 + Math.random() * (body.obstacleType === 'glass' ? 5 : 4),
+      color: pColor,
+      type: body.obstacleType
+    });
+  }
+
+  // Glass sparkle particles
+  if (body.obstacleType === 'glass') {
+    for (let i = 0; i < 8; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * 4;
+      particles.push({
+        x: cx, y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 3,
+        life: 30 + Math.random() * 30,
+        maxLife: 60,
+        size: 1 + Math.random() * 2,
+        color: '#ffffff',
+        type: 'sparkle'
+      });
+    }
+    shakeAmount = Math.min(shakeAmount + 5, 15);
+  }
+
+  // Remove from physics
+  Composite.remove(engine.world, body);
+}
+
+// --- Input ---
+canvas.addEventListener('mousedown', (e) => {
+  if (!gameStarted || launched) return;
+  const mx = e.clientX;
+  const my = e.clientY;
+  const dx = mx - slingOrigin.x;
+  const dy = my - slingOrigin.y;
+  if (Math.sqrt(dx * dx + dy * dy) < 120) {
+    dragging = true;
+    dragStart = { x: slingOrigin.x, y: slingOrigin.y };
+    dragEnd = { x: mx, y: my };
+  }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!dragging) return;
+  dragEnd = { x: e.clientX, y: e.clientY };
+  // Clamp drag distance
+  const dx = dragEnd.x - dragStart.x;
+  const dy = dragEnd.y - dragStart.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const maxDist = 180;
+  if (dist > maxDist) {
+    dragEnd.x = dragStart.x + (dx / dist) * maxDist;
+    dragEnd.y = dragStart.y + (dy / dist) * maxDist;
+  }
+
+  // Move ragdoll to drag position
+  if (ragdoll) {
+    const offsetX = dragEnd.x - slingOrigin.x;
+    const offsetY = dragEnd.y - slingOrigin.y;
+    ragdoll.parts.forEach(part => {
+      Body.setPosition(part, {
+        x: part.position.x + (slingOrigin.x + offsetX - ragdoll.torso.position.x) * 0.3,
+        y: part.position.y + (slingOrigin.y + offsetY - ragdoll.torso.position.y) * 0.3
+      });
+      Body.setVelocity(part, { x: 0, y: 0 });
+    });
+  }
+});
+
+canvas.addEventListener('mouseup', () => {
+  if (!dragging) return;
+  dragging = false;
+  if (!dragEnd) return;
+
+  const dx = dragStart.x - dragEnd.x;
+  const dy = dragStart.y - dragEnd.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+
+  if (dist < 15) return; // Too small a pull
+
+  const power = dist * 0.18;
+  const angle = Math.atan2(dy, dx);
+
+  // Launch ragdoll
+  if (ragdoll) {
+    ragdoll.parts.forEach(part => {
+      Body.setVelocity(part, {
+        x: Math.cos(angle) * power,
+        y: Math.sin(angle) * power
+      });
+    });
+    launched = true;
+  }
+  dragEnd = null;
+});
+
+// Touch support
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  const t = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent('mousedown', { clientX: t.clientX, clientY: t.clientY }));
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  const t = e.touches[0];
+  canvas.dispatchEvent(new MouseEvent('mousemove', { clientX: t.clientX, clientY: t.clientY }));
+}, { passive: false });
+
+canvas.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  canvas.dispatchEvent(new MouseEvent('mouseup'));
+}, { passive: false });
+
+// --- Render ---
+function gameLoop() {
+  if (!gameStarted) return;
+
+  ctx.save();
+
+  // Screen shake
+  if (shakeAmount > 0.5) {
+    const sx = (Math.random() - 0.5) * shakeAmount;
+    const sy = (Math.random() - 0.5) * shakeAmount;
+    ctx.translate(sx, sy);
+    shakeAmount *= 0.9;
+  }
+
+  // Background
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(-20, -20, W + 40, H + 40);
+
+  // Ground
+  ctx.fillStyle = '#2d2d4e';
+  ctx.fillRect(0, H - 40, W, 40);
+  ctx.fillStyle = '#3d3d5e';
+  ctx.fillRect(0, H - 40, W, 3);
+
+  // Slingshot post
+  drawSlingshot();
+
+  // Sling elastic + trajectory
+  if (dragging && dragEnd) {
+    drawElastic();
+    drawTrajectory();
+  }
+
+  // Obstacles
+  for (const obs of obstacles) {
+    if (brokenBodies.has(obs.id)) continue;
+    drawObstacle(obs);
+  }
+
+  // Ragdoll
+  if (ragdoll) {
+    drawRagdoll();
+  }
+
+  // Particles
+  updateAndDrawParticles();
+
+  // Floating texts
+  updateAndDrawFloatingTexts();
+
+  ctx.restore();
+
+  // UI
+  document.getElementById('score').textContent = score;
+  if (comboTimer > 0) {
+    comboTimer--;
+    if (combo > 1) {
+      document.getElementById('combo').textContent = `COMBO x${combo}!`;
+      document.getElementById('combo').style.opacity = comboTimer / 120;
+    }
+  } else {
+    document.getElementById('combo').textContent = '';
+    combo = 0;
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+function drawSlingshot() {
+  const x = slingOrigin.x;
+  const y = slingOrigin.y;
+
+  // Fork
+  ctx.strokeStyle = '#6b4226';
+  ctx.lineWidth = 6;
+  ctx.lineCap = 'round';
+
+  // Left prong
+  ctx.beginPath();
+  ctx.moveTo(x - 2, y + 60);
+  ctx.lineTo(x - 2, y + 10);
+  ctx.lineTo(x - 15, y - 20);
+  ctx.stroke();
+
+  // Right prong
+  ctx.beginPath();
+  ctx.moveTo(x + 2, y + 60);
+  ctx.lineTo(x + 2, y + 10);
+  ctx.lineTo(x + 15, y - 20);
+  ctx.stroke();
+
+  // Darker outline
+  ctx.strokeStyle = '#4a2e14';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x - 2, y + 60);
+  ctx.lineTo(x - 2, y + 10);
+  ctx.lineTo(x - 15, y - 20);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x + 2, y + 60);
+  ctx.lineTo(x + 2, y + 10);
+  ctx.lineTo(x + 15, y - 20);
+  ctx.stroke();
+
+  // Idle elastic (when not dragging)
+  if (!dragging && !launched) {
+    ctx.strokeStyle = '#c0392b';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x - 15, y - 20);
+    ctx.quadraticCurveTo(x, y - 5, x + 15, y - 20);
+    ctx.stroke();
+  }
+}
+
+function drawElastic() {
+  const x = slingOrigin.x;
+  const y = slingOrigin.y;
+
+  ctx.strokeStyle = '#c0392b';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+
+  // Left band to pull point
+  ctx.beginPath();
+  ctx.moveTo(x - 15, y - 20);
+  ctx.lineTo(dragEnd.x, dragEnd.y);
+  ctx.stroke();
+
+  // Right band to pull point
+  ctx.beginPath();
+  ctx.moveTo(x + 15, y - 20);
+  ctx.lineTo(dragEnd.x, dragEnd.y);
+  ctx.stroke();
+
+  // Pull point indicator
+  ctx.fillStyle = '#e74c3c';
+  ctx.beginPath();
+  ctx.arc(dragEnd.x, dragEnd.y, 5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawTrajectory() {
+  const dx = dragStart.x - dragEnd.x;
+  const dy = dragStart.y - dragEnd.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist < 15) return;
+
+  const power = dist * 0.18;
+  const angle = Math.atan2(dy, dx);
+  const vx = Math.cos(angle) * power;
+  const vy = Math.sin(angle) * power;
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  let px = slingOrigin.x;
+  let py = slingOrigin.y;
+  let pvx = vx;
+  let pvy = vy;
+  const gravity = 1.5 / 60;
+
+  for (let i = 0; i < 30; i++) {
+    px += pvx;
+    pvy += gravity;
+    py += pvy;
+    if (py > H - 40) break;
+    if (i % 2 === 0) {
+      const alpha = 1 - i / 30;
+      ctx.globalAlpha = alpha * 0.5;
+      ctx.beginPath();
+      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawObstacle(obs) {
+  ctx.save();
+  ctx.translate(obs.position.x, obs.position.y);
+  ctx.rotate(obs.angle);
+
+  const dmgRatio = obs.hp / obs.maxHp;
+
+  if (obs.label === 'target') {
+    // Red circle target
+    ctx.fillStyle = obs.color;
+    ctx.beginPath();
+    ctx.arc(0, 0, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(0, 0, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = obs.color;
+    ctx.beginPath();
+    ctx.arc(0, 0, 4, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    const w = obs.width;
+    const h = obs.height;
+
+    ctx.fillStyle = obs.color;
+    ctx.fillRect(-w / 2, -h / 2, w, h);
+
+    // Damage cracks
+    if (dmgRatio < 0.7) {
+      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+      ctx.lineWidth = 1;
+      const cracks = Math.floor((1 - dmgRatio) * 5);
+      for (let i = 0; i < cracks; i++) {
+        ctx.beginPath();
+        const sx = (Math.random() - 0.5) * w * 0.8;
+        const sy = (Math.random() - 0.5) * h * 0.8;
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(sx + (Math.random() - 0.5) * 15, sy + (Math.random() - 0.5) * 15);
+        ctx.stroke();
+      }
+    }
+
+    // Glass shine effect
+    if (obs.obstacleType === 'glass') {
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.fillRect(-w / 2 + 2, -h / 2 + 2, w * 0.4, h - 4);
+    }
+
+    // Outline
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-w / 2, -h / 2, w, h);
+  }
+
+  ctx.restore();
+}
+
+function drawRagdoll() {
+  const parts = ragdoll.parts;
+  const head = ragdoll.head;
+  const torso = ragdoll.torso;
+
+  // Limb connections (draw lines between constrained parts)
+  ctx.strokeStyle = '#f5c542';
+  ctx.lineWidth = 5;
+  ctx.lineCap = 'round';
+
+  // Draw limb segments
+  function drawLimb(a, b) {
+    ctx.beginPath();
+    ctx.moveTo(a.position.x, a.position.y);
+    ctx.lineTo(b.position.x, b.position.y);
+    ctx.stroke();
+  }
+
+  // Arms: torso -> upper arm -> forearm
+  ctx.strokeStyle = '#f0c040';
+  ctx.lineWidth = 5;
+  drawLimb(parts[2], parts[4]); // left arm to forearm
+  drawLimb(parts[3], parts[5]); // right arm to forearm
+
+  // Connect shoulders
+  drawLimb(torso, parts[2]); // torso to left arm
+  drawLimb(torso, parts[3]); // torso to right arm
+
+  // Legs: torso -> upper leg -> shin
+  ctx.strokeStyle = '#3498db';
+  ctx.lineWidth = 5;
+  drawLimb(parts[6], parts[8]); // left leg to shin
+  drawLimb(parts[7], parts[9]); // right leg to shin
+
+  // Connect hips
+  drawLimb(torso, parts[6]); // torso to left leg
+  drawLimb(torso, parts[7]); // torso to right leg
+
+  // Torso body
+  ctx.save();
+  ctx.translate(torso.position.x, torso.position.y);
+  ctx.rotate(torso.angle);
+  ctx.fillStyle = '#e74c3c';
+  ctx.fillRect(-8, -15, 16, 30);
+  ctx.restore();
+
+  // Neck line
+  ctx.strokeStyle = '#f5c542';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(torso.position.x, torso.position.y - 12);
+  ctx.lineTo(head.position.x, head.position.y + 8);
+  ctx.stroke();
+
+  // Head
+  ctx.save();
+  ctx.translate(head.position.x, head.position.y);
+  ctx.rotate(head.angle);
+
+  // Head circle
+  ctx.fillStyle = '#f5c542';
+  ctx.beginPath();
+  ctx.arc(0, 0, 12, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = '#333';
+  ctx.beginPath();
+  ctx.arc(-4, -2, 2.5, 0, Math.PI * 2);
+  ctx.arc(4, -2, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Mouth - changes based on velocity
+  const speed = Math.sqrt(head.velocity.x ** 2 + head.velocity.y ** 2);
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  if (speed > 10) {
+    // Screaming
+    ctx.arc(0, 3, 4, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (speed > 3) {
+    // Surprised
+    ctx.arc(0, 4, 3, 0, Math.PI);
+    ctx.stroke();
+  } else {
+    // Smile
+    ctx.arc(0, 2, 3, 0.1 * Math.PI, 0.9 * Math.PI);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+
+  // Hands (circles at end of forearms)
+  ctx.fillStyle = '#f5c542';
+  [parts[4], parts[5]].forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.position.x, p.position.y + 6, 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Feet (small rectangles at end of shins)
+  ctx.fillStyle = '#555';
+  [parts[8], parts[9]].forEach(p => {
+    ctx.save();
+    ctx.translate(p.position.x, p.position.y + 8);
+    ctx.rotate(p.angle);
+    ctx.fillRect(-5, -2, 10, 5);
+    ctx.restore();
+  });
+}
+
+function updateAndDrawParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.15;
+    p.vx *= 0.98;
+    p.life--;
+
+    if (p.life <= 0) {
+      particles.splice(i, 1);
+      continue;
+    }
+
+    const alpha = p.life / p.maxLife;
+    ctx.globalAlpha = alpha;
+
+    if (p.type === 'sparkle') {
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      // Draw a small diamond for sparkle
+      ctx.moveTo(p.x, p.y - p.size);
+      ctx.lineTo(p.x + p.size * 0.7, p.y);
+      ctx.lineTo(p.x, p.y + p.size);
+      ctx.lineTo(p.x - p.size * 0.7, p.y);
+      ctx.closePath();
+      ctx.fill();
+    } else if (p.type === 'glass') {
+      // Angular shard shape
+      ctx.fillStyle = p.color;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.vx * 0.5);
+      ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * 0.6);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+function updateAndDrawFloatingTexts() {
+  for (let i = floatingTexts.length - 1; i >= 0; i--) {
+    const t = floatingTexts[i];
+    t.y += t.vy;
+    t.vy *= 0.97;
+    t.life--;
+
+    if (t.life <= 0) {
+      floatingTexts.splice(i, 1);
+      continue;
+    }
+
+    const alpha = Math.min(1, t.life / 30);
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = t.color;
+    ctx.font = `bold ${t.size}px 'Segoe UI', Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+    ctx.lineWidth = 3;
+    ctx.strokeText(t.text, t.x, t.y);
+    ctx.fillText(t.text, t.x, t.y);
+  }
+  ctx.globalAlpha = 1;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<html>
+  <head>
+    <title>Whacko!</title>
+  </head>
+
+  <body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+        font-family: 'Mountains of Christmas', cursive;
+      }
+
+      @font-face {
+          font-family: 'Mountains of Christmas';
+          src: url(".\\media\\MountainsofChristmas-Bold.woff") format("woff"),
+               url(".\\media\\MountainsofChristmas-Bold.ttf")  format("truetype");
+      }
+    </style>
+
+    <script src="imageLoader.js"></script>
+    <script src="sprite.js"></script>
+  </body>
+
+<script type="text/javascript">
+
+  // Get a reference to the canvas element
+  var canvas = document.getElementById("canvas");
+
+  // Get the canvas context, which is used to draw on the canvas
+  var ctx = canvas.getContext("2d");
+
+  // Set the canvas to fill the entire window
+  canvas.width = 1024;
+  canvas.height = 768;
+
+  var images = new ImageLoader();
+  var sfx = null;
+  var sprites = null;
+  var score = 0, scoreCount = 0;
+  var touch = false;
+
+  const names = ["sam", "joe", "betty", "keith", "pat", "ruth", "jen", "pete", "julie"];
+
+  var loading = 0;
+  loadAllImages();
+  loadAllAudio();
+
+  window.addEventListener("resize", function() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  // Variables for the mouse position and whether the mouse is down
+  mouseX = 0;
+  mouseY = 0;
+  mouseDown = false;
+
+  deltaTime = 0;
+  var lastTime = Date.now();
+
+  // Function to update the canvas on each frame
+  function update() {
+    deltaTime = (Date.now() - lastTime) / 1000;
+    lastTime = Date.now();
+
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (loading == 0)
+    {
+      // Initialise sprites when all the Images have loaded
+      if (!sprites)
+      {
+        sprites = {};
+
+        var sprite = new Sprite("static", "bg", "bg", 0, 768, images);
+        sprite.setPivot(0, 1);
+        sprite.setVisible(true);
+        addSprite(sprite);
+
+        for(var i = 0; i < 4; i++)
+        {
+            var sprite = new Sprite("bopped", "target" + i.toString(), "target" + i.toString(), 128 + i * 256, 720, images);
+            sprite.setPivot(0.5, 1.0);
+            sprite.setScale(0.85, 0.85);
+            addSprite(sprite);
+
+            var sprite = new Sprite("static", "pressy" + i.toString(), "pressy", 128 + i * 256, 768, images);
+            sprite.setPivot(0.5, 1.0);
+            sprite.setVisible(true);
+            addSprite(sprite);
+        }
+
+        var sprite = new Sprite("bopper", "mallet", "mallet", 100, 100, images);
+        sprite.setPivot(1.0, 0.5);
+        sprite.setAnchor(-0.8, 0.35);
+        sprite.setVisible(true);
+        addSprite(sprite);
+      }
+
+      // Update all sprites
+      for(var s in sprites)
+        sprites[s].update();
+
+      centreText("Merry Christmas!", 2, 102, "white", "100px");
+      centreText("Merry Christmas!", 0, 100, "red", "100px");
+
+      centreText("Click to Whack...", 2, 202, "black", "50px");
+      centreText("Click to Whack...", 0, 200, "white", "50px");
+
+      drawText("Score: " + score.toString(), 35, 744, (scoreCount-- <= 0) ? "white":"red", "50px");
+    }
+
+    // Request the next frame
+    requestAnimationFrame(update);
+  }
+
+  // Start the raf loop
+  update();
+
+  // Set up mouse events
+  canvas.addEventListener("mousemove", function(event) {
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+  });
+
+  canvas.addEventListener("mousedown", function(event) {
+    mouseDown = true;
+  });
+
+  canvas.addEventListener("touchstart", function(event) {
+    mouseDown = true;
+    mouseX = event.touches[0].clientX;
+    mouseY = event.touches[0].clientY;
+  });
+
+  canvas.addEventListener("mouseup", function(event) {
+    mouseDown = false;
+  });
+
+  canvas.addEventListener("touchend", function(event) {
+    mouseDown = false;
+  });
+
+
+  function centreText(text, x, y, colour, size)
+  {
+    ctx.font = size + " Mountains of Christmas, bold";
+    ctx.fillStyle = colour;
+    var w = ctx.measureText(text).width;
+    ctx.fillText(text, (canvas.width - w) / 2 + x, y);
+  }
+
+  function drawText(text, x, y, colour, size)
+  {
+    ctx.font = size + " Mountains of Christmas, bold";
+    ctx.fillStyle = colour;
+    ctx.fillText(text, x, y);
+  }
+
+  function addSprite(sprite)
+  {
+    sprites[sprite.name] = sprite;
+  }
+
+  function forEachSprite(context, callback)
+  {
+    for(var n in sprites)
+    {
+      callback(context, sprites[n]);
+    }
+  }
+
+  function scoreUp(amount)
+  {
+    score += amount;
+    scoreCount = 30;
+  }
+
+  function loadAllImages()
+  {
+    loading++;
+    images.loadImage("bg", ".\\media\\bg1024.jpg", 1024, 768).then(function() {
+      loading--;
+    });
+    loading++;
+    images.loadImage("pressy", ".\\media\\pressy256.png", 256, 256).then(function() {
+      loading--;
+    });
+    loading++;
+    images.loadImage("mallet", ".\\media\\mallet.png", 256, 256, 6).then(function() {
+      loading--;
+    });
+
+    for(let i = 0; i < names.length; i++)
+    {
+      loading++;
+      images.loadImage("target" + i.toString(), ".\\media\\" + names[i] + "256.png", 256, 256, 1).then(function() {
+        loading--;
+      });
+    }
+  }
+
+  function loadAllAudio()
+  {
+    sfx = {};
+    for(let i = 0; i < names.length; i++)
+      sfx["target" + i.toString()] = new Audio(".\\media\\ow_" + names[i] + ".mp3");
+    sfx["xmas_pete"] = new Audio(".\\media\\xmas_pete.mp3");
+    sfx["xmas_julie"] = new Audio(".\\media\\xmas_julie.mp3");
+  }
+
+
+
+</script>

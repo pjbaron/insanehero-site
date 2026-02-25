@@ -1,0 +1,174 @@
+{
+	"Strings": {
+		"String": [
+			{
+                "_id": "new_game_start_button_string",
+                "__text": "INIZIA"
+            },
+			{
+                "_id": "string_level_goal_title",
+                "__text": "OBIETTIVO"
+            },
+			{
+                "_id": "string_level_goal_protect",
+                "__text": "Proteggi la barriera"
+            },
+			{
+                "_id": "string_level_goal_crack_egg",
+                "__text": "Fai schiudere l'uovo"
+            },
+			{
+                "_id": "string_level_goal_collect",
+                "__text": "Ottieni tutto il pesce"
+            },
+			{
+                "_id": "string_level_goal_protect_fail",
+                "__text": "Non hai protetto la barriera"
+            },
+			{
+                "_id": "string_level_goal_crack_egg_fail",
+                "__text": "L'uovo non si è schiuso"
+            },
+			{
+                "_id": "string_level_goal_collect_fail",
+                "__text": "Non hai ottenuto abbastanza pesce"
+            },
+			{
+                "_id": "string_level_out_of_shots",
+                "__text": "Hai esaurito le bolle da lanciare"
+            },
+			{
+                "_id": "string_level_complete",
+                "__text": "Livello completato"
+            },
+			{
+                "_id": "string_win",
+                "__text": "HAI VINTO"
+            },
+			{
+                "_id": "string_lose",
+                "__text": "RIPROVA"
+            },
+			{
+                "_id": "string_score",
+                "__text": "PUNTEGGIO"
+            },
+			{
+                "_id": "string_high_score",
+                "__text": "RECORD"
+            },
+			{
+                "_id": "level_number_ui",
+                "__text": "Livello"
+            },
+			{
+                "_id": "game_quit_title",
+                "__text": "ESCI DAL GIOCO"
+            },
+			{
+                "_id": "help_title_boost",
+                "__text": "Potenziamento"
+            },
+			{
+                "_id": "help_title_special",
+                "__text": "Speciale"
+            },
+			{
+                "_id": "name_special_bomb",
+                "__text": "Bomba"
+            },
+			{
+                "_id": "desc_special_bomb",
+                "__text": "Distrugge le bolle vicine con un'esplosione."
+            },
+			{
+                "_id": "name_special_rocket",
+                "__text": "Razzo"
+            },
+			{
+                "_id": "desc_special_rocket",
+                "__text": "Fa esplodere le bolle che si trovano nella sua traiettoria."
+            },
+			{
+                "_id": "name_special_frozen_bubble",
+                "__text": "Bolla ghiacciata"
+            },
+			{
+                "_id": "desc_special_frozen_bubble",
+                "__text": "Nasconde il colore della bolla finché non viene colpita."
+            },
+			{
+                "_id": "name_special_carry_dragon",
+                "__text": "Drago avido"
+            },
+			{
+                "_id": "desc_special_carry_dragon",
+                "__text": "Evita che le bolle cadano."
+            },
+			{
+                "_id": "name_special_burst_dragon",
+                "__text": "Drago dei tizzoni"
+            },
+			{
+                "_id": "desc_special_burst_dragon",
+                "__text": "Fa scoppiare un gruppo di bolle a caso."
+            },
+			{
+                "_id": "name_special_convert_dragon",
+                "__text": "Drago scintillante"
+            },
+			{
+                "_id": "desc_special_convert_dragon",
+                "__text": "Rende speciale una bolla normale."
+            },
+			{
+                "_id": "name_boost_mine",
+                "__text": "Mina"
+            },
+			{
+                "_id": "desc_boost_mine",
+                "__text": "Distrugge delle bolle con una grossa esplosione."
+            },
+			{
+                "_id": "name_boost_wild",
+                "__text": "Jolly"
+            },
+			{
+                "_id": "desc_boost_wild",
+                "__text": "Efficace con bolle di qualsiasi colore."
+            },
+			{
+                "_id": "name_boost_fireball",
+                "__text": "Palla di fuoco"
+            },
+			{
+                "_id": "desc_boost_fireball",
+                "__text": "Distrugge bolle in linea retta."
+            },
+			{
+                "_id": "name_boost_extra_moves",
+                "__text": "Mosse extra"
+            },
+			{
+                "_id": "desc_boost_extra_moves",
+                "__text": "Aggiunge 5 bolle alla tua scorta."
+            },
+			{
+                "_id": "name_boost_burst_dragon",
+                "__text": "Drago dei tizzoni"
+            },
+			{
+                "_id": "desc_boost_burst_dragon",
+                "__text": "Fa scoppiare 3 gruppi di bolle a caso."
+            },
+			{
+                "_id": "name_boost_convert_dragon",
+                "__text": "Drago scintillante"
+            },
+			{
+                "_id": "desc_boost_convert_dragon",
+                "__text": "Trasforma 3 bolle normali in bolle speciali."
+            }
+		]
+	}
+}

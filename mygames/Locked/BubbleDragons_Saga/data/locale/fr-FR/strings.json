@@ -1,0 +1,174 @@
+{
+	"Strings": {
+		"String": [
+			{
+                "_id": "new_game_start_button_string",
+                "__text": "COMMENCER"
+            },
+			{
+                "_id": "string_level_goal_title",
+                "__text": "OBJECTIF"
+            },
+			{
+                "_id": "string_level_goal_protect",
+                "__text": "Protéger la barrière"
+            },
+			{
+                "_id": "string_level_goal_crack_egg",
+                "__text": "Casser l'œuf"
+            },
+			{
+                "_id": "string_level_goal_collect",
+                "__text": "Récupérer tous les poissons"
+            },
+			{
+                "_id": "string_level_goal_protect_fail",
+                "__text": "Vous n'avez pas protégé la barrière"
+            },
+			{
+                "_id": "string_level_goal_crack_egg_fail",
+                "__text": "Vous n'avez pas cassé l'œuf"
+            },
+			{
+                "_id": "string_level_goal_collect_fail",
+                "__text": "Vous n'avez pas récupéré assez de poissons"
+            },
+			{
+                "_id": "string_level_out_of_shots",
+                "__text": "Vous n'avez plus de bulles à tirer"
+            },
+			{
+                "_id": "string_level_complete",
+                "__text": "Niveau terminé"
+            },
+			{
+                "_id": "string_win",
+                "__text": "VOUS AVEZ GAGNÉ"
+            },
+			{
+                "_id": "string_lose",
+                "__text": "RÉESSAYER"
+            },
+			{
+                "_id": "string_score",
+                "__text": "SCORE"
+            },
+			{
+                "_id": "string_high_score",
+                "__text": "MEILLEUR SCORE"
+            },
+			{
+                "_id": "level_number_ui",
+                "__text": "Niveau"
+            },
+			{
+                "_id": "game_quit_title",
+                "__text": "QUITTER JEU"
+            },
+			{
+                "_id": "help_title_boost",
+                "__text": "Bonus"
+            },
+			{
+                "_id": "help_title_special",
+                "__text": "Spécial"
+            },
+			{
+                "_id": "name_special_bomb",
+                "__text": "Bombe"
+            },
+			{
+                "_id": "desc_special_bomb",
+                "__text": "Faites éclater les bulles à proximité dans une explosion"
+            },
+			{
+                "_id": "name_special_rocket",
+                "__text": "Fusée"
+            },
+			{
+                "_id": "desc_special_rocket",
+                "__text": "Éclate une rangée de bulles dans son sillon"
+            },
+			{
+                "_id": "name_special_frozen_bubble",
+                "__text": "Bulle glacée"
+            },
+			{
+                "_id": "desc_special_frozen_bubble",
+                "__text": "Cache la couleur de la bulle jusqu'à ce qu'elle soit touchée"
+            },
+			{
+                "_id": "name_special_carry_dragon",
+                "__text": "Dragon gourmand"
+            },
+			{
+                "_id": "desc_special_carry_dragon",
+                "__text": "Empêche les bulles de tomber"
+            },
+			{
+                "_id": "name_special_burst_dragon",
+                "__text": "Dragon ardent"
+            },
+			{
+                "_id": "desc_special_burst_dragon",
+                "__text": "Éclate des groupes de bulles au hasard"
+            },
+			{
+                "_id": "name_special_convert_dragon",
+                "__text": "Dragon étincelle"
+            },
+			{
+                "_id": "desc_special_convert_dragon",
+                "__text": "Transforme une bulle en bulle spéciale"
+            },
+			{
+                "_id": "name_boost_mine",
+                "__text": "Mine"
+            },
+			{
+                "_id": "desc_boost_mine",
+                "__text": "Éclate des bulles avec une grande explosion à l'impact"
+            },
+			{
+                "_id": "name_boost_wild",
+                "__text": "Sauvage"
+            },
+			{
+                "_id": "desc_boost_wild",
+                "__text": "S'associe avec des bulles de toutes les couleurs"
+            },
+			{
+                "_id": "name_boost_fireball",
+                "__text": "Boule de feu"
+            },
+			{
+                "_id": "desc_boost_fireball",
+                "__text": "Éclate les bulles sur une ligne droite"
+            },
+			{
+                "_id": "name_boost_extra_moves",
+                "__text": "Coups extra"
+            },
+			{
+                "_id": "desc_boost_extra_moves",
+                "__text": "Remplit votre réserve de bulles de 5 unités"
+            },
+			{
+                "_id": "name_boost_burst_dragon",
+                "__text": "Dragon ardent"
+            },
+			{
+                "_id": "desc_boost_burst_dragon",
+                "__text": "Éclate 3 groupes de bulles au hasard"
+            },
+			{
+                "_id": "name_boost_convert_dragon",
+                "__text": "Dragon étincelle"
+            },
+			{
+                "_id": "desc_boost_convert_dragon",
+                "__text": "Transforme 3 bulles en bulles spéciales"
+            }
+		]
+	}
+}

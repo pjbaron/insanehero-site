@@ -1,0 +1,20 @@
+{
+  "name": "Stack Thief",
+  "slug": "stack_thief",
+  "description": "Swipe to steal blocks from wobbling towers and stack them onto yours before everything topples \u00e2\u20ac\u201d tallest tower wins each round.",
+  "perspective": "side-view",
+  "core_loop": "Towers of varied blocks sway with physics on screen. Tap/swipe a block from any rival tower to yank it out \u00e2\u20ac\u201d it flies to the top of your tower. Your tower sways more with each addition. Time your steals carefully: pulling a load-bearing block collapses the rival tower (bonus points), but stacking too fast makes YOUR tower wobble and fall (round over). Each round lasts 30-60 seconds with a rising 'earthquake' rumble that intensifies wobble, forcing risky plays.",
+  "retention_hooks": [
+    "Tower height is your high score \u00e2\u20ac\u201d beat your record each round with a visible ghost-line marker",
+    "Unlockable block themes (gold, jelly, ice, lava) every few rounds that change physics feel",
+    "Combo streaks for stealing 3+ blocks without your tower wobbling past the danger angle"
+  ],
+  "controls": "Tap/click a block on any rival tower to steal it. Tap your own tower to 'brace' it momentarily (3-second cooldown), reducing wobble. That's it \u00e2\u20ac\u201d one-finger play, fully mobile friendly.",
+  "tags": [
+    "physics",
+    "stacking",
+    "strategy",
+    "timing",
+    "arcade"
+  ]
+}

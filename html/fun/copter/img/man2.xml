@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:36fa658063d1b6a5d67e82944cb69716:16e2d2952223e8253ede16604e673465:9f48b6cd575d5baa48585cfed9817f00$ -->
+<TextureAtlas imagePath="man2.png">
+    <SubTexture name="man2R_fall" x="2" y="2" width="32" height="64"/>
+    <SubTexture name="man2R_hold" x="2" y="68" width="32" height="64"/>
+    <SubTexture name="man2R_idle" x="2" y="134" width="32" height="64"/>
+    <SubTexture name="man2R_walk01" x="2" y="200" width="32" height="64"/>
+    <SubTexture name="man2R_walk02" x="2" y="266" width="32" height="64"/>
+    <SubTexture name="man2R_walk03" x="2" y="332" width="32" height="64"/>
+    <SubTexture name="man2R_walk04" x="2" y="398" width="32" height="64"/>
+    <SubTexture name="man2R_walk05" x="2" y="464" width="32" height="64"/>
+    <SubTexture name="man2R_walk06" x="2" y="530" width="32" height="64"/>
+    <SubTexture name="man2R_wave01" x="2" y="596" width="32" height="64"/>
+    <SubTexture name="man2R_wave02" x="2" y="662" width="32" height="64"/>
+    <SubTexture name="man2R_wave03" x="2" y="728" width="32" height="64"/>
+    <SubTexture name="man2_fall" x="2" y="794" width="32" height="64"/>
+    <SubTexture name="man2_hold" x="2" y="860" width="32" height="64"/>
+    <SubTexture name="man2_idle" x="2" y="926" width="32" height="64"/>
+    <SubTexture name="man2_walk01" x="2" y="992" width="32" height="64"/>
+    <SubTexture name="man2_walk02" x="2" y="1058" width="32" height="64"/>
+    <SubTexture name="man2_walk03" x="2" y="1124" width="32" height="64"/>
+    <SubTexture name="man2_walk04" x="2" y="1190" width="32" height="64"/>
+    <SubTexture name="man2_walk05" x="2" y="1256" width="32" height="64"/>
+    <SubTexture name="man2_walk06" x="2" y="1322" width="32" height="64"/>
+    <SubTexture name="man2_wave01" x="2" y="1388" width="32" height="64"/>
+    <SubTexture name="man2_wave02" x="2" y="1454" width="32" height="64"/>
+    <SubTexture name="man2_wave03" x="2" y="1520" width="32" height="64"/>
+</TextureAtlas>

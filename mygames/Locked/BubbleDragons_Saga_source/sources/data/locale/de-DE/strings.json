@@ -1,0 +1,174 @@
+{
+	"Strings": {
+		"String": [
+			{
+                "_id": "new_game_start_button_string",
+                "__text": "START"
+            },
+			{
+                "_id": "string_level_goal_title",
+                "__text": "ZIEL"
+            },
+			{
+                "_id": "string_level_goal_protect",
+                "__text": "Beschütze die Barriere."
+            },
+			{
+                "_id": "string_level_goal_crack_egg",
+                "__text": "Breche das Ei auf."
+            },
+			{
+                "_id": "string_level_goal_collect",
+                "__text": "Sammle alle Fische."
+            },
+			{
+                "_id": "string_level_goal_protect_fail",
+                "__text": "Du hast die Barriere nicht beschützt."
+            },
+			{
+                "_id": "string_level_goal_crack_egg_fail",
+                "__text": "Du hast das Ei nicht aufgebrochen."
+            },
+			{
+                "_id": "string_level_goal_collect_fail",
+                "__text": "Du hast nicht genügend Fische gesammelt."
+            },
+			{
+                "_id": "string_level_out_of_shots",
+                "__text": "Du hast keine Blasen mehr zum Verschießen."
+            },
+			{
+                "_id": "string_level_complete",
+                "__text": "Level abgeschlossen"
+            },
+			{
+                "_id": "string_win",
+                "__text": "DU HAST GEWONNEN"
+            },
+			{
+                "_id": "string_lose",
+                "__text": "VERSUCH ES NOCH MAL"
+            },
+			{
+                "_id": "string_score",
+                "__text": "ERGEBNIS"
+            },
+			{
+                "_id": "string_high_score",
+                "__text": "HIGHSCORE"
+            },
+			{
+                "_id": "level_number_ui",
+                "__text": "Level"
+            },
+			{
+                "_id": "game_quit_title",
+                "__text": "SPIEL VERLASSEN"
+            },
+			{
+                "_id": "help_title_boost",
+                "__text": "Boost"
+            },
+			{
+                "_id": "help_title_special",
+                "__text": "Spezial"
+            },
+			{
+                "_id": "name_special_bomb",
+                "__text": "Bombe"
+            },
+			{
+                "_id": "desc_special_bomb",
+                "__text": "Lässt umliegende Blasen mit einer Explosion platzen."
+            },
+			{
+                "_id": "name_special_rocket",
+                "__text": "Rakete"
+            },
+			{
+                "_id": "desc_special_rocket",
+                "__text": "Lässt Blasen in seiner Flugbahn platzen."
+            },
+			{
+                "_id": "name_special_frozen_bubble",
+                "__text": "Gefrorene Blase"
+            },
+			{
+                "_id": "desc_special_frozen_bubble",
+                "__text": "Versteckt bis zu einem Treffer die Farbe der Blase."
+            },
+			{
+                "_id": "name_special_carry_dragon",
+                "__text": "Gieriger Drache"
+            },
+			{
+                "_id": "desc_special_carry_dragon",
+                "__text": "Hält Blasen davon ab, herunterzufallen."
+            },
+			{
+                "_id": "name_special_burst_dragon",
+                "__text": "Glutdrache"
+            },
+			{
+                "_id": "desc_special_burst_dragon",
+                "__text": "Lässt eine zufällig gewählte Gruppe Blasen platzen."
+            },
+			{
+                "_id": "name_special_convert_dragon",
+                "__text": "Elektrodrache"
+            },
+			{
+                "_id": "desc_special_convert_dragon",
+                "__text": "Verwandelt eine Blase in eine besondere Blase."
+            },
+			{
+                "_id": "name_boost_mine",
+                "__text": "Mine"
+            },
+			{
+                "_id": "desc_boost_mine",
+                "__text": "Lässt bei Aufprall Blasen in einer großen Explosion platzen."
+            },
+			{
+                "_id": "name_boost_wild",
+                "__text": "Joker"
+            },
+			{
+                "_id": "desc_boost_wild",
+                "__text": "Lässt sich mit Blasen jeglicher Farbe kombinieren."
+            },
+			{
+                "_id": "name_boost_fireball",
+                "__text": "Feuerball"
+            },
+			{
+                "_id": "desc_boost_fireball",
+                "__text": "Lässt Blasen in einer geraden Linie in Flammen aufgehen."
+            },
+			{
+                "_id": "name_boost_extra_moves",
+                "__text": "Extrazüge"
+            },
+			{
+                "_id": "desc_boost_extra_moves",
+                "__text": "Füllt deinen Blasenvorrat um 5 auf."
+            },
+			{
+                "_id": "name_boost_burst_dragon",
+                "__text": "Glutdrache"
+            },
+			{
+                "_id": "desc_boost_burst_dragon",
+                "__text": "Lässt 3 zufällig gewählte Gruppen Blasen platzen."
+            },
+			{
+                "_id": "name_boost_convert_dragon",
+                "__text": "Elektrodrache"
+            },
+			{
+                "_id": "desc_boost_convert_dragon",
+                "__text": "Verwandelt 3 Blasen in besondere Blasen."
+            }
+		]
+	}
+}

@@ -1,0 +1,252 @@
+/* workspace.css - Workspace view styles */
+
+.workspace-view {
+    padding: 40px;
+}
+
+.workspace-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.boards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 250px));
+    gap: 16px;
+}
+
+.board-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    padding: 16px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s;
+    position: relative;
+    height: 120px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.board-card:hover {
+    transform: translateY(-2px);
+}
+
+.board-card-title {
+    font-weight: 600;
+    font-size: 16px;
+    flex: 1;
+}
+
+/* Board Management Menu */
+.board-card-menu {
+    position: relative;
+    margin-left: 8px;
+    align-self: flex-start;
+}
+
+.board-menu-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: background-color 0.2s ease;
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.board-card:hover .board-menu-btn {
+    opacity: 1;
+}
+
+.board-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.board-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 180px;
+    padding: 8px 0;
+    margin-top: 4px;
+}
+
+.board-menu-dropdown.hidden {
+    display: none;
+}
+
+.board-menu-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    color: #172b4d;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.board-menu-option:hover {
+    background: #f4f5f7;
+}
+
+.board-menu-option:hover .menu-icon {
+    transform: scale(1.1);
+}
+
+.delete-option {
+    color: #eb5a46;
+}
+
+.delete-option:hover {
+    background: #ffebe6;
+}
+
+.menu-icon {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.menu-divider {
+    height: 1px;
+    background: #e4e6ea;
+    margin: 8px 0;
+}
+
+/* Create Board Card */
+.create-board-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-board-card .board-card-title {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+}
+
+.create-board-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Folder section header in workspace grid */
+.folder-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0 8px;
+    margin-top: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 12px;
+}
+
+.folder-section-header:first-child {
+    margin-top: 0;
+}
+
+.folder-section-click-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.folder-section-click-area:hover .folder-section-name {
+    opacity: 0.8;
+}
+
+.folder-section-toggle {
+    font-family: monospace;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    width: 14px;
+    text-align: center;
+}
+
+.folder-section-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+.folder-section-count {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.folder-section-menu {
+    position: relative;
+    margin-left: auto;
+}
+
+.folder-section-menu-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.folder-section-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
+.folder-boards-grid {
+    margin-bottom: 24px;
+}
+
+.workspace-actions-row {
+    margin-top: 24px;
+}
+
+.folder-empty-msg {
+    grid-column: 1 / -1;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    padding: 16px 0;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .workspace-view {
+        padding: 20px;
+    }
+    
+    .boards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+    }
+    
+    .board-card {
+        height: 100px;
+        padding: 12px;
+    }
+    
+    .board-card-title {
+        font-size: 14px;
+    }
+}

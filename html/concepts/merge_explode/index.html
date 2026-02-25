@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Merge Explode</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #111; }
+canvas { display: block; }
+#startScreen {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: #111; z-index: 10;
+}
+#startScreen h1 {
+  font-family: 'Arial Black', Arial, sans-serif; font-size: 72px;
+  color: #ff4444; text-shadow: 0 0 30px #ff0000, 0 0 60px #ff4400;
+  margin-bottom: 40px; letter-spacing: 8px;
+}
+#startBtn, #againBtn {
+  font-family: 'Arial Black', Arial, sans-serif; font-size: 36px;
+  padding: 20px 60px; border: none; border-radius: 16px;
+  background: linear-gradient(180deg, #ff6644, #cc2200);
+  color: #fff; cursor: pointer; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  box-shadow: 0 6px 20px rgba(255,50,0,0.4);
+  transition: transform 0.1s;
+}
+#startBtn:hover, #againBtn:hover { transform: scale(1.08); cursor: pointer; }
+#gameOver {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.85); z-index: 10;
+}
+#gameOver h2 {
+  font-family: 'Arial Black', Arial, sans-serif; font-size: 48px;
+  color: #ff4444; margin-bottom: 10px;
+}
+#finalScore {
+  font-family: 'Arial Black', Arial, sans-serif; font-size: 64px;
+  color: #ffcc00; margin-bottom: 30px;
+}
+</style>
+</head>
+<body>
+<div id="startScreen">
+  <h1>MERGE EXPLODE</h1>
+  <button id="startBtn">DROP!</button>
+</div>
+<div id="gameOver">
+  <h2>GAME OVER</h2>
+  <div id="finalScore">0</div>
+  <button id="againBtn">Again?</button>
+</div>
+<canvas id="c"></canvas>
+<script>
+(function() {
+  const { Engine, Render, Runner, Bodies, Body, Composite, Events, Vector, Query } = Matter;
+
+  // --- CONSTANTS ---
+  const TIERS = [
+    { r: 12,  color: '#ffffff', name: 'dot',    points: 10 },
+    { r: 18,  color: '#ffee44', name: 'small',  points: 25 },
+    { r: 26,  color: '#ff8800', name: 'medium', points: 50 },
+    { r: 36,  color: '#ee2222', name: 'large',  points: 100 },
+    { r: 46,  color: '#aa44ff', name: 'big',    points: 200 },
+    { r: 58,  color: '#222222', name: 'huge',   points: 500 },
+    { r: 70,  color: 'rainbow', name: 'MEGA',   points: 2000 },
+  ];
+  const WALL_THICK = 20;
+  const DROP_ZONE_Y = 80;
+  const GAME_OVER_LINE_Y = 120;
+  const BLAST_RADIUS = 200;
+  const MIN_DROP_INTERVAL = 350;
+
+  let W, H, CONTAINER_X, CONTAINER_W, CONTAINER_H, CONTAINER_Y;
+  let engine, render, runner;
+  let gameObjects = [];
+  let particles = [];
+  let scorePopups = [];
+  let confettis = [];
+  let score = 0;
+  let combo = 0;
+  let comboTimer = 0;
+  let cursorX = 0;
+  let nextTier = 0;
+  let currentTier = 0;
+  let canDrop = true;
+  let lastDropTime = 0;
+  let gameRunning = false;
+  let gameOverTriggered = false;
+  let shakeAmount = 0;
+  let shakeDecay = 0.9;
+  let mergesProcessing = new Set();
+  let gameOverCheckPaused = 0;
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  let animFrame;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    CONTAINER_W = Math.min(400, W - 40);
+    CONTAINER_H = H - 160;
+    CONTAINER_X = (W - CONTAINER_W) / 2;
+    CONTAINER_Y = H - CONTAINER_H - 40;
+    canvas.width = W;
+    canvas.height = H;
+  }
+
+  function init() {
+    resize();
+
+    engine = Engine.create({ gravity: { x: 0, y: 1.8 } });
+
+    // Walls
+    const wallOpts = { isStatic: true, friction: 0.3, restitution: 0.2, render: { visible: false } };
+    const floor = Bodies.rectangle(
+      CONTAINER_X + CONTAINER_W / 2, CONTAINER_Y + CONTAINER_H + WALL_THICK / 2,
+      CONTAINER_W + WALL_THICK * 2, WALL_THICK, wallOpts
+    );
+    const leftWall = Bodies.rectangle(
+      CONTAINER_X - WALL_THICK / 2, CONTAINER_Y + CONTAINER_H / 2,
+      WALL_THICK, CONTAINER_H + WALL_THICK, wallOpts
+    );
+    const rightWall = Bodies.rectangle(
+      CONTAINER_X + CONTAINER_W + WALL_THICK / 2, CONTAINER_Y + CONTAINER_H / 2,
+      WALL_THICK, CONTAINER_H + WALL_THICK, wallOpts
+    );
+    Composite.add(engine.world, [floor, leftWall, rightWall]);
+
+    // Collision handling
+    Events.on(engine, 'collisionStart', onCollision);
+
+    runner = Runner.create();
+    Runner.run(runner, engine);
+
+    currentTier = randomDropTier();
+    nextTier = randomDropTier();
+    score = 0;
+    combo = 0;
+    comboTimer = 0;
+    gameObjects = [];
+    particles = [];
+    scorePopups = [];
+    confettis = [];
+    gameOverTriggered = false;
+    gameOverCheckPaused = 0;
+    canDrop = true;
+    cursorX = CONTAINER_X + CONTAINER_W / 2;
+
+    gameRunning = true;
+    if (animFrame) cancelAnimationFrame(animFrame);
+    gameLoop();
+  }
+
+  function randomDropTier() {
+    // Weight towards lower tiers
+    const weights = [35, 30, 20, 10, 5, 0, 0];
+    const total = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < weights.length; i++) {
+      r -= weights[i];
+      if (r <= 0) return i;
+    }
+    return 0;
+  }
+
+  function createGameObject(x, y, tier, isDropping) {
+    const t = TIERS[tier];
+    const body = Bodies.circle(x, y, t.r, {
+      restitution: 0.3,
+      friction: 0.5,
+      density: 0.001 * (tier + 1),
+      frictionAir: 0.01,
+    });
+    body.gameTier = tier;
+    body.gameId = Math.random().toString(36).substr(2, 9);
+    body.merging = false;
+    body.spawnTime = Date.now();
+    body.squish = 0;
+    Composite.add(engine.world, body);
+    gameObjects.push(body);
+    return body;
+  }
+
+  function dropObject() {
+    if (!canDrop || !gameRunning) return;
+    const now = Date.now();
+    if (now - lastDropTime < MIN_DROP_INTERVAL) return;
+
+    const x = Math.max(CONTAINER_X + TIERS[currentTier].r + 5,
+                       Math.min(CONTAINER_X + CONTAINER_W - TIERS[currentTier].r - 5, cursorX));
+    const obj = createGameObject(x, CONTAINER_Y - 10, currentTier, true);
+    lastDropTime = now;
+    currentTier = nextTier;
+    nextTier = randomDropTier();
+
+    // Pause game-over checking briefly after drop
+    gameOverCheckPaused = Date.now() + 1500;
+  }
+
+  function onCollision(event) {
+    for (const pair of event.pairs) {
+      const a = pair.bodyA;
+      const b = pair.bodyB;
+
+      // Squish effect
+      if (a.gameTier !== undefined) a.squish = 0.3;
+      if (b.gameTier !== undefined) b.squish = 0.3;
+
+      // Check merge
+      if (a.gameTier !== undefined && b.gameTier !== undefined &&
+          a.gameTier === b.gameTier && !a.merging && !b.merging &&
+          a.gameTier < 6) {
+        a.merging = true;
+        b.merging = true;
+        mergeBodies(a, b);
+      }
+    }
+  }
+
+  function mergeBodies(a, b) {
+    const newTier = a.gameTier + 1;
+    const mx = (a.position.x + b.position.x) / 2;
+    const my = (a.position.y + b.position.y) / 2;
+
+    // Remove old
+    removeGameObject(a);
+    removeGameObject(b);
+
+    // Merge particles
+    spawnMergeEffect(mx, my, TIERS[newTier].color, TIERS[newTier].r);
+
+    // Score
+    combo++;
+    comboTimer = 120;
+    const multiplier = Math.min(combo, 10);
+    const pts = TIERS[newTier].points * multiplier;
+    score += pts;
+    spawnScorePopup(mx, my - 30, pts, multiplier);
+
+    if (newTier === 6) {
+      // MEGA tier - briefly show then explode!
+      const mega = createGameObject(mx, my, 6, false);
+      Body.setStatic(mega, true);
+      setTimeout(() => {
+        removeGameObject(mega);
+        explode(mx, my);
+      }, 300);
+    } else {
+      const obj = createGameObject(mx, my, newTier, false);
+      // Give it a little upward kick on merge
+      Body.setVelocity(obj, { x: 0, y: -3 });
+      gameOverCheckPaused = Date.now() + 1000;
+    }
+
+    shakeAmount += 3 + newTier * 2;
+  }
+
+  function explode(x, y) {
+    // Massive screen shake
+    shakeAmount += 40;
+
+    // Spawn explosion particles
+    for (let i = 0; i < 80; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2 + Math.random() * 10;
+      const hue = Math.random() * 360;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 5,
+        life: 60 + Math.random() * 40,
+        maxLife: 100,
+        r: 3 + Math.random() * 6,
+        color: `hsl(${hue}, 100%, 60%)`,
+      });
+    }
+
+    // Big confetti burst
+    for (let i = 0; i < 40; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 3 + Math.random() * 8;
+      confettis.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 8,
+        life: 90 + Math.random() * 60,
+        w: 4 + Math.random() * 8,
+        h: 3 + Math.random() * 5,
+        rot: Math.random() * Math.PI * 2,
+        rotV: (Math.random() - 0.5) * 0.3,
+        color: `hsl(${Math.random() * 360}, 90%, 60%)`,
+      });
+    }
+
+    // Destroy objects in blast radius
+    const toDestroy = [];
+    for (const obj of gameObjects) {
+      if (obj.merging) continue;
+      const dx = obj.position.x - x;
+      const dy = obj.position.y - y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < BLAST_RADIUS) {
+        toDestroy.push(obj);
+      }
+    }
+
+    // Score bonus for destroyed objects
+    const explosionBonus = toDestroy.length * 150 * Math.min(combo + 1, 10);
+    score += explosionBonus;
+    if (toDestroy.length > 0) {
+      spawnScorePopup(x, y - 60, explosionBonus, combo + 1);
+    }
+
+    // Check for chain reactions - if destroyed objects were same tier and close
+    const chainMerges = [];
+    for (let i = 0; i < toDestroy.length; i++) {
+      for (let j = i + 1; j < toDestroy.length; j++) {
+        if (toDestroy[i].gameTier === toDestroy[j].gameTier) {
+          const dx = toDestroy[i].position.x - toDestroy[j].position.x;
+          const dy = toDestroy[i].position.y - toDestroy[j].position.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const combinedR = TIERS[toDestroy[i].gameTier].r * 3;
+          if (dist < combinedR && toDestroy[i].gameTier < 6) {
+            chainMerges.push({
+              x: (toDestroy[i].position.x + toDestroy[j].position.x) / 2,
+              y: (toDestroy[i].position.y + toDestroy[j].position.y) / 2,
+              tier: toDestroy[i].gameTier + 1,
+            });
+          }
+        }
+      }
+    }
+
+    // Destroy the objects with mini explosions
+    for (const obj of toDestroy) {
+      spawnDestroyEffect(obj.position.x, obj.position.y, TIERS[obj.gameTier].color);
+      removeGameObject(obj);
+    }
+
+    // Spawn chain merge results
+    for (const cm of chainMerges) {
+      if (cm.tier === 6) {
+        setTimeout(() => explode(cm.x, cm.y), 200);
+        combo++;
+        comboTimer = 120;
+        score += TIERS[6].points * Math.min(combo, 10);
+      } else {
+        const obj = createGameObject(cm.x, cm.y, cm.tier, false);
+        Body.setVelocity(obj, { x: (Math.random() - 0.5) * 4, y: -5 });
+        combo++;
+        comboTimer = 120;
+      }
+    }
+
+    gameOverCheckPaused = Date.now() + 2000;
+  }
+
+  function removeGameObject(obj) {
+    Composite.remove(engine.world, obj);
+    const idx = gameObjects.indexOf(obj);
+    if (idx !== -1) gameObjects.splice(idx, 1);
+  }
+
+  function spawnMergeEffect(x, y, color, radius) {
+    for (let i = 0; i < 15; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1 + Math.random() * 4;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 20 + Math.random() * 20,
+        maxLife: 40,
+        r: 2 + Math.random() * 3,
+        color: color === 'rainbow' ? `hsl(${Math.random() * 360}, 100%, 60%)` : color,
+      });
+    }
+  }
+
+  function spawnDestroyEffect(x, y, color) {
+    for (let i = 0; i < 10; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1 + Math.random() * 5;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        life: 25 + Math.random() * 15,
+        maxLife: 40,
+        r: 2 + Math.random() * 4,
+        color: color === 'rainbow' ? `hsl(${Math.random() * 360}, 100%, 60%)` : color,
+      });
+    }
+  }
+
+  function spawnScorePopup(x, y, pts, multiplier) {
+    scorePopups.push({
+      x, y, pts, multiplier,
+      life: 60, maxLife: 60,
+      vy: -1.5,
+    });
+  }
+
+  function checkGameOver() {
+    if (gameOverTriggered || Date.now() < gameOverCheckPaused) return;
+    for (const obj of gameObjects) {
+      if (obj.merging) continue;
+      // Only check objects that have existed long enough and have settled
+      if (Date.now() - obj.spawnTime < 2000) continue;
+      const speed = Math.sqrt(obj.velocity.x * obj.velocity.x + obj.velocity.y * obj.velocity.y);
+      if (speed > 2) continue;
+      if (obj.position.y - TIERS[obj.gameTier].r < GAME_OVER_LINE_Y + CONTAINER_Y) {
+        triggerGameOver();
+        return;
+      }
+    }
+  }
+
+  function triggerGameOver() {
+    gameOverTriggered = true;
+    gameRunning = false;
+    Runner.stop(runner);
+    document.getElementById('finalScore').textContent = score.toLocaleString();
+    document.getElementById('gameOver').style.display = 'flex';
+  }
+
+  // --- INPUT ---
+  function onPointerMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    cursorX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  }
+  function onPointerDown(e) {
+    if (!gameRunning) return;
+    const rect = canvas.getBoundingClientRect();
+    cursorX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    dropObject();
+  }
+
+  canvas.addEventListener('mousemove', onPointerMove);
+  canvas.addEventListener('mousedown', onPointerDown);
+  canvas.addEventListener('touchmove', (e) => { e.preventDefault(); onPointerMove(e); }, { passive: false });
+  canvas.addEventListener('touchstart', (e) => { e.preventDefault(); onPointerDown(e); }, { passive: false });
+  window.addEventListener('resize', () => {
+    if (!gameRunning) return;
+    resize();
+  });
+
+  // --- RENDERING ---
+  function drawFace(x, y, r, tier) {
+    const scale = r / 30;
+    // Eyes
+    ctx.fillStyle = tier === 5 ? '#fff' : '#000';
+    const eyeOff = r * 0.25;
+    const eyeR = Math.max(2, r * 0.12);
+    ctx.beginPath();
+    ctx.arc(x - eyeOff, y - r * 0.1, eyeR, 0, Math.PI * 2);
+    ctx.arc(x + eyeOff, y - r * 0.1, eyeR, 0, Math.PI * 2);
+    ctx.fill();
+    // Mouth
+    ctx.beginPath();
+    if (tier >= 5) {
+      // Worried/excited mouth
+      ctx.arc(x, y + r * 0.2, r * 0.15, 0, Math.PI * 2);
+      ctx.strokeStyle = tier === 5 ? '#fff' : '#ff0';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    } else {
+      // Smile
+      ctx.arc(x, y + r * 0.05, r * 0.2, 0.1 * Math.PI, 0.9 * Math.PI);
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+
+  function drawObject(obj) {
+    const tier = obj.gameTier;
+    const t = TIERS[tier];
+    const x = obj.position.x;
+    const y = obj.position.y;
+    let r = t.r;
+
+    // Squish animation
+    const squishX = 1 + obj.squish * 0.3;
+    const squishY = 1 - obj.squish * 0.2;
+    obj.squish *= 0.85;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(obj.angle);
+    ctx.scale(squishX, squishY);
+
+    // Vibration for tier 4+
+    let vx = 0, vy = 0;
+    if (tier === 4) {
+      vx = (Math.random() - 0.5) * 2;
+      vy = (Math.random() - 0.5) * 2;
+    } else if (tier === 5) {
+      vx = (Math.random() - 0.5) * 4;
+      vy = (Math.random() - 0.5) * 4;
+    }
+
+    // Pulsing for tier 5
+    let pulseR = r;
+    if (tier === 5) {
+      pulseR = r + Math.sin(Date.now() * 0.01) * 4;
+    }
+
+    ctx.translate(vx, vy);
+
+    // Draw circle
+    if (tier === 6) {
+      // Rainbow gradient
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, pulseR);
+      const hue = (Date.now() * 0.5) % 360;
+      grad.addColorStop(0, `hsl(${hue}, 100%, 70%)`);
+      grad.addColorStop(0.5, `hsl(${(hue + 120) % 360}, 100%, 60%)`);
+      grad.addColorStop(1, `hsl(${(hue + 240) % 360}, 100%, 50%)`);
+      ctx.fillStyle = grad;
+    } else {
+      ctx.fillStyle = t.color;
+    }
+
+    // Glow for high tiers
+    if (tier >= 4) {
+      ctx.shadowColor = tier === 5 ? '#ff00ff' : tier === 6 ? '#fff' : '#aa44ff';
+      ctx.shadowBlur = 15 + Math.sin(Date.now() * 0.008) * 8;
+    }
+
+    ctx.beginPath();
+    ctx.arc(0, 0, pulseR, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Outline
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = tier === 5 ? '#555' : 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Face
+    drawFace(0, 0, pulseR, tier);
+
+    ctx.restore();
+  }
+
+  function drawContainer() {
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 3;
+    // Left wall
+    ctx.beginPath();
+    ctx.moveTo(CONTAINER_X, CONTAINER_Y);
+    ctx.lineTo(CONTAINER_X, CONTAINER_Y + CONTAINER_H);
+    ctx.stroke();
+    // Right wall
+    ctx.beginPath();
+    ctx.moveTo(CONTAINER_X + CONTAINER_W, CONTAINER_Y);
+    ctx.lineTo(CONTAINER_X + CONTAINER_W, CONTAINER_Y + CONTAINER_H);
+    ctx.stroke();
+    // Floor
+    ctx.beginPath();
+    ctx.moveTo(CONTAINER_X, CONTAINER_Y + CONTAINER_H);
+    ctx.lineTo(CONTAINER_X + CONTAINER_W, CONTAINER_Y + CONTAINER_H);
+    ctx.stroke();
+
+    // Danger line
+    ctx.strokeStyle = 'rgba(255, 50, 50, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([8, 8]);
+    ctx.beginPath();
+    ctx.moveTo(CONTAINER_X, GAME_OVER_LINE_Y + CONTAINER_Y);
+    ctx.lineTo(CONTAINER_X + CONTAINER_W, GAME_OVER_LINE_Y + CONTAINER_Y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function drawDropPreview() {
+    if (!gameRunning || !canDrop) return;
+    const t = TIERS[currentTier];
+    const x = Math.max(CONTAINER_X + t.r + 5,
+                       Math.min(CONTAINER_X + CONTAINER_W - t.r - 5, cursorX));
+
+    // Dotted line
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]);
+    ctx.beginPath();
+    ctx.moveTo(x, CONTAINER_Y - 20);
+    ctx.lineTo(x, CONTAINER_Y + CONTAINER_H);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Preview object
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = t.color === 'rainbow' ? '#fff' : t.color;
+    ctx.beginPath();
+    ctx.arc(x, CONTAINER_Y - 20, t.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawNextPreview() {
+    const t = TIERS[nextTier];
+    const px = W - 50;
+    const py = 40;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.fillRect(px - 30, py - 30, 60, 60);
+
+    ctx.fillStyle = '#aaa';
+    ctx.font = '10px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('NEXT', px, py - 22);
+
+    ctx.fillStyle = t.color === 'rainbow' ? '#fff' : t.color;
+    ctx.beginPath();
+    ctx.arc(px, py + 2, Math.min(t.r, 20), 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawScore() {
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 28px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(score.toLocaleString(), 20, 40);
+
+    if (combo > 1 && comboTimer > 0) {
+      ctx.fillStyle = `rgba(255, 200, 50, ${comboTimer / 120})`;
+      ctx.font = 'bold 18px Arial';
+      ctx.fillText(`x${combo} COMBO!`, 20, 65);
+    }
+  }
+
+  function drawParticles() {
+    for (const p of particles) {
+      const alpha = p.life / p.maxLife;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * alpha, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawConfetti() {
+    for (const c of confettis) {
+      const alpha = Math.min(1, c.life / 30);
+      ctx.globalAlpha = alpha;
+      ctx.save();
+      ctx.translate(c.x, c.y);
+      ctx.rotate(c.rot);
+      ctx.fillStyle = c.color;
+      ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawScorePopups() {
+    for (const s of scorePopups) {
+      const alpha = s.life / s.maxLife;
+      const scale = 1 + (1 - alpha) * 0.5;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = s.multiplier > 1 ? '#ffcc00' : '#fff';
+      ctx.font = `bold ${Math.floor(20 * scale)}px Arial`;
+      ctx.textAlign = 'center';
+      let text = `+${s.pts}`;
+      if (s.multiplier > 1) text += ` x${s.multiplier}`;
+      ctx.fillText(text, s.x, s.y);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function updateParticles() {
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.15;
+      p.vx *= 0.98;
+      p.life--;
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+  }
+
+  function updateConfetti() {
+    for (let i = confettis.length - 1; i >= 0; i--) {
+      const c = confettis[i];
+      c.x += c.vx;
+      c.y += c.vy;
+      c.vy += 0.12;
+      c.vx *= 0.97;
+      c.rot += c.rotV;
+      c.life--;
+      if (c.life <= 0) confettis.splice(i, 1);
+    }
+  }
+
+  function updateScorePopups() {
+    for (let i = scorePopups.length - 1; i >= 0; i--) {
+      const s = scorePopups[i];
+      s.y += s.vy;
+      s.life--;
+      if (s.life <= 0) scorePopups.splice(i, 1);
+    }
+  }
+
+  function gameLoop() {
+    // Update
+    updateParticles();
+    updateConfetti();
+    updateScorePopups();
+
+    if (comboTimer > 0) {
+      comboTimer--;
+      if (comboTimer <= 0) combo = 0;
+    }
+
+    shakeAmount *= shakeDecay;
+    if (shakeAmount < 0.5) shakeAmount = 0;
+
+    if (gameRunning) checkGameOver();
+
+    // Draw
+    ctx.save();
+
+    // Screen shake
+    if (shakeAmount > 0) {
+      const sx = (Math.random() - 0.5) * shakeAmount;
+      const sy = (Math.random() - 0.5) * shakeAmount;
+      ctx.translate(sx, sy);
+    }
+
+    // Clear
+    ctx.fillStyle = '#111';
+    ctx.fillRect(-10, -10, W + 20, H + 20);
+
+    // Background glow when explosions happen
+    if (shakeAmount > 5) {
+      const glow = Math.min(shakeAmount / 40, 0.3);
+      ctx.fillStyle = `rgba(255, 100, 0, ${glow})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    drawContainer();
+    drawDropPreview();
+
+    // Draw game objects
+    for (const obj of gameObjects) {
+      drawObject(obj);
+    }
+
+    drawParticles();
+    drawConfetti();
+    drawScorePopups();
+    drawNextPreview();
+    drawScore();
+
+    ctx.restore();
+
+    animFrame = requestAnimationFrame(gameLoop);
+  }
+
+  // --- START / RESTART ---
+  document.getElementById('startBtn').addEventListener('click', () => {
+    document.getElementById('startScreen').style.display = 'none';
+    init();
+  });
+
+  document.getElementById('againBtn').addEventListener('click', () => {
+    document.getElementById('gameOver').style.display = 'none';
+    // Clear old engine
+    if (engine) {
+      Composite.clear(engine.world);
+      Engine.clear(engine);
+    }
+    if (runner) Runner.stop(runner);
+    init();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+var sprites2 = {"frames": [
+
+{
+	"filename": "canyonRock1.png",
+	"frame": {"x":1,"y":348,"w":430,"h":386},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":430,"h":386},
+	"sourceSize": {"w":430,"h":386},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "canyonRock2.png",
+	"frame": {"x":432,"y":348,"w":430,"h":387},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":430,"h":387},
+	"sourceSize": {"w":430,"h":387},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "crown_billboard.png",
+	"frame": {"x":1,"y":1,"w":533,"h":305},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":533,"h":305},
+	"sourceSize": {"w":533,"h":305},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Digger4.png",
+	"frame": {"x":535,"y":1,"w":517,"h":328},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":517,"h":328},
+	"sourceSize": {"w":517,"h":328},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker1.png",
+	"frame": {"x":335,"y":774,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker2.png",
+	"frame": {"x":168,"y":774,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker3.png",
+	"frame": {"x":1698,"y":348,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker4.png",
+	"frame": {"x":1865,"y":348,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker5.png",
+	"frame": {"x":1030,"y":348,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker6.png",
+	"frame": {"x":1197,"y":348,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker7.png",
+	"frame": {"x":1531,"y":348,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker8.png",
+	"frame": {"x":863,"y":348,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker9.png",
+	"frame": {"x":1364,"y":348,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "distance marker10.png",
+	"frame": {"x":1,"y":774,"w":166,"h":425},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":425},
+	"sourceSize": {"w":166,"h":425},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "dryTree4.png",
+	"frame": {"x":502,"y":774,"w":393,"h":442},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":393,"h":442},
+	"sourceSize": {"w":393,"h":442},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "FarmHouseB3.png",
+	"frame": {"x":1409,"y":1,"w":501,"h":346},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":501,"h":346},
+	"sourceSize": {"w":501,"h":346},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "gas station sign.png",
+	"frame": {"x":873,"y":1229,"w":151,"h":499},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":151,"h":499},
+	"sourceSize": {"w":151,"h":499},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Lamp Post 1.png",
+	"frame": {"x":1174,"y":1229,"w":200,"h":514},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":200,"h":514},
+	"sourceSize": {"w":200,"h":514},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Lamp Post 2.png",
+	"frame": {"x":1,"y":1229,"w":218,"h":457},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":218,"h":457},
+	"sourceSize": {"w":218,"h":457},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Motel.png",
+	"frame": {"x":462,"y":1229,"w":266,"h":479},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":266,"h":479},
+	"sourceSize": {"w":266,"h":479},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "power-line1.png",
+	"frame": {"x":729,"y":1229,"w":143,"h":497},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":143,"h":497},
+	"sourceSize": {"w":143,"h":497},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "power-line2.png",
+	"frame": {"x":1025,"y":1229,"w":148,"h":508},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":148,"h":508},
+	"sourceSize": {"w":148,"h":508},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "sharp-turn.png",
+	"frame": {"x":1053,"y":1,"w":177,"h":342},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":177,"h":342},
+	"sourceSize": {"w":177,"h":342},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "sharp-turn_rgt.png",
+	"frame": {"x":1231,"y":1,"w":177,"h":344},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":177,"h":344},
+	"sourceSize": {"w":177,"h":344},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "SiloA1.png",
+	"frame": {"x":220,"y":1229,"w":241,"h":471},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":241,"h":471},
+	"sourceSize": {"w":241,"h":471},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "tree2.png",
+	"frame": {"x":1375,"y":1229,"w":417,"h":522},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":417,"h":522},
+	"sourceSize": {"w":473,"h":522},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Tree4 Spin_0025.png",
+	"frame": {"x":896,"y":774,"w":393,"h":442},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":393,"h":442},
+	"sourceSize": {"w":393,"h":442},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Tree_01.png",
+	"frame": {"x":1290,"y":774,"w":542,"h":454},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":43,"w":542,"h":454},
+	"sourceSize": {"w":542,"h":500},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "sprites2.png",
+	"format": "RGBA8888",
+	"size": {"w":2048,"h":2048},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:574b37419152f5af72171eeacae7ac7a:1a99eb3503b6e558ed485abb70f4da64:98ba61cce977d803285b31b1450becfc$"
+}
+}

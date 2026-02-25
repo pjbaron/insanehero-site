@@ -1,0 +1,46 @@
+Phaser 3 renderer progress.
+2015-05-01
+
+The WIP can be found here: https://github.com/photonstorm/phaser3/tree/master/renderer
+A recent online demo is here: http://www.insanehero.com/html/renderer/src/
+The project commit log is here: https://github.com/photonstorm/phaser3/commits?author=pjbaron
+
+This update:
+
+16th, 18th, 28th, 29th, 30th April, 1st May
+
+Changed folder structure for pretty much everything... new structure better reflects the class structure defined in docs/API_structure.txt
+Quick experiment with new structure, added the beginnings of a new demo for multiple point-light sources.  I'm happy with the new structure, I found it much more intuitive when searching for a particular source file.
+Finished the multiple light demo "pointLights", linking 16 separate lights to various events in the invaders demo.  Very pretty!  The demo also illustrates how easy it is to manually update a layer and all it's children... it's used to create a layer that doesn't cast shadows here, because the shader will treat everything in the render texture as a shadow caster.
+
+Made a dungeon demo with point light sources attached to animating sprites in a maze-like dungeon... shows off the shadow casting effect nicely.
+Modified filter and shader programs to permit multiple 'sampler' textures, fix all demos that get broken.
+Modified lighting filter to accept a second sampler texture and use those pixels multiplied by the lighting/ambient colour.
+Experimented with various rules for lighting attenuation in the 'dungeon' demo and finally found one that I think works well - bright in the middle with rapid attenuation and a long fade distance (I'm using the first quadrant of a curve resembling an Astroid [http://en.wikipedia.org/wiki/Astroid]).
+
+I have renamed pbSprite to the more accurate (albeit less catchy) pbTransformObject.  This conveniently frees up the name "pbSprite" which I am now using for a sprite wrapping object which should make creation of sprites much simpler for the user... frequently just a single line of code.
+
+It was necessary to move the pbSurface creation away from the pbImage/pbSprite system to avoid passing large numbers of parameters to each new pbSprite (which defeats the intention of those objects).  After trying several variations I settled on the idea of creating the surface when the image is added to the loader.  Passing optional extra parameters to loadImage which further define the thing being loaded seems reasonably sensible.  By modifying the value stored in the textures dictionary to an object, there is the ability to store more data with each loaded "thing" (eg. a "type" field) so this should be nicely extensible going forwards.
+
+After some thought I decided my initial split between 'shaders' and 'filters' was wrong.  The two objects contained a great deal of duplicated code and the 'filters' were really just 'user defined' shaders.  I've merged the objects so the pbWebGlShader object now encapsulates everything that the filters used to do.  The shader code has been extended to use an array instead of hard-wiring all the shaders, and it now allows a JSON string object to be registered as a valid shader program.  My first test of this change is in the 'dungeon' demo... I've switched it over to shaders and put the pbWebGlFilter.multiLightBgShaderProgram into a text file in JSON format.  Seems to work ok.
+
+I've now changed all 'filter' demos over to use loaded shaders instead, and removed pbWebGlFilters entirely now it's no longer used.
+
+First attempt at fast bump mapping 'depth' demo... it's not working yet (but I'm too tired to concentrate on it properly now).
+Algorithm concept:
+- create a 'slope' image using R for x and G for y slope components, B can be used for steepness or as a multiplier
+- slope image is centralised on component values of 128 = flat, 0 = maximum -'ve slope, 255 = maximum +'ve slope
+- when adding lighting with a bump mapped tile, modify the brightness according to whether the slope points towards or away from the light source and how steep the slope is
+I believe this should create a simple but effective bump mapping effect, sufficient for most purposes and significantly faster than 'normal maps'... *if* I can get it to work.
+
+Bump mapping is working!  I love this effect, it really brings the ground layer to life.  Added some missiles to the 'depth' demo to show off the lighting effect a bit more.  Modified the shader so that bright lights can spill up on top of the walls.  Added some constants to control the scene brightness across four components.  Spent *way* too much time fiddling with all the values trying things out and getting it to look even more amazing :)
+
+
+Coming soon:
+
+I've cleaned up a fair few bits of ugly code, but that was too boring to spend an entire week on so I've added some new demos too.  There's more code cleaning needed, but I think I've handled the biggest jobs now.  I'm very pleased with the new pbSprite approach... it needs a bunch of functions to make it powerful, but it's already reduced all the demos significantly.
+I need to write a tool to create and edit bump maps that fit my design.  I want to extend the bump map shader to use the 'b' component of the source image for a 'surface type'.  The bump shader needs to handle different bump textures for different tiles... probably the best way to do this is to have a bump texture which parallels the tile texture (all tiles in the same positions in both textures).  I need to decide if I want bump mapping for wall tops (currently when it's on top of a wall it's using a flat shader for the lighting effect over-spill).
+I need to create a list of fundamentals and work out what's missing so I can prioritise them.  It's been suggested that adding DragonBones capabilities might highlight a number of missing features, and that should be fun too :)
+
+- Pete
+
