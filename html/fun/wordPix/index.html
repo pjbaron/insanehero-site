@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0">  <!-- request GPU rasterization from Chrome browsers, where available -->
+	<meta charset="utf-8" />
+	<title>Word Pix</title>
+	<style>
+		body {
+			margin: 0;
+			background: #f2f2f2;
+			border: none;
+		}
+	</style>
+
+	<script type="text/javascript" src="src/Main.js"></script>
+
+</head>
+
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script type="text/javascript">
+
+	var main = new Main();
+	main.create( document.getElementById("canvas") );
+	main.start();
+
+</script>
+
+</body>
+</html>
