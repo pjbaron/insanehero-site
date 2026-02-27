@@ -3713,7 +3713,7 @@ function drawTitle(W, H, titlePulse, gameTime) {
     ctx.save();
     ctx.translate(cx, H * 0.55);
     ctx.scale(pulse, pulse);
-    drawText('ONE BUTTON', 0, -30, 50, PAL.coinGold, 'center');
+    drawText('ONE CLICK', 0, -30, 50, PAL.coinGold, 'center');
     pulse = 1 + Math.sin(titlePulse * 2 + .1) * 0.1;
     ctx.scale(pulse, pulse);
     drawText('KINGDOM', 0, 15, 56, PAL.uiText, 'center');
@@ -3729,7 +3729,7 @@ function drawTitle(W, H, titlePulse, gameTime) {
     // Session gap expression
     ctx.textAlign     = 'center';
     ctx.font          = 'italic 12px serif';
-    ctx.fillStyle     = '#9a8a50';
+    ctx.fillStyle     = '#5a4a10';
     ctx.fillText("The story so far...", W / 2, HEAD_Y + HEAD_RADIUS - 5);
 
     const annalsData  = loadAnnals();
@@ -3741,7 +3741,7 @@ function drawTitle(W, H, titlePulse, gameTime) {
     // Daily modifier
     const mod     = getDailyModifier();
     ctx.font      = 'italic 13px serif';
-    ctx.fillStyle = '#9a8a50';
+    ctx.fillStyle = '#5a4a10';
     ctx.fillText('Almanac: ' + mod.name, W / 2, HEAD_Y + HEAD_RADIUS + 50);
 
     // Prestige display - always show to inform players
