@@ -18,11 +18,12 @@ import {
     getBattleCryActive,
 } from './combat.js';
 import {
-    isShopOpen, getShopSelectedIndex,
+    isShopOpen, getShopSelectedIndex, setShopSelectedIndex,
     getShopBuyFlash, getShopIconPop, getShopIconPopKey,
-    getTabletState, getUpgradeItems,
+    getTabletState, getUpgradeItems, buyUpgrade, closeShopTablets,
 } from './upgrades.js';
 import { loadAnnals, getTitleExpression, getDailyModifier, getPrestigeTier, getOvernightEntry } from './annals.js';
+import { registerHitRegion } from './hitRegions.js';
 
 const PAL = CONFIG.PAL;
 
@@ -2699,6 +2700,15 @@ function drawShopTablets(W, H) {
         }
 
         ctx.restore();
+
+        // Register hit region for this tablet
+        registerHitRegion(tx - tabW / 2, ty - tabH / 2, tabW, tabH, () => {
+            if (selectedIdx === i) {
+                buyUpgrade(item.key, W, H);
+            } else {
+                setShopSelectedIndex(i);
+            }
+        }, 10); // High zIndex for shop UI
     });
 
     // Close button below tablets
@@ -2712,6 +2722,11 @@ function drawShopTablets(W, H) {
     ctx.lineWidth = 2;
     ctx.strokeRect(closeBtnX, closeBtnY, closeBtnW, closeBtnH);
     drawText('CLOSE SHOP', W / 2, closeBtnY + closeBtnH / 2 - 12, 22, '#ffcccc', 'center', false);
+
+    // Register hit region for close button
+    registerHitRegion(closeBtnX, closeBtnY, closeBtnW, closeBtnH, () => {
+        closeShopTablets();
+    }, 10);
 }
 
 // --- Shop buy flash overlay ---

@@ -8,9 +8,9 @@ import {
     getDesperation, setDesperationCharge, getDesperationCharge, getBeamWidthBonus,
 } from './resources.js';
 import { getLoyalty, adjustLoyalty } from './loyalty.js';
-import { spawnFloatingText, spawnActionAnim, spawnParticle, spawnVacuumSpiral } from './particles.js';
+import { spawnFloatingText, spawnActionAnim, spawnParticle } from './particles.js';
 import { applyCleave, getScreenShakeRef, setHammerHolding, setHammerHoldTime, registerKill, applyRainOfArrows, applyShieldBash } from './combat.js';
-import { isShopOpen, handleShopTap } from './upgrades.js';
+import { isShopOpen } from './upgrades.js';
 import { getScrollAngle, normalizeAngle, angularDist, pixelsToRadians, thetaToScreen, isVisible } from './world.js';
 
 // --- Button state ---
@@ -184,7 +184,7 @@ export function performAction(W, H, PAL, gameTime) {
         const hitsLeft = obj.hitsRemaining ?? 1;
         if (hitsLeft > hitPower) {
             obj.hitsRemaining = hitsLeft - hitPower;
-            spawnActionAnim(obj, PAL, screenShakeRef, gameTime);
+            spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
             const hitColor = obj.type === 'TREE' ? '#c89060' : obj.type === 'ROCK' ? '#b0b4b8' : '#80d040';
             spawnFloatingText(obj.hitsRemaining + ' hits left', cx, _fY - 10, hitColor);
             buttonPressTimer = CONFIG.BUTTON_PRESS_DURATION;
@@ -194,11 +194,7 @@ export function performAction(W, H, PAL, gameTime) {
     }
 
     obj.acted = true;
-    spawnActionAnim(obj, PAL, screenShakeRef, gameTime);
-    spawnVacuumSpiral(cx, cy, HEAD_X, HEAD_Y);
-
-    const S = CONFIG.ENTITY_SCALE || 1;
-    const floatY = cy - obj.height * (S - 1);
+    spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
 
     const crownBonus = hasUpgrade('golden_crown') ? CONFIG.GOLDEN_CROWN_BONUS : 0;
     switch (obj.type) {
@@ -207,7 +203,6 @@ export function performAction(W, H, PAL, gameTime) {
             addResource('wood', amount);
             addTotalResourcesGathered(amount);
             addScore(CONFIG.RESOURCE_SCORE);
-            spawnFloatingText('+' + amount + ' Wood', cx, floatY - 10, '#c89060');
             getWorldObjects().push(createStump(obj.theta));
             break;
         }
@@ -216,7 +211,6 @@ export function performAction(W, H, PAL, gameTime) {
             addResource('stone', amount);
             addTotalResourcesGathered(amount);
             addScore(CONFIG.RESOURCE_SCORE);
-            spawnFloatingText('+' + amount + ' Stone', cx, floatY - 10, '#b0b4b8');
             getWorldObjects().push(createCrater(obj.theta));
             break;
         }
@@ -225,7 +219,6 @@ export function performAction(W, H, PAL, gameTime) {
             addResource('food', amount);
             addTotalResourcesGathered(amount);
             addScore(CONFIG.RESOURCE_SCORE);
-            spawnFloatingText('+' + amount + ' Food', cx, floatY - 10, '#80d040');
             getWorldObjects().push(createTrampleMark(obj.theta));
             break;
         }
@@ -624,7 +617,7 @@ export function handleTapDown(x, y, W, H, PAL, gameTime, stateRef) {
     }
     if (stateRef.value === 'playing') {
         if (isShopOpen()) {
-            handleShopTap(x, y, W, H);
+            // Shop clicks handled by hit region system
             return 'shop';
         }
 

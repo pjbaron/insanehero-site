@@ -76,6 +76,32 @@ export function updateParticles(dt) {
             if (p.dead) particles.splice(i, 1);
             continue;
         }
+        if (p.type === 'resource_suction') {
+            // Initial ballistic arc, then suction toward head
+            p.progress += dt * 1000 / p.duration;
+            const t = Math.min(p.progress, 1);
+
+            if (t < 0.3) {
+                // Initial burst outward (ballistic)
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.vy += 180 * dt; // gravity
+            } else {
+                // Suction phase - accelerate toward head
+                const suctionT = (t - 0.3) / 0.7;
+                const suctionEase = suctionT * suctionT; // accelerating attraction
+                const dx = p.targetX - p.x;
+                const dy = p.targetY - p.y;
+                const pullStrength = 400 * suctionEase;
+                p.vx = dx * pullStrength * dt;
+                p.vy = dy * pullStrength * dt;
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+            }
+
+            if (p.progress >= 1) particles.splice(i, 1);
+            continue;
+        }
         p.x += p.vx * dt;
         p.y += p.vy * dt;
         p.vy += 200 * dt; // gravity
@@ -117,86 +143,76 @@ function pushParticle(p) {
     particles.push(p);
 }
 
-export function spawnActionAnim(obj, PAL, screenShakeRef, gameTime) {
+export function spawnActionAnim(obj, PAL, screenShakeRef, gameTime, headX, headY) {
     const type = obj.type;
     const cx = obj.x + obj.width / 2;
     const cy = obj.y + obj.height / 2;
 
     switch (type) {
         case 'TREE':
+            // Tool animation
             animations.push({ type: 'chop', x: cx, y: cy, timer: 0, duration: 0.8, treeX: obj.x, treeY: obj.y, treeW: obj.width, treeH: obj.height, upgraded: hasUpgrade('better_axe') });
-            for (let i = 0; i < 14; i++) {
+            // Wood logs that get suctioned
+            for (let i = 0; i < 12; i++) {
                 pushParticle({
-                    x: cx + randRange(-10, 10), y: obj.y + randRange(0, 20),
-                    vx: randRange(-80, 80), vy: randRange(-120, -30),
-                    life: 0.9, maxLife: 0.9,
-                    color: i < 7 ? PAL.leaf : PAL.leafDark, size: randRange(3, 7),
-                    spin: randRange(-5, 5),
+                    type: 'resource_suction',
+                    x: cx + randRange(-15, 15),
+                    y: cy + randRange(-10, 10),
+                    vx: randRange(-40, 40),
+                    vy: randRange(-60, -20),
+                    targetX: headX,
+                    targetY: headY,
+                    progress: 0,
+                    duration: 1500,
+                    color: PAL.wood,
+                    size: randRange(4, 7),
+                    life: 3,
+                    maxLife: 3,
                 });
-            }
-            for (let i = 0; i < 4; i++) {
-                pushParticle({
-                    x: cx, y: cy + 10,
-                    vx: randRange(-40, 40), vy: randRange(-80, -20),
-                    life: 0.6, maxLife: 0.6,
-                    color: PAL.wood, size: randRange(2, 4),
-                });
-            }
-            // Better axe glow particles
-            if (hasUpgrade('better_axe')) {
-                for (let i = 0; i < 6; i++) {
-                    pushParticle({
-                        x: cx, y: cy - 10,
-                        vx: randRange(-30, 30), vy: randRange(-60, -20),
-                        life: 0.5, maxLife: 0.5,
-                        color: '#ffe880', size: randRange(2, 4),
-                    });
-                }
             }
             break;
         case 'ROCK':
+            // Tool animation
             animations.push({ type: 'mine', x: cx, y: cy, timer: 0, duration: 0.6, upgraded: hasUpgrade('better_pick') });
-            animations.push({ type: 'spark', x: cx, y: cy, timer: 0, duration: 0.2 });
-            for (let i = 0; i < 4; i++) {
-                const angle = (i / 4) * Math.PI - Math.PI / 2;
+            // Stone chunks that get suctioned
+            for (let i = 0; i < 10; i++) {
+                const angle = (i / 10) * Math.PI * 2;
                 pushParticle({
-                    x: cx + randRange(-5, 5), y: cy + randRange(-5, 5),
-                    vx: Math.cos(angle) * randRange(60, 120), vy: randRange(-150, -60),
-                    life: 0.8, maxLife: 0.8,
-                    color: i % 2 === 0 ? PAL.stone : PAL.stoneLight, size: randRange(5, 9),
-                    gravity: true,
+                    type: 'resource_suction',
+                    x: cx + randRange(-12, 12),
+                    y: cy + randRange(-12, 12),
+                    vx: Math.cos(angle) * randRange(30, 60),
+                    vy: randRange(-80, -30),
+                    targetX: headX,
+                    targetY: headY,
+                    progress: 0,
+                    duration: 1550,
+                    color: i % 2 === 0 ? PAL.stone : PAL.stoneLight,
+                    size: randRange(5, 9),
+                    life: 3,
+                    maxLife: 3,
                 });
             }
-            // Base spark particles
-            const sparkCount = hasUpgrade('better_pick') ? 14 : 8;
-            for (let i = 0; i < sparkCount; i++) {
-                pushParticle({
-                    x: cx, y: cy,
-                    vx: randRange(-100, 100), vy: randRange(-140, -40),
-                    life: 0.3, maxLife: 0.3,
-                    color: hasUpgrade('better_pick') ? (i % 2 === 0 ? '#ffe080' : '#ffffff') : '#ffe080',
-                    size: randRange(1, hasUpgrade('better_pick') ? 4 : 3),
-                });
-            }
-            animations.push({ type: 'resourceArc', x: cx, y: cy - 20, timer: 0, duration: 0.5, icon: 'stone', color: '#b0b4b8' });
             break;
         case 'BUSH':
+            // Tool animation
             animations.push({ type: 'harvest', x: cx, y: cy, timer: 0, duration: 0.5 });
-            for (let i = 0; i < 6; i++) {
-                const delay = i * 0.05;
+            // Berries/fruit that get suctioned
+            for (let i = 0; i < 8; i++) {
                 pushParticle({
-                    x: cx + randRange(-12, 12), y: cy + randRange(-8, 4),
-                    vx: randRange(-30, 30), vy: randRange(-60, -20),
-                    life: 0.6 + delay, maxLife: 0.6 + delay,
-                    color: PAL.berry, size: randRange(3, 5),
-                });
-            }
-            for (let i = 0; i < 4; i++) {
-                pushParticle({
-                    x: cx + randRange(-10, 10), y: cy,
-                    vx: randRange(-20, 20), vy: randRange(-30, -10),
-                    life: 0.4, maxLife: 0.4,
-                    color: PAL.leaf, size: randRange(2, 4),
+                    type: 'resource_suction',
+                    x: cx + randRange(-15, 15),
+                    y: cy + randRange(-8, 8),
+                    vx: randRange(-35, 35),
+                    vy: randRange(-55, -25),
+                    targetX: headX,
+                    targetY: headY,
+                    progress: 0,
+                    duration: 1450,
+                    color: PAL.berry,
+                    size: randRange(4, 6),
+                    life: 3,
+                    maxLife: 3,
                 });
             }
             break;

@@ -31,6 +31,7 @@ export function getShopSlide()        { return shopSlide; }
 export function getShopCountdown()    { return shopCountdown; }
 export function getShopOptions()      { return shopOptions; }
 export function getShopSelectedIndex(){ return shopSelectedIndex; }
+export function setShopSelectedIndex(idx) { shopSelectedIndex = idx; }
 export function getShopBuyFlash()     { return shopBuyFlash; }
 export function getShopBuyFlashKey()  { return shopBuyFlashKey; }
 export function getShopIconPop()      { return shopIconPop; }
@@ -193,8 +194,13 @@ export function handleShopTap(x, y, W, H) {
     const tabH   = 110;
     const gap    = 10;
     const baseY  = H - 40;
-    const riseAmt = 260;  // must match renderer.js drawShopTablets
-    const startX = W / 2 - (items.length * (tabW + gap)) / 2 + tabW / 2;
+    const total  = items.length;
+
+    // Multi-row layout (must match renderer.js drawShopTablets)
+    const maxRowWidth = W - 40;
+    const tabsPerRow = Math.max(1, Math.floor(maxRowWidth / (tabW + gap)));
+    const rows = Math.ceil(total / tabsPerRow);
+    const riseAmt = 260 + (rows - 1) * (tabH + gap);
 
     // Close button below tablets (must match renderer.js drawShopTablets dimensions)
     const closeBtnH = 64;
@@ -208,8 +214,12 @@ export function handleShopTap(x, y, W, H) {
     }
 
     for (let i = 0; i < items.length; i++) {
-        const tx = startX + i * (tabW + gap);
-        const ty = baseY - tabH / 2 - riseAmt * ease;
+        const row = Math.floor(i / tabsPerRow);
+        const col = i % tabsPerRow;
+        const tabsInRow = Math.min(tabsPerRow, total - row * tabsPerRow);
+        const rowStartX = W / 2 - (tabsInRow * (tabW + gap)) / 2 + tabW / 2;
+        const tx = rowStartX + col * (tabW + gap);
+        const ty = baseY - tabH / 2 - riseAmt * ease + row * (tabH + gap);
         if (x >= tx - tabW / 2 && x <= tx + tabW / 2 &&
             y >= ty - tabH / 2 && y <= ty + tabH / 2) {
             if (shopSelectedIndex === i) {

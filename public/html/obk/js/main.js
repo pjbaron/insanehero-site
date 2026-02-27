@@ -23,6 +23,7 @@ import {
     updateParticles, updateFloatingTexts, updateAnimations, clearAll as clearParticles,
     spawnParticle, spawnFloatingText,
 } from './particles.js';
+import { clearHitRegions, checkHitRegions } from './hitRegions.js';
 
 // --- Runtime config: overrides applied here shadow config.js defaults ---
 export const runtimeConfig = {};
@@ -137,6 +138,10 @@ function onTapDown(x, y) {
     // Annals screen: any tap returns to title
     if (stateRef.value === 'annals') {
         resetToTitle();
+        return;
+    }
+    // Check hit regions first (UI elements registered during rendering)
+    if (checkHitRegions(x, y)) {
         return;
     }
     const result = handleTapDown(x, y, W, H, PAL, gameTime, stateRef);
@@ -396,6 +401,7 @@ function gameLoop(timestamp) {
     lastTime = timestamp;
 
     update(dt);
+    clearHitRegions(); // Clear before drawing to rebuild hit regions
     draw(W, H, stateRef.value, gameTime, titlePulse, gameState, dt);
 
     requestAnimationFrame(gameLoop);
