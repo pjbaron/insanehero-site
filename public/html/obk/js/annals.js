@@ -21,7 +21,7 @@ export const FEATS = [
 // 14 Daily Chronicle modifiers (rotate by calendar day)
 export const DAILY_MODIFIERS = [
   { name: 'The Fresh Start',    config_override: {} },
-  { name: 'The Short Day',      config_override: { DAY_DURATIONS_MULT: 0.85 } },
+  { name: 'The Shortest Day',   config_override: { DAY_DURATIONS_MULT: 0.85 } },
   { name: 'The Generous Earth', config_override: { RESOURCE_YIELD_MULT: 1.15 } },
   { name: 'The Barren Soil',    config_override: { RESOURCE_YIELD_MULT: 0.8 } },
   { name: 'The Slow World',     config_override: { BRAKE_MIN_SPEED: 0.02 } },

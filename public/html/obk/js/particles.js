@@ -143,6 +143,24 @@ function pushParticle(p) {
     particles.push(p);
 }
 
+// Spawn multiple coins with varied trajectories
+function spawnCoins(x, y, count, baseDuration) {
+    for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2;
+        const spread = 30;
+        animations.push({
+            type: 'tax',
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * spread,
+            vy: Math.sin(angle) * spread,
+            arcHeight: 30 + randRange(-10, 10),
+            timer: 0,
+            duration: baseDuration + randRange(-0.1, 0.1),
+        });
+    }
+}
+
 export function spawnActionAnim(obj, PAL, screenShakeRef, gameTime, headX, headY) {
     const type = obj.type;
     const cx = obj.x + obj.width / 2;
@@ -218,31 +236,24 @@ export function spawnActionAnim(obj, PAL, screenShakeRef, gameTime, headX, headY
             break;
         case 'VILLAGER':
         case 'MERCHANT':
-            animations.push({ type: 'tax', x: cx, y: cy, timer: 0, duration: 0.6, targetY: 10 });
-            for (let i = 0; i < 5; i++) {
-                pushParticle({
-                    x: cx, y: obj.y + 10,
-                    vx: randRange(-15, 15), vy: randRange(-50, -20),
-                    life: 0.8, maxLife: 0.8,
-                    color: PAL.coinGold, size: randRange(2, 4),
-                });
-            }
+            spawnCoins(cx, cy, 1, 0.6);
             break;
         case 'ENEMY':
         case 'REBEL':
             animations.push({ type: 'slash', x: cx, y: cy, timer: 0, duration: 0.5 });
             animations.push({ type: 'enemyFly', x: cx, y: cy, timer: 0, duration: 0.6,
                 bodyColor: type === 'REBEL' ? PAL.rebelBody : PAL.enemyBody });
-            animations.push({ type: 'coinDrop', x: cx, y: cy - 10, timer: 0, duration: 0.8,
-                vx: randRange(-20, 20), vy: -120 });
-            for (let i = 0; i < 6; i++) {
+            spawnCoins(cx, cy, 2, 0.65);
+            // Green sparkles (brief decoration)
+            for (let i = 0; i < 3; i++) {
                 pushParticle({
                     x: cx, y: cy,
                     vx: randRange(-60, 80), vy: randRange(-100, -30),
-                    life: 0.5, maxLife: 0.5,
-                    color: i < 3 ? PAL.coinGold : '#80ff80', size: randRange(2, 5),
+                    life: 0.4, maxLife: 0.4,
+                    color: '#80ff80', size: randRange(2, 4),
                 });
             }
+            // White flash particles
             for (let i = 0; i < 8; i++) {
                 pushParticle({
                     x: cx, y: cy,
@@ -255,18 +266,14 @@ export function spawnActionAnim(obj, PAL, screenShakeRef, gameTime, headX, headY
             break;
         case 'BOSS':
             animations.push({ type: 'slash', x: cx, y: cy, timer: 0, duration: 0.5 });
-            // Multiple coin drops for boss
-            for (let ci = 0; ci < 3; ci++) {
-                animations.push({ type: 'coinDrop', x: cx + randRange(-15, 15), y: cy - 10,
-                    timer: 0, duration: 0.8 + ci * 0.1,
-                    vx: randRange(-40, 40), vy: -100 - ci * 30 });
-            }
-            for (let i = 0; i < 10; i++) {
+            spawnCoins(cx, cy, 5, 0.7);
+            // Boss armor debris (decorative)
+            for (let i = 0; i < 5; i++) {
                 pushParticle({
                     x: cx, y: cy,
                     vx: randRange(-80, 80), vy: randRange(-100, -20),
-                    life: 0.6, maxLife: 0.6,
-                    color: i < 5 ? PAL.bossArmor : '#ffe080', size: randRange(3, 6),
+                    life: 0.5, maxLife: 0.5,
+                    color: PAL.bossArmor, size: randRange(3, 5),
                 });
             }
             screenShakeRef.value = Math.max(screenShakeRef.value, 0.2);
@@ -285,16 +292,7 @@ export function spawnActionAnim(obj, PAL, screenShakeRef, gameTime, headX, headY
             break;
         case 'DRAGON':
             animations.push({ type: 'deflect', x: cx, y: cy, timer: 0, duration: 0.6 });
-            // Treasure burst
-            for (let i = 0; i < 20; i++) {
-                pushParticle({
-                    x: cx, y: cy,
-                    vx: randRange(-150, 150), vy: randRange(-200, -50),
-                    life: 1.0, maxLife: 1.0,
-                    color: i % 3 === 0 ? PAL.coinGold : i % 3 === 1 ? '#ffe080' : '#ff8020',
-                    size: randRange(3, 6),
-                });
-            }
+            spawnCoins(cx, cy, 10, 0.75);
             screenShakeRef.value = Math.max(screenShakeRef.value, 0.3);
             break;
     }

@@ -140,6 +140,20 @@ function onTapDown(x, y) {
         resetToTitle();
         return;
     }
+    // Branch choice: check if clicking on option buttons
+    if (gameState.activeBranchChoice) {
+        const bc = gameState.activeBranchChoice;
+        const cx2 = W / 2;
+        const cy2 = H / 2;
+        bc.options.forEach((opt, i) => {
+            const bx = cx2 + (i === 0 ? -90 : 90);
+            const by = cy2 + 16;
+            if (x >= bx - 70 && x <= bx + 70 && y >= by - 20 && y <= by + 20) {
+                resolveBranchChoice(gameState, i);
+            }
+        });
+        return;
+    }
     // Check hit regions first (UI elements registered during rendering)
     if (checkHitRegions(x, y)) {
         return;
@@ -193,7 +207,7 @@ function update(dt) {
     updateScreenShake(dt);
 
     // Shop timer + auto-open
-    updateShop(dt);
+    updateShop(dt, gameState);
     updateTablets(dt);
 
     const shopOpen = isShopOpen();

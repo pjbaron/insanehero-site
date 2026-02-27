@@ -214,34 +214,42 @@ const CONFIG = Object.freeze({
 
     // --- Upgrade definitions ---
     UPGRADES: Object.freeze({
-        wooden_wall:   { name: 'Wooden Wall',    cat: 'wall',   cost: { stone: 3, wood: 5 },              desc: '+5 Max HP, +2 HP',   tier: 1 },
-        stone_wall:    { name: 'Stone Wall',     cat: 'wall',   cost: { stone: 15, wood: 10 },            desc: '+5 Max HP, +2 HP',   tier: 2, requires: 'wooden_wall' },
-        iron_wall:     { name: 'Iron Wall',      cat: 'wall',   cost: { stone: 25, wood: 15 },            desc: '+5 Max HP, +2 HP',   tier: 3, requires: 'stone_wall' },
-        fortified_wall:{ name: 'Fortified Wall', cat: 'wall',   cost: { stone: 45, wood: 30, coins: 20 }, desc: '+10 HP, +5 heal',    tier: 4, requires: 'iron_wall' },
-        archer_tower:  { name: 'Archer Tower',   cat: 'wall',   cost: { stone: 6, coins: 5 },             desc: 'Auto-shoot enemies' },
-        archer_tower_2:{ name: 'Marksman Tower', cat: 'wall',   cost: { stone: 20, coins: 18 },           desc: '2x fire rate',          requires: 'archer_tower' },
-        archer_tower_3:{ name: 'Sniper Tower',   cat: 'wall',   cost: { stone: 35, coins: 25, wood: 18 }, desc: 'Fire arrows! Boss dmg', requires: 'archer_tower_2' },
-        moat:          { name: 'Moat',           cat: 'wall',   cost: { stone: 5, wood: 5 },              desc: 'Enemies 30% slower' },
-        moat_upgrade:  { name: 'Deep Moat',      cat: 'wall',   cost: { stone: 18, wood: 15 },            desc: '50% slow (up from 30%)', requires: 'moat' },
-        burning_moat:  { name: 'Burning Moat',   cat: 'wall',   cost: { stone: 25, wood: 18, coins: 14 }, desc: 'Moat burns enemies',    requires: 'moat_upgrade' },
-        spike_pit:     { name: 'Spike Pit',      cat: 'wall',   cost: { wood: 8, stone: 6 },              desc: 'Passive dmg to enemies' },
-        better_axe:    { name: 'Better Axe',     cat: 'weapon', cost: { wood: 4, coins: 3 },              desc: 'One-shot medium trees' },
-        master_axe:    { name: 'Master Axe',     cat: 'weapon', cost: { wood: 20, stone: 12, coins: 15 }, desc: 'One-shot large trees',   requires: 'better_axe' },
-        better_pick:   { name: 'Better Pickaxe', cat: 'weapon', cost: { wood: 4, coins: 3 },              desc: 'One-shot medium rocks' },
-        master_pick:   { name: 'Master Pickaxe', cat: 'weapon', cost: { stone: 20, wood: 12, coins: 15 }, desc: 'One-shot large rocks',   requires: 'better_pick' },
-        cleave:        { name: 'Cleave Sword',   cat: 'weapon', cost: { wood: 6, coins: 5 },              desc: 'Hit enemies behind' },
-        forward_cleave:{ name: 'Sweeping Blow',  cat: 'weapon', cost: { wood: 18, coins: 14, stone: 10 }, desc: 'Cleave front + back',   requires: 'cleave' },
-        war_hammer:    { name: 'War Hammer',     cat: 'weapon', cost: { wood: 25, stone: 22, coins: 18 }, desc: 'HOLD to smash all!' },
-        rain_of_arrows:{ name: 'Rain of Arrows', cat: 'weapon', cost: { wood: 12, coins: 8 },             desc: 'Arrow rain on kill' },
-        shield_bash:   { name: 'Shield Bash',    cat: 'weapon', cost: { wood: 8, stone: 8 },              desc: 'Stun nearby on kill' },
-        battle_cry:    { name: 'Battle Cry',     cat: 'weapon', cost: { coins: 15, food: 10 },            desc: '3-kill streak = +50% dmg' },
-        wider_beam:    { name: 'Wider Beam',     cat: 'head',   cost: { coins: 10, wood: 8 },             desc: 'Beam zone +40px' },
-        massive_beam:  { name: 'Massive Beam',   cat: 'head',   cost: { coins: 35, stone: 25 },           desc: 'Beam zone +40px more',  requires: 'wider_beam' },
-        golden_crown:  { name: 'Golden Crown',   cat: 'food',   cost: { coins: 30, wood: 15, stone: 15 }, desc: 'All gathering +1' },
-        dragon_slayer: { name: 'Dragon Slayer',  cat: 'weapon', cost: { stone: 35, wood: 30, coins: 40 }, desc: 'Instant kill dragons' },
-        farm:          { name: 'Farm',           cat: 'food',   cost: { food: 5, wood: 4 },               desc: '+1 food / 20s' },
-        bakery:        { name: 'Bakery',         cat: 'food',   cost: { food: 5, stone: 4 },              desc: '+3 loyalty / 20s' },
-        feast:         { name: 'Feast',          cat: 'food',   cost: { food: 12, coins: 3 },             desc: '+10 loyalty now!' },
+        // Wall upgrades (4 tiers, exponential growth)
+        wooden_wall:   { name: 'Wooden Wall',    cat: 'wall',   cost: { wood: 6, stone: 4 },     desc: '+5 Max HP, +2 HP',   tier: 1 },
+        stone_wall:    { name: 'Stone Wall',     cat: 'wall',   cost: { wood: 12, stone: 18 },   desc: '+5 Max HP, +2 HP',   tier: 2, requires: 'wooden_wall' },
+        iron_wall:     { name: 'Iron Wall',      cat: 'wall',   cost: { wood: 22, stone: 28 },   desc: '+5 Max HP, +2 HP',   tier: 3, requires: 'stone_wall' },
+        fortified_wall:{ name: 'Fortified Wall', cat: 'wall',   cost: { stone: 45, coins: 70 },  desc: '+10 HP, +5 heal',    tier: 4, requires: 'iron_wall' },
+        // Archer tower (3 tiers)
+        archer_tower:  { name: 'Archer Tower',   cat: 'wall',   cost: { stone: 7, coins: 10 },   desc: 'Auto-shoot enemies' },
+        archer_tower_2:{ name: 'Marksman Tower', cat: 'wall',   cost: { stone: 20, coins: 30 },  desc: '2x fire rate',          requires: 'archer_tower' },
+        archer_tower_3:{ name: 'Sniper Tower',   cat: 'wall',   cost: { stone: 35, coins: 60 },  desc: 'Fire arrows! Boss dmg', requires: 'archer_tower_2' },
+        // Moat (3 tiers)
+        moat:          { name: 'Moat',           cat: 'wall',   cost: { wood: 6, stone: 5 },     desc: 'Enemies 30% slower' },
+        moat_upgrade:  { name: 'Deep Moat',      cat: 'wall',   cost: { wood: 15, stone: 18 },   desc: '50% slow (up from 30%)', requires: 'moat' },
+        burning_moat:  { name: 'Burning Moat',   cat: 'wall',   cost: { wood: 25, coins: 40 },   desc: 'Moat burns enemies',    requires: 'moat_upgrade' },
+        // Standalone defenses (priced at penultimate tier)
+        spike_pit:     { name: 'Spike Pit',      cat: 'wall',   cost: { wood: 20, coins: 36 },   desc: 'Passive dmg to enemies' },
+        // Tool upgrades (2 tiers each)
+        better_axe:    { name: 'Better Axe',     cat: 'weapon', cost: { wood: 15, coins: 8 },     desc: 'One-shot medium trees' },
+        master_axe:    { name: 'Master Axe',     cat: 'weapon', cost: { wood: 30, coins: 36 },   desc: 'One-shot large trees',   requires: 'better_axe' },
+        better_pick:   { name: 'Better Pickaxe', cat: 'weapon', cost: { stone: 15, coins: 8 },    desc: 'One-shot medium rocks' },
+        master_pick:   { name: 'Master Pickaxe', cat: 'weapon', cost: { stone: 30, coins: 36 },  desc: 'One-shot large rocks',   requires: 'better_pick' },
+        // Combat upgrades
+        cleave:        { name: 'Cleave Sword',   cat: 'weapon', cost: { wood: 7, coins: 10 },    desc: 'Hit enemies behind' },
+        forward_cleave:{ name: 'Sweeping Blow',  cat: 'weapon', cost: { wood: 20, coins: 32 },   desc: 'Cleave front + back',   requires: 'cleave' },
+        war_hammer:    { name: 'War Hammer',     cat: 'weapon', cost: { wood: 28, coins: 50 },   desc: 'HOLD to smash all!' },
+        rain_of_arrows:{ name: 'Rain of Arrows', cat: 'weapon', cost: { wood: 18, coins: 28 },   desc: 'Arrow rain on kill' },
+        shield_bash:   { name: 'Shield Bash',    cat: 'weapon', cost: { wood: 15, stone: 13 },   desc: 'Stun nearby on kill' },
+        battle_cry:    { name: 'Battle Cry',     cat: 'weapon', cost: { food: 15, coins: 36 },   desc: '3-kill streak = +50% dmg' },
+        // Beam upgrades (2 tiers)
+        wider_beam:    { name: 'Wider Beam',     cat: 'head',   cost: { wood: 10, coins: 16 },   desc: 'Beam zone +40px' },
+        massive_beam:  { name: 'Massive Beam',   cat: 'head',   cost: { stone: 30, coins: 56 },  desc: 'Beam zone +40px more',  requires: 'wider_beam' },
+        // Economy upgrades
+        golden_crown:  { name: 'Abundance',      cat: 'food',   cost: { wood: 20, coins: 48 },   desc: 'All gathering +1' },
+        dragon_slayer: { name: 'Dragon Slayer',  cat: 'weapon', cost: { stone: 40, coins: 90 },  desc: 'Instant kill dragons' },
+        farm:          { name: 'Farm',           cat: 'food',   cost: { food: 8, wood: 12 },     desc: '+1 food / 20s' },
+        bakery:        { name: 'Bakery',         cat: 'food',   cost: { food: 16, stone: 6 },    desc: '+3 loyalty / 20s' },
+        feast:         { name: 'Feast',          cat: 'food',   cost: { food: 12, coins: 10 },   desc: '+10 loyalty now!' },
     }),
 
     // --- Wall upgrade effects ---
@@ -249,10 +257,10 @@ const CONFIG = Object.freeze({
     WALL_UPGRADE_HEAL: 2,
 
     // --- Feast ---
-    FEAST_LOYALTY: 10,
+    FEAST_LOYALTY: 15,
 
     // --- Resource gathering (multi-hit tiers: small/medium/large) ---
-    RESOURCE_SIZE_PROBS: Object.freeze([0.5, 0.3, 0.2]),  // spawn weights
+    RESOURCE_SIZE_PROBS: Object.freeze([0.5, 0.3, 0.2]),   // spawn weights
     RESOURCE_HITS:       Object.freeze([1, 3, 5]),         // hits to deplete per size
     RESOURCE_YIELDS:     Object.freeze([1, 2, 3]),         // resources yielded per size
     BASE_WOOD: 1,

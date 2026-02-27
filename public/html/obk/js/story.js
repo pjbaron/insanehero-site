@@ -45,17 +45,17 @@ export function updateBeat(dt, state) {
 // Branch choice days and their options
 export const BRANCH_CHOICES = {
     4: {
-        text: 'THE HEAD MUST CHOOSE ITS FOCUS.',
+        text: 'THE HEAD MUST CHOOSE A FOCUS.',
         options: [
             { label: 'STRENGTH', effect: 'combat_focus',  desc: 'Enemies spawn slower. Beam targets enemies first.' },
             { label: 'HARVEST',  effect: 'harvest_focus', desc: 'Resources yield more. Beam targets resources first.' },
         ],
     },
     12: {
-        text: 'THE RIVAL GROWS BOLD.',
+        text: 'THE WIZARD GROWS BOLD.',
         options: [
             { label: 'FORTIFY', effect: 'fortify',  desc: 'Wall gains 3 HP. Castle approach alarm activates.' },
-            { label: 'AGGRESS', effect: 'aggress',  desc: 'Rival castle spawns 2 days earlier. Bonus gold on kill.' },
+            { label: 'AGGRESS', effect: 'aggress',  desc: 'Wizard castle spawns 2 days earlier. Bonus gold on kill.' },
         ],
     },
     20: {
@@ -79,7 +79,7 @@ export function triggerBranchChoice(day, state) {
         day,
         ...BRANCH_CHOICES[day],
         elapsed:     0,
-        autoTimeout: 4000,  // ms before default option applied
+        autoTimeout: Infinity,  // Never auto-dismiss, player must choose
         resolved:    false,
     };
 }

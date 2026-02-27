@@ -1,7 +1,7 @@
 'use strict';
 
 import CONFIG, { HEAD_X, HEAD_Y, HEAD_RADIUS, SAPLING_GROW_S, BEAM_WIDTH, DESPERATION_BONUS_PX, DESPERATION_CHARGE_S } from './config.js';
-import { getWorldObjects, getBoulders, spawnObject, getSpawnInterval, createStump, createCrater, createTrampleMark } from './entities.js';
+import { getWorldObjects, getBoulders, spawnObject, getSpawnInterval, createStump, createCrater, createTrampleMark, createScorchMark } from './entities.js';
 import {
     hasUpgrade, addResource, addScore, incrementEnemiesDefeated,
     addTotalResourcesGathered, damageWall, setMerchantsScared,
@@ -42,11 +42,47 @@ export function performAction(W, H, PAL, gameTime) {
     const _S = CONFIG.ENTITY_SCALE || 1;
     const _fY = cy - obj.height * (_S - 1);  // visual top for floating text
 
+    // Enemy hut or bandit hut: multi-hit
+    if (obj.type === 'enemy_hut' || obj.type === 'bandit_hut') {
+        obj.hp--;
+        spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
+        screenShakeRef.value = Math.max(screenShakeRef.value, CONFIG.SHAKE_ENEMY_HIT || 0.3);
+        if (obj.hp <= 0) {
+            obj.acted = true;
+            addResource('coins', 5);
+            incrementEnemiesDefeated();
+            registerKill();
+            addScore(CONFIG.ENEMY_SCORE * 5);
+            spawnFloatingText(obj.label + ' Destroyed! +5 Coins', cx, _fY - 10, '#ffe040');
+            // Small explosion
+            for (let i = 0; i < 8; i++) {
+                const color = i % 2 === 0 ? '#ff6020' : '#ffaa40';
+                spawnParticle({
+                    x: cx, y: cy + 10,
+                    vx: (Math.random() - 0.5) * 200, vy: -40 - Math.random() * 80,
+                    life: 0.8, maxLife: 0.8,
+                    color: color, size: 3 + Math.random() * 3,
+                });
+            }
+            // Leave scorch mark
+            if (obj.type === 'enemy_hut') {
+                getWorldObjects().push(createScorchMark(obj.theta));
+            }
+            applyShieldBash(obj.theta, PAL);
+            applyRainOfArrows(cx, cy, W, H);
+        } else {
+            spawnFloatingText('HIT! (' + obj.hp + '/' + obj.maxHp + ')', cx, _fY - 10, '#ff8040');
+        }
+        buttonPressTimer = CONFIG.BUTTON_PRESS_DURATION;
+        buttonPressed = true;
+        return;
+    }
+
     // Boss: multi-hit
     if (obj.type === 'BOSS') {
         obj.bossHP--;
         obj.bossStagger = CONFIG.BOSS_STAGGER_TIME;
-        spawnActionAnim(obj, PAL, screenShakeRef, gameTime);
+        spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
         screenShakeRef.value = Math.max(screenShakeRef.value, CONFIG.SHAKE_BOSS_HIT);
         if (obj.bossHP <= 0) {
             obj.acted = true;
@@ -79,7 +115,7 @@ export function performAction(W, H, PAL, gameTime) {
     // Dragon: tap to deflect for treasure (dragon slayer = instant kill + 2x reward)
     if (obj.type === 'DRAGON') {
         obj.acted = true;
-        spawnActionAnim(obj, PAL, screenShakeRef, gameTime);
+        spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
         const isDragonSlayer = hasUpgrade('dragon_slayer');
         const coinReward = isDragonSlayer ? CONFIG.DRAGON_TREASURE_COINS * 2 : CONFIG.DRAGON_TREASURE_COINS;
         const scoreReward = isDragonSlayer ? CONFIG.DRAGON_TREASURE_SCORE * 2 : CONFIG.DRAGON_TREASURE_SCORE;
@@ -113,7 +149,7 @@ export function performAction(W, H, PAL, gameTime) {
     // Catapult deflect
     if (obj.type === 'CATAPULT') {
         obj.acted = true;
-        spawnActionAnim(obj, PAL, screenShakeRef, gameTime);
+        spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
         addResource('stone', 1);
         addScore(CONFIG.CATAPULT_SCORE);
         spawnFloatingText('Deflected! +1 Stone', cx, _fY - 10, '#b0b4b8');
@@ -130,7 +166,7 @@ export function performAction(W, H, PAL, gameTime) {
     // Merchant: taxing scares all future merchants
     if (obj.type === 'MERCHANT') {
         obj.acted = true;
-        spawnActionAnim(obj, PAL, screenShakeRef, gameTime);
+        spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
         addResource('coins', CONFIG.MERCHANT_TAX_COINS);
         adjustLoyalty(-CONFIG.MERCHANT_TAX_LOYALTY_COST);
         setMerchantsScared(true);
@@ -152,7 +188,7 @@ export function performAction(W, H, PAL, gameTime) {
             const loyaltyCost = CONFIG.VILLAGER_TAX_LOYALTY[obj.taxCount - 1] || 3;
             adjustLoyalty(-loyaltyCost);
             const coinsLeft = CONFIG.VILLAGER_MAX_COINS - obj.taxCount;
-            spawnActionAnim(obj, PAL, screenShakeRef, gameTime);
+            spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
             if (coinsLeft > 0) {
                 spawnFloatingText('+1 Coin (' + coinsLeft + ' left)', cx, floatY - 10, PAL.coinGold);
             } else {
@@ -166,7 +202,7 @@ export function performAction(W, H, PAL, gameTime) {
             obj.shirtTaken = true;
             obj.acted = true;
             adjustLoyalty(-CONFIG.VILLAGER_SHIRT_LOYALTY);
-            spawnActionAnim(obj, PAL, screenShakeRef, gameTime);
+            spawnActionAnim(obj, PAL, screenShakeRef, gameTime, HEAD_X, HEAD_Y);
             spawnFloatingText('Took their shirt!', cx, floatY - 10, '#ff8040');
             spawnFloatingText('"The shirt off my back!"', cx, floatY - 30, '#ff4040');
             spawnFloatingText('(Worthless)', cx, floatY - 50, '#888888');

@@ -7,11 +7,13 @@ import CONFIG, {
 } from './config.js';
 import { getBeamWidthBonus } from './resources.js';
 import { getButtonTarget } from './action.js';
+import { getParticles } from './particles.js';
 
 const state = {
   expression: HEAD_EXPR_IDLE,
   bobOffset: 0,
   mouthOpenFraction: 0,  // 0 = closed, 1 = fully open
+  targetMouthOpen: 0,    // target mouth openness (smoothly interpolate toward this)
   time: 0,
   crashPlayed: false,
   crashProgress: 0,      // 0..1 during crash animation
@@ -137,22 +139,35 @@ export function update(dt, gameState) {
   const loyalty = gameState?.resources?.loyalty ?? 50;
   const wallHp  = gameState?.wallHp ?? 10;
   const entityInBeam = !!getButtonTarget();
+  // Check if any resources are flying toward mouth
+  const resourcesInFlight = getParticles().some(p => p.type === 'resource_suction' && p.progress < 0.95);
 
+  // Set target mouth openness based on state
   if (wallHp < 5) {
     state.expression = HEAD_EXPR_DESPERATE;
-    state.mouthOpenFraction = 0.8 + Math.sin(state.time * 8) * 0.15;
+    state.targetMouthOpen = 0.8 + Math.sin(state.time * 8) * 0.15;
   } else if (loyalty >= 80) {
     state.expression = HEAD_EXPR_GRIN;
-    state.mouthOpenFraction = 0.9;
+    state.targetMouthOpen = 0.9;
   } else if (loyalty < 30) {
     state.expression = HEAD_EXPR_WARN;
-    state.mouthOpenFraction = 0.3 + Math.abs(Math.sin(state.time * 4)) * 0.2;
-  } else if (entityInBeam) {
+    state.targetMouthOpen = 0.3 + Math.abs(Math.sin(state.time * 4)) * 0.2;
+  } else if (entityInBeam || resourcesInFlight) {
     state.expression = HEAD_EXPR_READY;
-    state.mouthOpenFraction = 0.7;
+    state.targetMouthOpen = 1.2;  // Grow really quite wide!
   } else {
     state.expression = HEAD_EXPR_IDLE;
-    state.mouthOpenFraction = 0.2;
+    state.targetMouthOpen = 0;
+  }
+
+  // Smoothly interpolate mouth opening
+  const mouthDiff = state.targetMouthOpen - state.mouthOpenFraction;
+  if (mouthDiff > 0) {
+    // Opening: grow slowly
+    state.mouthOpenFraction += Math.min(mouthDiff, dt * 2.5);
+  } else {
+    // Closing: slam shut quickly
+    state.mouthOpenFraction += Math.max(mouthDiff, -dt * 8);
   }
 }
 
@@ -160,6 +175,7 @@ export function resetHead() {
   state.expression = HEAD_EXPR_IDLE;
   state.bobOffset = 0;
   state.mouthOpenFraction = 0;
+  state.targetMouthOpen = 0;
   state.time = 0;
   state.crashPlayed = false;
   state.crashProgress = 0;
@@ -325,11 +341,43 @@ function _drawCracks(ctx, cx, cy, r) {
 }
 
 function _drawBeam(ctx, cx, cy, r, colorOverride) {
+  const entityInBeam = !!getButtonTarget();
+  const resourcesInFlight = getParticles().some(p => p.type === 'resource_suction' && p.progress < 0.95);
+  const hasResources = entityInBeam || resourcesInFlight;
+
   const fillColor   = colorOverride ?? BEAM_COLOR;
   const strokeColor = colorOverride ? 'rgba(200,30,20,0.9)' : BEAM_EDGE_COLOR;
   const beamTop    = cy + 27;  // fixed anchor at mouth, independent of head radius
   const beamBottom = ctx.canvas.height * (1 - CONFIG.GROUND_RATIO) + 15;
   const halfW      = (BEAM_WIDTH + getBeamWidthBonus()) / 2;
+
+  // Enhanced beam when resources present
+  if (hasResources && !colorOverride) {
+    const pulse = Math.sin(state.time * 6) * 0.5 + 0.5;
+    const glowIntensity = 0.3 + pulse * 0.3;
+
+    // Outer glow layers
+    ctx.save();
+    ctx.globalAlpha = glowIntensity * 0.4;
+    ctx.fillStyle = 'rgba(255, 240, 160, 0.3)';
+    ctx.fillRect(cx - halfW * 1.5, beamTop, halfW * 3, beamBottom - beamTop);
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = glowIntensity * 0.6;
+    ctx.fillStyle = 'rgba(255, 230, 120, 0.2)';
+    ctx.fillRect(cx - halfW * 1.2, beamTop, halfW * 2.4, beamBottom - beamTop);
+    ctx.restore();
+
+    // Pulsing center beam
+    ctx.save();
+    ctx.globalAlpha = 0.8 + pulse * 0.2;
+    ctx.beginPath();
+    ctx.rect(cx - halfW, beamTop, halfW * 2, beamBottom - beamTop);
+    ctx.fillStyle = `rgba(255, 240, 160, ${0.4 + pulse * 0.1})`;
+    ctx.fill();
+    ctx.restore();
+  }
 
   // Soft fill
   ctx.beginPath();
@@ -337,13 +385,32 @@ function _drawBeam(ctx, cx, cy, r, colorOverride) {
   ctx.fillStyle = fillColor;
   ctx.fill();
 
-  // Edge lines
+  // Edge lines (brighter when resources present)
   ctx.beginPath();
   ctx.moveTo(cx - halfW, beamTop);
   ctx.lineTo(cx - halfW, beamBottom);
   ctx.moveTo(cx + halfW, beamTop);
   ctx.lineTo(cx + halfW, beamBottom);
-  ctx.strokeStyle = strokeColor;
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = hasResources && !colorOverride ? 'rgba(255, 220, 80, 0.8)' : strokeColor;
+  ctx.lineWidth = hasResources && !colorOverride ? 3 : 2;
   ctx.stroke();
+
+  // Animated particles flowing up when resources present
+  if (hasResources && !colorOverride) {
+    const particleCount = 8;
+    for (let i = 0; i < particleCount; i++) {
+      const offset = (state.time * 100 + i * 50) % (beamBottom - beamTop);
+      const py = beamBottom - offset;
+      const px = cx + Math.sin(state.time * 3 + i) * halfW * 0.6;
+      const particleAlpha = Math.sin((offset / (beamBottom - beamTop)) * Math.PI) * 0.6;
+
+      ctx.save();
+      ctx.globalAlpha = particleAlpha;
+      ctx.fillStyle = '#ffe080';
+      ctx.beginPath();
+      ctx.arc(px, py, 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
 }

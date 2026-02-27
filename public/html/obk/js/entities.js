@@ -303,6 +303,7 @@ export function resetEntities() {
 export function createEnemyHut(theta) {
     return {
         type:    'enemy_hut',
+        info:    { name: 'enemy hut', icon: 'sword', resource: 'coins', action: 'ATTACK' },
         theta:   theta ?? ENEMY_HUT_SPAWN_THETA,
         hp:      ENEMY_HUT_HP,
         maxHp:   ENEMY_HUT_HP,
@@ -359,11 +360,20 @@ export function createSapling(theta) {
 export function createBanditHut(theta) {
   return {
     type:    'bandit_hut',
+    info:    { name: 'bandit hut', icon: 'sword', resource: 'coins', action: 'ATTACK' },
     theta:   theta ?? Math.PI * 1.5,
     hp:      4,
     maxHp:   4,
     active:  true,
+    alive:   true,
+    acted:   false,
     label:   'Bandit Hut',
+    width:   28,
+    height:  34,
+    x:       0,
+    y:       0,
+    surfaceAngle: 0,
+    direction: -1,
   };
 }
 

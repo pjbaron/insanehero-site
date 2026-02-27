@@ -29,6 +29,15 @@ const PAL = CONFIG.PAL;
 
 let ctx = null;
 
+// Wizard state for castle character
+const wizardState = {
+    ducking: false,
+    duckTimer: 0,
+    duckDuration: 0.3,    // seconds to duck down
+    peekDelay: 0.5,       // seconds to peek back up
+    yOffset: 0,           // current vertical offset (0 = standing, 8 = ducked)
+};
+
 export function initRenderer(context) {
     ctx = context;
 }
@@ -502,6 +511,136 @@ function drawRain(W, H) {
     ctx.stroke();
 }
 
+// Update wizard duck/peek behavior based on head proximity to rival castle
+function updateWizard(dt) {
+    // Find the rival castle entity
+    const worldObjects = getWorldObjects();
+    const rivalCastle = worldObjects.find(obj => obj.type === 'rival_castle');
+    if (!rivalCastle) return;
+
+    const rivalCastleX = rivalCastle.x + rivalCastle.width / 2;
+
+    // Check if head is passing over castle (within ~100px)
+    const headOverCastle = Math.abs(HEAD_X - rivalCastleX) < 100;
+
+    if (headOverCastle && !wizardState.ducking) {
+        // Start ducking
+        wizardState.ducking = true;
+        wizardState.duckTimer = 0;
+    }
+
+    if (wizardState.ducking) {
+        wizardState.duckTimer += dt;
+
+        if (wizardState.duckTimer < wizardState.duckDuration) {
+            // Ducking down
+            const t = wizardState.duckTimer / wizardState.duckDuration;
+            wizardState.yOffset = t * 8;
+        } else if (!headOverCastle && wizardState.duckTimer >= wizardState.duckDuration + wizardState.peekDelay) {
+            // Peeking back up
+            const peekT = (wizardState.duckTimer - wizardState.duckDuration - wizardState.peekDelay) / wizardState.duckDuration;
+            if (peekT >= 1) {
+                // Done peeking
+                wizardState.ducking = false;
+                wizardState.yOffset = 0;
+            } else {
+                wizardState.yOffset = 8 * (1 - peekT);
+            }
+        } else {
+            // Holding ducked position
+            wizardState.yOffset = 8;
+        }
+    }
+}
+
+// --- Crowd of peasants for title screen ---
+function drawCrowd(W, H, gameTime) {
+    const groundY = H - H * CONFIG.GROUND_RATIO;
+    const ES = CONFIG.ENTITY_SCALE || 1;
+
+    // Peasant positions around the castle (world offsets in pixels)
+    const peasantOffsets = [
+        { offset: -180, color: '#6a4a2a', hat: 0, waving: false },
+        { offset: -130, color: '#4a5a4a', hat: 1, waving: true },
+        { offset: -85, color: '#5a4a6a', hat: 2, waving: false },
+        { offset: -40, color: '#6a5a3a', hat: 0, waving: true },
+        { offset: 40, color: '#4a6a5a', hat: 1, waving: false },
+        { offset: 85, color: '#5a4a4a', hat: 2, waving: true },
+        { offset: 130, color: '#6a4a5a', hat: 0, waving: false },
+        { offset: 180, color: '#4a5a6a', hat: 1, waving: true },
+        { offset: -160, color: '#5a6a4a', hat: 2, waving: false },
+        { offset: 160, color: '#6a5a5a', hat: 0, waving: true }
+    ];
+
+    for (const peasant of peasantOffsets) {
+        const screenX = baseToScreenX(peasant.offset, W);
+        if (screenX === null) continue;
+
+        ctx.save();
+        applyPolarTransform(peasant.offset, groundY, W);
+        ctx.scale(ES, ES);
+
+        // Simple peasant figure centered at origin
+        const pw = 20, ph = 30;
+        const px = -pw / 2, py = -ph;
+        const ol = 2;
+
+        // Body/shirt
+        drawThickRect(px + 4, py + 14, 12, 16, peasant.color, PAL.outline, ol);
+
+        // Head
+        drawThickCircle(px + 10, py + 8, 7, PAL.skin, PAL.outline, ol);
+
+        // Hat
+        ctx.fillStyle = peasant.color;
+        if (peasant.hat === 1) {
+            // Flat hat
+            ctx.fillRect(px + 4, py - 1, 12, 4);
+            ctx.fillStyle = PAL.outline;
+            ctx.fillRect(px + 3, py + 2, 14, 2);
+        } else if (peasant.hat === 2) {
+            // Round hat
+            ctx.beginPath();
+            ctx.arc(px + 10, py + 6, 9, Math.PI, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = PAL.outline;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        // Face - simple eyes and mouth
+        ctx.fillStyle = PAL.outline;
+        ctx.fillRect(px + 7, py + 6, 2, 2);   // left eye
+        ctx.fillRect(px + 11, py + 6, 2, 2);  // right eye
+
+        if (peasant.waving) {
+            // Happy mouth
+            ctx.beginPath();
+            ctx.arc(px + 10, py + 10, 3, 0, Math.PI);
+            ctx.strokeStyle = PAL.outline;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Waving arm - animated
+            const waveAngle = Math.sin(gameTime * 4 + peasant.offset * 0.01) * 0.3;
+            ctx.save();
+            ctx.translate(px + 16, py + 18);
+            ctx.rotate(waveAngle);
+            drawThickRect(0, 0, 6, 3, PAL.skin, PAL.outline, 1);
+            ctx.restore();
+        } else {
+            // Neutral mouth
+            ctx.fillRect(px + 8, py + 11, 4, 1);
+        }
+
+        // Legs
+        drawThickRect(px + 6, py + 26, 4, 6, '#3a2a1a', PAL.outline, 1);
+        drawThickRect(px + 10, py + 26, 4, 6, '#3a2a1a', PAL.outline, 1);
+
+        ctx.restore();
+    }
+}
+
 // --- Wall ---
 function drawCastle(W, H, gameTime) {
     const groundY = H - H * CONFIG.GROUND_RATIO;
@@ -595,6 +734,62 @@ function drawCastle(W, H, gameTime) {
         }
     }
 
+    // --- King on top of the castle (drawn before battlements so he appears behind them) ---
+    ctx.save();
+    const kingX = 0;
+    const kingY = wy - 4; // standing on top of wall
+    // Legs
+    ctx.fillStyle = PAL.outline;
+    ctx.fillRect(kingX - 5, kingY, 4, 6);
+    ctx.fillRect(kingX + 1, kingY, 4, 6);
+    ctx.fillStyle = '#4a2060';
+    ctx.fillRect(kingX - 4, kingY + 1, 3, 4);
+    ctx.fillRect(kingX + 1, kingY + 1, 3, 4);
+    // Royal robe (body) - sized like a peasant
+    drawThickRect(kingX - 6, kingY - 16, 12, 16, '#8020a0', PAL.outline, 2);
+    // Robe gold trim
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(kingX - 6, kingY - 16, 12, 2);
+    ctx.fillRect(kingX - 6, kingY - 2, 12, 2);
+    ctx.fillRect(kingX - 1, kingY - 14, 2, 12);
+    // Head
+    drawThickCircle(kingX, kingY - 22, 7, PAL.skin, PAL.outline, 2);
+    // Eyes
+    ctx.fillStyle = PAL.outline;
+    ctx.fillRect(kingX - 4, kingY - 24, 2, 3);
+    ctx.fillRect(kingX + 2, kingY - 24, 2, 3);
+    // Smile
+    ctx.fillRect(kingX - 2, kingY - 19, 4, 1);
+    // Crown
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(kingX - 6, kingY - 30, 12, 4);
+    ctx.fillStyle = PAL.outline;
+    ctx.fillRect(kingX - 7, kingY - 30, 14, 1);
+    // Crown points
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(kingX - 6, kingY - 34, 3, 4);
+    ctx.fillRect(kingX - 1, kingY - 36, 3, 6);
+    ctx.fillRect(kingX + 4, kingY - 34, 3, 4);
+    // Crown jewels
+    ctx.fillStyle = '#ff2020';
+    ctx.fillRect(kingX - 5, kingY - 29, 2, 2);
+    ctx.fillStyle = '#2020ff';
+    ctx.fillRect(kingX + 3, kingY - 29, 2, 2);
+    ctx.fillStyle = '#20ff20';
+    ctx.fillRect(kingX - 1, kingY - 29, 2, 2);
+    // Scepter (right hand)
+    ctx.fillStyle = PAL.skin;
+    ctx.fillRect(kingX + 6, kingY - 14, 3, 5);
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(kingX + 7, kingY - 26, 2, 14);
+    // Scepter gem
+    ctx.fillStyle = '#ff2020';
+    ctx.fillRect(kingX + 6, kingY - 28, 4, 3);
+    // Left arm waving
+    ctx.fillStyle = PAL.skin;
+    ctx.fillRect(kingX - 9, kingY - 14, 3, 5);
+    ctx.restore();
+
     // --- Battlements (crenellations along the top) ---
     const merlonW = 6;
     const merlonH = 8;
@@ -672,62 +867,6 @@ function drawCastle(W, H, gameTime) {
             ctx.restore();
         }
     }
-
-    // --- King on top of the castle ---
-    ctx.save();
-    const kingX = 0;
-    const kingY = wy - 4; // standing on top of wall
-    // Legs
-    ctx.fillStyle = PAL.outline;
-    ctx.fillRect(kingX - 5, kingY, 4, 6);
-    ctx.fillRect(kingX + 1, kingY, 4, 6);
-    ctx.fillStyle = '#4a2060';
-    ctx.fillRect(kingX - 4, kingY + 1, 3, 4);
-    ctx.fillRect(kingX + 1, kingY + 1, 3, 4);
-    // Royal robe (body) - sized like a peasant
-    drawThickRect(kingX - 6, kingY - 16, 12, 16, '#8020a0', PAL.outline, 2);
-    // Robe gold trim
-    ctx.fillStyle = '#ffd700';
-    ctx.fillRect(kingX - 6, kingY - 16, 12, 2);
-    ctx.fillRect(kingX - 6, kingY - 2, 12, 2);
-    ctx.fillRect(kingX - 1, kingY - 14, 2, 12);
-    // Head
-    drawThickCircle(kingX, kingY - 22, 7, PAL.skin, PAL.outline, 2);
-    // Eyes
-    ctx.fillStyle = PAL.outline;
-    ctx.fillRect(kingX - 4, kingY - 24, 2, 3);
-    ctx.fillRect(kingX + 2, kingY - 24, 2, 3);
-    // Smile
-    ctx.fillRect(kingX - 2, kingY - 19, 4, 1);
-    // Crown
-    ctx.fillStyle = '#ffd700';
-    ctx.fillRect(kingX - 6, kingY - 30, 12, 4);
-    ctx.fillStyle = PAL.outline;
-    ctx.fillRect(kingX - 7, kingY - 30, 14, 1);
-    // Crown points
-    ctx.fillStyle = '#ffd700';
-    ctx.fillRect(kingX - 6, kingY - 34, 3, 4);
-    ctx.fillRect(kingX - 1, kingY - 36, 3, 6);
-    ctx.fillRect(kingX + 4, kingY - 34, 3, 4);
-    // Crown jewels
-    ctx.fillStyle = '#ff2020';
-    ctx.fillRect(kingX - 5, kingY - 29, 2, 2);
-    ctx.fillStyle = '#2020ff';
-    ctx.fillRect(kingX + 3, kingY - 29, 2, 2);
-    ctx.fillStyle = '#20ff20';
-    ctx.fillRect(kingX - 1, kingY - 29, 2, 2);
-    // Scepter (right hand)
-    ctx.fillStyle = PAL.skin;
-    ctx.fillRect(kingX + 6, kingY - 14, 3, 5);
-    ctx.fillStyle = '#ffd700';
-    ctx.fillRect(kingX + 7, kingY - 26, 2, 14);
-    // Scepter gem
-    ctx.fillStyle = '#ff2020';
-    ctx.fillRect(kingX + 6, kingY - 28, 4, 3);
-    // Left arm waving
-    ctx.fillStyle = PAL.skin;
-    ctx.fillRect(kingX - 9, kingY - 14, 3, 5);
-    ctx.restore();
 
     ctx.restore();
 
@@ -841,24 +980,79 @@ function drawCastle(W, H, gameTime) {
     }
 }
 
-// --- Enemy Castle (at theta = PI, opposite side of world) ---
-function drawEnemyCastle(W, H, gameTime) {
-    const groundY = H - H * CONFIG.GROUND_RATIO;
-    // Enemy castle is at world offset = circumference / 2
-    const enemyOffset = CONFIG.WORLD_CIRCUMFERENCE / 2;
-    const screenX = baseToScreenX(enemyOffset, W);
-    if (screenX === null) return;
+function drawWizard(wx, wy, gameTime)
+{
+    // --- Evil Wizard (drawn before battlements so he appears behind them) ---
+    const wizardX = 0;
+    const wizardBaseY = wy - 5;
+    const wizardY = wizardBaseY + wizardState.yOffset;
 
-    ctx.save();
-    applyPolarTransform(enemyOffset, groundY, W);
+    const blinkNow = wizardState.ducking ? (gameTime*1000)%500 < 80 : (gameTime*1000)%4000 < 130;
 
-    const ES = CONFIG.ENTITY_SCALE || 1;
-    ctx.scale(ES, ES);
+    // Legs
+    ctx.fillStyle = PAL.outline;
+    ctx.fillRect(wizardX - 4, wizardY, 3, 5);
+    ctx.fillRect(wizardX + 1, wizardY, 3, 5);
+    ctx.fillStyle = '#2a1a4a';
+    ctx.fillRect(wizardX - 3, wizardY + 1, 2, 3);
+    ctx.fillRect(wizardX + 1, wizardY + 1, 2, 3);
 
-    const ecw = 50;
-    const ech = 60;
-    const wx = -ecw / 2;
-    const wy = -ech;
+    // Robe (body)
+    drawThickRect(wizardX - 5, wizardY - 14, 10, 14, '#4a2a6a', PAL.outline, 2);
+
+    // Stars on robe
+    ctx.fillStyle = '#ffd700';
+    ctx.fillRect(wizardX - 2, wizardY - 10, 1, 1);
+    ctx.fillRect(wizardX + 1, wizardY - 7, 1, 1);
+    ctx.fillRect(wizardX - 3, wizardY - 5, 1, 1);
+
+    // Head
+    drawThickCircle(wizardX, wizardY - 20, 6, PAL.skin, PAL.outline, 2);
+    // Eyes (peeking)
+    ctx.fillStyle = PAL.outline;
+    if (blinkNow)
+    {
+        ctx.fillRect(wizardX - 3, wizardY - 22, 2, 1);
+        ctx.fillRect(wizardX + 1, wizardY - 22, 2, 1);
+    }
+    else
+    {
+        ctx.fillRect(wizardX - 3, wizardY - 22, 2, 2);
+        ctx.fillRect(wizardX + 1, wizardY - 22, 2, 2);
+    }
+
+    // Beard
+    ctx.fillStyle = '#d0d0d0';
+    ctx.fillRect(wizardX - 4, wizardY - 17, 8, 4);
+    ctx.fillRect(wizardX - 3, wizardY - 13, 6, 2);
+
+    // Wizard hat (pointy)
+    ctx.fillStyle = '#4a2a6a';
+    ctx.beginPath();
+    ctx.moveTo(wizardX - 6, wizardY - 26);
+    ctx.lineTo(wizardX, wizardY - 36);
+    ctx.lineTo(wizardX + 6, wizardY - 26);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = PAL.outline;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Hat brim
+    ctx.fillStyle = '#4a2a6a';
+    ctx.fillRect(wizardX - 7, wizardY - 27, 14, 2);
+    ctx.strokeStyle = PAL.outline;
+    ctx.strokeRect(wizardX - 7, wizardY - 27, 14, 2);
+    // Moon on hat
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath();
+    ctx.arc(wizardX + 2, wizardY - 31, 2, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+// Helper function to draw enemy castle visuals (centered at origin, bottom at y=0)
+function drawEnemyCastleBody(wx, wy, ecw, ech, gameTime) {
+
+    drawWizard(0, wy, gameTime);
 
     // Dark stone body
     drawThickRect(wx, wy, ecw, ech, '#404048', PAL.outline, 2);
@@ -965,6 +1159,28 @@ function drawEnemyCastle(W, H, gameTime) {
     ctx.fillStyle = `rgba(255,40,40,${blink})`;
     ctx.fillRect(wx - 2, -towerH + 10, 3, 5);
     ctx.fillRect(wx + ecw - 1, -towerH + 10, 3, 5);
+}
+
+// --- Enemy Castle (at theta = PI, opposite side of world) ---
+function drawEnemyCastle(W, H, gameTime, theta = Math.PI) {
+    const groundY = H - H * CONFIG.GROUND_RATIO;
+    // Convert theta angle to world offset
+    const enemyOffset = (theta / (2 * Math.PI)) * CONFIG.WORLD_CIRCUMFERENCE;
+    const screenX = baseToScreenX(enemyOffset, W);
+    if (screenX === null) return;
+
+    ctx.save();
+    applyPolarTransform(enemyOffset, groundY, W);
+
+    const ES = CONFIG.ENTITY_SCALE || 1;
+    ctx.scale(ES, ES);
+
+    const ecw = 50;
+    const ech = 60;
+    const wx = -ecw / 2;
+    const wy = -ech;
+
+    drawEnemyCastleBody(wx, wy, ecw, ech, gameTime);
 
     ctx.restore();
 }
@@ -1909,7 +2125,13 @@ function drawWorldObject(obj, gameTime, W, H) {
         case 'DRAGON': drawDragon(obj, gameTime); break;
         case 'enemy_hut': drawEnemyHut(obj); break;
         case 'bandit_hut': drawBanditHut(obj); break;
-        case 'rival_castle': drawRivalCastle(obj); break;
+        case 'rival_castle': {
+            const ecw = 50, ech = 60;
+            const wx = obj.x - ecw / 2 + obj.width / 2;
+            const wy = obj.y - ech + obj.height;
+            drawEnemyCastleBody(wx, wy, ecw, ech, gameTime);
+            break;
+        }
         case 'scorch_mark': drawScorchMark(obj); break;
         case 'stump': drawStump(obj); break;
         case 'crater': drawCrater(obj); break;
@@ -1961,24 +2183,6 @@ function drawBanditHut(obj) {
     ctx.fillRect(x - 1, y - 8, bW, bH);
     ctx.fillStyle = '#080';
     ctx.fillRect(x - 1, y - 8, bW * (obj.hp / obj.maxHp), bH);
-}
-
-function drawRivalCastle(obj) {
-    const x = obj.x, y = obj.y;
-    // Body
-    ctx.fillStyle = '#4a3050';
-    ctx.fillRect(x, y + 10, 36, 28);
-    // Battlements
-    for (let i = 0; i < 3; i++) {
-        ctx.fillRect(x + 2 + i * 12, y, 8, 10);
-    }
-    // HP bar above
-    const bW = 40;
-    const bH = 5;
-    ctx.fillStyle = '#300';
-    ctx.fillRect(x - 2, y - 10, bW, bH);
-    ctx.fillStyle = obj.attackable ? '#c00' : '#555';
-    ctx.fillRect(x - 2, y - 10, bW * (obj.hp / obj.maxHp), bH);
 }
 
 function drawScorchMark(obj) {
@@ -2259,11 +2463,11 @@ function drawHUD(W, H, gameTime) {
     ctx.fillRect(hudLeft, hudTop, hudW, hudHeight);
     ctx.restore();
 
-    // Resources row
-    const iconSize = 20;
-    const spacing = Math.min(90, (hudW - 20) / 4);
-    const resY = hudTop + 6;
-    const resStartX = hudLeft + 10;
+    // Resources column (left side, vertical)
+    const iconSize = W > 600 ? 28 : 20;  // Larger on desktop
+    const verticalSpacing = iconSize + 16;
+    const resStartX = 12;
+    const resStartY = H * 0.25;  // Start 25% down the screen
 
     const items = [
         { key: 'wood',  value: resources.wood,  color: '#c89060', icon: drawWoodIcon },
@@ -2273,7 +2477,7 @@ function drawHUD(W, H, gameTime) {
     ];
 
     for (let i = 0; i < items.length; i++) {
-        const ix = resStartX + i * spacing;
+        const iy = resStartY + i * verticalSpacing;
         const item = items[i];
         const p = pulse[item.key] || 0;
         const pNorm = p / CONFIG.HUD_PULSE_DURATION;
@@ -2281,36 +2485,37 @@ function drawHUD(W, H, gameTime) {
         ctx.save();
         if (pNorm > 0) {
             const scale = 1 + pNorm * 0.3;
-            ctx.translate(ix + iconSize / 2, resY + iconSize / 2);
+            ctx.translate(resStartX + iconSize / 2, iy + iconSize / 2);
             ctx.scale(scale, scale);
-            ctx.translate(-(ix + iconSize / 2), -(resY + iconSize / 2));
+            ctx.translate(-(resStartX + iconSize / 2), -(iy + iconSize / 2));
         }
-        item.icon(ix, resY, iconSize);
-        const fontSize = 16 + (pNorm > 0 ? Math.round(pNorm * 4) : 0);
-        drawText(String(item.value), ix + iconSize + 3, resY, fontSize, item.color, 'left');
+        item.icon(resStartX, iy, iconSize);
+        const fontSize = (W > 600 ? 20 : 16) + (pNorm > 0 ? Math.round(pNorm * 4) : 0);
+        drawText(String(item.value), resStartX + iconSize + 4, iy + iconSize / 2, fontSize, item.color, 'left');
         if (pNorm > 0.3) {
             ctx.fillStyle = `rgba(255,255,255,${(pNorm - 0.3) * 0.6})`;
-            ctx.fillRect(ix - 2, resY - 2, spacing - 8, iconSize + 4);
+            ctx.fillRect(resStartX - 2, iy - 2, iconSize + 60, iconSize + 4);
         }
         ctx.restore();
     }
 
-    // Wall HP bar with icon (second row)
+    // Wall HP bar with icon (bottom HUD area)
     const wallHP = getWallHP();
     const maxWallHP = getMaxWallHP();
     const wallDmgPulse = getWallDamagePulse();
-    const barX = resStartX + 18;
-    const barY = resY + iconSize + 6;
+    const barHudX = hudLeft + 10;
+    const barY = hudTop + 6;
+    const barX = barHudX + 18;
     const barW = Math.min(160, hudW * 0.35);
     const barH = 16;
 
     // Wall icon (small shield/castle)
     ctx.fillStyle = PAL.stone;
-    ctx.fillRect(resStartX, barY + 1, 14, 12);
+    ctx.fillRect(barHudX, barY + 1, 14, 12);
     ctx.fillStyle = PAL.stoneDark;
-    ctx.fillRect(resStartX + 2, barY + 3, 3, 4);
-    ctx.fillRect(resStartX + 9, barY + 3, 3, 4);
-    ctx.fillRect(resStartX + 5, barY + 7, 4, 6);
+    ctx.fillRect(barHudX + 2, barY + 3, 3, 4);
+    ctx.fillRect(barHudX + 9, barY + 3, 3, 4);
+    ctx.fillRect(barHudX + 5, barY + 7, 4, 6);
 
     ctx.save();
     if (wallDmgPulse > 0) {
@@ -2648,54 +2853,49 @@ function drawShopTablets(W, H) {
         ctx.fillStyle = catColor;
         ctx.fillRect(tx - tabW / 2 + 4, ty - tabH / 2 + 4, tabW - 8, 5);
 
-        // Item name
+        // Item name (moved up closer to category bar)
         ctx.globalAlpha  = 1.0;
         ctx.font         = 'bold 11px serif';
         ctx.fillStyle    = canAffordItem ? '#f0e0a0' : '#806040';
         ctx.textAlign    = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(item.name ?? ('Item ' + i), tx, ty - 10);
+        ctx.fillText(item.name ?? ('Item ' + i), tx, ty - 28);
 
-        // Description (wrapped to fit tablet width)
+        // Description (moved up, wrapped to fit tablet width)
         ctx.fillStyle = '#ffffff';
         const descLines = wrapText(item.desc ?? '', tabW - 12, 9, false);
         for (let li = 0; li < descLines.length; li++) {
-            ctx.fillText(descLines[li], tx, ty + 6 + li * 10);
+            ctx.fillText(descLines[li], tx, ty - 12 + li * 10);
         }
 
-        // Cost: colored pip squares per resource (non-numeric)
+        // Cost: icon + number for each resource
         {
-            const resColors = { wood: '#c89060', stone: '#b0b4b8', food: '#80d040', coins: '#ffd700' };
+            const iconFuncs = { wood: drawWoodIcon, stone: drawStoneIcon, food: drawFoodIcon, coins: drawCoinIcon };
             const costEntries = typeof item.cost === 'object' ? Object.entries(item.cost) : [];
-            const pipSize = 5;
-            const pipGap = 2;
-            const maxPips = 5; // max pips shown per resource row
-            let pipRowY = ty + 6 + descLines.length * 10 + 4;
+            const iconSize = 12;
+            let costY = ty - 12 + descLines.length * 10 + 8;
             for (const [res, amt] of costEntries) {
-                const pipColor = resColors[res] ?? '#aaaaaa';
                 const have = resources[res] ?? 0;
-                const pipCount = Math.min(amt, maxPips);
-                const rowW = pipCount * (pipSize + pipGap) - pipGap;
-                let px = tx - rowW / 2;
-                for (let pi = 0; pi < pipCount; pi++) {
-                    ctx.fillStyle = pipColor;
-                    ctx.fillRect(px, pipRowY, pipSize, pipSize);
-                    px += pipSize + pipGap;
+                const canAffordRes = have >= amt;
+                const iconFunc = iconFuncs[res];
+                if (iconFunc) {
+                    iconFunc(tx - 20, costY, iconSize);
                 }
-                if (amt > maxPips) {
-                    ctx.font = '7px monospace';
-                    ctx.fillStyle = '#aaaaaa';
-                    ctx.textAlign = 'left';
-                    ctx.fillText('+', px, pipRowY);
-                }
-                pipRowY += pipSize + 3;
+                ctx.font = 'bold 11px serif';
+                ctx.fillStyle = canAffordRes ? '#f0f0f0' : '#ff6060';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(amt, tx - 5, costY + iconSize / 2);
+                costY += iconSize + 4;
             }
         }
 
-        // Selection prompt
+        // Selection prompt (properly centered)
         if (isSelected) {
             ctx.font      = 'bold 10px serif';
             ctx.fillStyle = canAffordItem ? '#ffe040' : '#ff6060';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
             ctx.fillText(canAffordItem ? 'TAP TO BUY' : 'CANT AFFORD', tx, ty + tabH / 2 - 10);
         }
 
@@ -2711,17 +2911,17 @@ function drawShopTablets(W, H) {
         }, 10); // High zIndex for shop UI
     });
 
-    // Close button below tablets
-    const closeBtnH = 64;
-    const closeBtnW = 200;
+    // Close button below tablets (offset to avoid accidental taps)
+    const closeBtnH = 50;
+    const closeBtnW = 160;
     const closeBtnX = W / 2 - closeBtnW / 2;
-    const closeBtnY = H - closeBtnH - 6;
+    const closeBtnY = H - closeBtnH - 80; // Moved up to avoid bottom tap area
     ctx.fillStyle = '#882222';
     ctx.fillRect(closeBtnX, closeBtnY, closeBtnW, closeBtnH);
     ctx.strokeStyle = '#cc4444';
     ctx.lineWidth = 2;
     ctx.strokeRect(closeBtnX, closeBtnY, closeBtnW, closeBtnH);
-    drawText('CLOSE SHOP', W / 2, closeBtnY + closeBtnH / 2 - 12, 22, '#ffcccc', 'center', false);
+    drawText('CLOSE SHOP', W / 2, closeBtnY + closeBtnH / 2 - 10, 18, '#ffcccc', 'center', false);
 
     // Register hit region for close button
     registerHitRegion(closeBtnX, closeBtnY, closeBtnW, closeBtnH, () => {
@@ -3204,9 +3404,17 @@ function drawAnimations(gameTime, W) {
             case 'tax': {
                 ctx.globalAlpha = 1;
                 const arcT = t;
-                const coinX = lerp(a.x, W * 0.4, arcT);
-                const coinY = lerp(a.y, 10, arcT) - Math.sin(arcT * Math.PI) * 60;
+                // Apply velocity offsets for varied trajectories
+                const vx = a.vx || 0;
+                const vy = a.vy || 0;
+                const offsetX = vx * arcT * (1 - arcT) * 2; // parabolic offset
+                const offsetY = vy * arcT * (1 - arcT) * 2;
+                const arcHeight = a.arcHeight || 40;
+                const coinX = lerp(a.x, HEAD_X, arcT) + offsetX;
+                const coinY = lerp(a.y, HEAD_Y, arcT) - Math.sin(arcT * Math.PI) * arcHeight + offsetY;
                 const coinSize = lerp(6, 3, arcT);
+                const coinAlpha = arcT > 0.7 ? 1 - (arcT - 0.7) / 0.3 : 1;
+                ctx.globalAlpha = coinAlpha;
                 ctx.fillStyle = PAL.coinDark;
                 ctx.beginPath();
                 ctx.arc(coinX, coinY, coinSize + 1, 0, Math.PI * 2);
@@ -3215,8 +3423,8 @@ function drawAnimations(gameTime, W) {
                 ctx.beginPath();
                 ctx.arc(coinX, coinY, coinSize, 0, Math.PI * 2);
                 ctx.fill();
-                if (t > 0.1) {
-                    ctx.globalAlpha = 0.5 * (1 - t);
+                if (t > 0.1 && t < 0.5) {
+                    ctx.globalAlpha = 0.5 * (1 - t * 2);
                     ctx.fillStyle = PAL.coinGold;
                     ctx.fillRect(coinX - 1 + randRange(-3, 3), coinY + randRange(-3, 3), 2, 2);
                 }
@@ -3344,13 +3552,43 @@ function drawAnimations(gameTime, W) {
                 break;
             }
             case 'coinDrop': {
-                // Gold coin pops up then falls with gravity
-                const gravity = 400;
+                // Gold coin flies to head mouth with two-phase movement
                 const coinT = a.timer;
-                const coinX = a.x + (a.vx || 0) * coinT;
-                const coinY = a.y + (a.vy || 0) * coinT + 0.5 * gravity * coinT * coinT;
+                const progress = coinT / a.duration;
+
+                // Initialize position tracking on first frame
+                if (!a.currentX) {
+                    a.currentX = a.x;
+                    a.currentY = a.y;
+                    a.currentVX = a.vx || 0;
+                    a.currentVY = a.vy || 0;
+                }
+
+                // Two-phase movement: ballistic burst, then suction to mouth
+                if (progress < 0.3) {
+                    // Ballistic phase with gravity
+                    const dt = 1/60; // approximate frame time
+                    a.currentX += a.currentVX * dt;
+                    a.currentY += a.currentVY * dt;
+                    a.currentVY += 180 * dt; // gravity
+                } else {
+                    // Suction phase - accelerate toward head mouth
+                    const suctionT = (progress - 0.3) / 0.7;
+                    const suctionEase = suctionT * suctionT;
+                    const dx = HEAD_X - a.currentX;
+                    const dy = HEAD_Y - a.currentY;
+                    const dt = 1/60;
+                    const pullStrength = 400 * suctionEase;
+                    a.currentVX = dx * pullStrength * dt;
+                    a.currentVY = dy * pullStrength * dt;
+                    a.currentX += a.currentVX * dt;
+                    a.currentY += a.currentVY * dt;
+                }
+
+                const coinX = a.currentX;
+                const coinY = a.currentY;
                 const spin = coinT * 8; // spinning coin
-                const coinAlpha = t > 0.7 ? 1 - (t - 0.7) / 0.3 : 1;
+                const coinAlpha = progress > 0.85 ? 1 - (progress - 0.85) / 0.15 : 1;
                 ctx.globalAlpha = coinAlpha;
                 ctx.save();
                 ctx.translate(coinX, coinY);
@@ -3431,14 +3669,24 @@ function drawAnimations(gameTime, W) {
 }
 
 // --- Title screen ---
-function drawTitle(W, H, titlePulse) {
+function drawTitle(W, H, titlePulse, gameTime) {
     drawSky(W, H, 0);
     drawClouds(W, H);
     drawHills(getHillsFar(), PAL.hillFar, CONFIG.HILLS_FAR_PARALLAX_TITLE, W, H);
     drawHills(getHillsMid(), PAL.hillMid, CONFIG.HILLS_MID_PARALLAX_TITLE, W, H);
     drawGround(W, H);
 
-    ctx.fillStyle = 'rgba(0,0,20,0.45)';
+    // Evil wizard's castle
+    //wizardState.yOffset = 8; // Test: make wizard duck
+    //wizardState.ducking = true;
+    //drawEnemyCastle(W, H, Date.now() / 1000.0, 0);
+
+    drawCastle(W, H, Date.now() / 1000.0);
+
+    drawCrowd(W, H, Date.now() / 1000.0);
+
+    // tint overlay
+    ctx.fillStyle = 'rgba(0,0,20,0.15)';
     ctx.fillRect(0, 0, W, H);
 
     const cx = W / 2;
@@ -3461,12 +3709,14 @@ function drawTitle(W, H, titlePulse) {
     // ctx.closePath();
     // ctx.fill();
 
-    const pulse = 1 + Math.sin(titlePulse * 2) * 0.03;
+    var pulse = 1 + Math.sin(titlePulse * 2) * 0.1;
     ctx.save();
     ctx.translate(cx, H * 0.55);
     ctx.scale(pulse, pulse);
     drawText('ONE BUTTON', 0, -30, 50, PAL.coinGold, 'center');
-    drawText('KINGDOM', 0, 10, 56, PAL.uiText, 'center');
+    pulse = 1 + Math.sin(titlePulse * 2 + .1) * 0.1;
+    ctx.scale(pulse, pulse);
+    drawText('KINGDOM', 0, 15, 56, PAL.uiText, 'center');
     ctx.restore();
 
     const tapAlpha = 0.5 + Math.sin(titlePulse * 3) * 0.5;
@@ -3477,18 +3727,22 @@ function drawTitle(W, H, titlePulse) {
     drawText('Tap / Spacebar', cx, H * 0.80, 14, '#aaaaaa', 'center');
 
     // Session gap expression
+    ctx.textAlign     = 'center';
+    ctx.font          = 'italic 12px serif';
+    ctx.fillStyle     = '#9a8a50';
+    ctx.fillText("The story so far...", W / 2, HEAD_Y + HEAD_RADIUS - 5);
+
     const annalsData  = loadAnnals();
     const titleExpr   = getTitleExpression(annalsData.lastPlayed);
-    ctx.font          = 'bold 22px serif';
     ctx.fillStyle     = '#f0e0a0';
-    ctx.textAlign     = 'center';
+    ctx.font          = 'bold 22px serif';
     ctx.fillText(titleExpr.text, W / 2, HEAD_Y + HEAD_RADIUS + 20);
 
     // Daily modifier
-    const mod = getDailyModifier();
+    const mod     = getDailyModifier();
     ctx.font      = 'italic 13px serif';
     ctx.fillStyle = '#9a8a50';
-    ctx.fillText('Chronicle: ' + mod.name, W / 2, HEAD_Y + HEAD_RADIUS + 50);
+    ctx.fillText('Almanac: ' + mod.name, W / 2, HEAD_Y + HEAD_RADIUS + 50);
 
     // Prestige display - always show to inform players
     const prestigeTier = getPrestigeTier();
@@ -3852,9 +4106,12 @@ function drawBattleCryAura(W, H, gameTime) {
 export function draw(W, H, state, gameTime, titlePulse, gameState, dt) {
     ctx.clearRect(0, 0, W, H);
 
+    // Update wizard duck/peek animation
+    if (dt) updateWizard(dt);
+
     if (state === 'title') {
         gameOverStartTime = -1;
-        drawTitle(W, H, titlePulse);
+        drawTitle(W, H, titlePulse, gameTime);
         return;
     }
 
@@ -4041,6 +4298,24 @@ export function draw(W, H, state, gameTime, titlePulse, gameState, dt) {
         ctx.restore();
     }
 
+    if (screenShake > 0) {
+        ctx.restore();
+    }
+
+    // Danger vignette (drawn over world but under HUD)
+    drawDangerVignette(W, H, gameTime);
+
+    if (state === 'playing') {
+        drawHUD(W, H, gameTime);
+        drawButton(W, H, gameTime);
+        drawHordeWarning(W, H, gameTime);
+        drawHordeActiveIndicator(W, H, gameTime);
+        drawShopTablets(W, H);
+        drawShopBuyFlash(W, H);
+        drawActiveUpgradeIconPop(gameTime, W, H);
+    }
+
+    // Branch choice (drawn on top of everything including shop)
     if (gameState && gameState.activeBranchChoice) {
         const bc      = gameState.activeBranchChoice;
         const timeout = bc.autoTimeout;
@@ -4083,30 +4358,15 @@ export function draw(W, H, state, gameTime, titlePulse, gameState, dt) {
             ctx.fillText(opt.label, bx, by);
         });
 
-        // Timeout bar
-        ctx.fillStyle = 'rgba(200,150,50,0.35)';
-        ctx.fillRect(cx2 - 140, cy2 + 60, 280, 6);
-        ctx.fillStyle = 'rgba(200,150,50,0.85)';
-        ctx.fillRect(cx2 - 140, cy2 + 60, 280 * (1 - progress), 6);
+        // Timeout bar (hidden when timeout is Infinity)
+        if (timeout !== Infinity) {
+            ctx.fillStyle = 'rgba(200,150,50,0.35)';
+            ctx.fillRect(cx2 - 140, cy2 + 60, 280, 6);
+            ctx.fillStyle = 'rgba(200,150,50,0.85)';
+            ctx.fillRect(cx2 - 140, cy2 + 60, 280 * (1 - progress), 6);
+        }
 
         ctx.restore();
-    }
-
-    if (screenShake > 0) {
-        ctx.restore();
-    }
-
-    // Danger vignette (drawn over world but under HUD)
-    drawDangerVignette(W, H, gameTime);
-
-    if (state === 'playing') {
-        drawHUD(W, H, gameTime);
-        drawButton(W, H, gameTime);
-        drawHordeWarning(W, H, gameTime);
-        drawHordeActiveIndicator(W, H, gameTime);
-        drawShopTablets(W, H);
-        drawShopBuyFlash(W, H);
-        drawActiveUpgradeIconPop(gameTime, W, H);
     }
 
     if (state === 'gameover') {

@@ -1,6 +1,6 @@
 'use strict';
 
-import CONFIG from './config.js';
+import CONFIG, { HEAD_X, HEAD_Y } from './config.js';
 import { getWorldObjects, spawnHordeEnemy, getBoulders } from './entities.js';
 import { hasUpgrade, addResource, incrementEnemiesDefeated, incrementHordesSurvived } from './resources.js';
 import { getScrollSpeed, angularDist, pixelsToRadians, isVisible, thetaToScreen, getScrollAngle, normalizeAngle } from './world.js';
@@ -206,7 +206,7 @@ export function updateMilitia(dt, PAL) {
                         obj.acted = true;
                         incrementEnemiesDefeated();
                         registerKill();
-                        spawnActionAnim(enemy, PAL, screenShakeRef);
+                        spawnActionAnim(enemy, PAL, screenShakeRef, 0, HEAD_X, HEAD_Y);
                         const ecx = enemy.x + enemy.width / 2;
                         spawnFloatingText('Militia!', ecx, enemy.y - enemy.height * ((CONFIG.ENTITY_SCALE || 1) - 1) - 10, '#4488cc');
                         addResource('coins', 1);
@@ -327,7 +327,7 @@ export function updateArcher(dt, W, H, PAL) {
                     t.acted = true;
                     incrementEnemiesDefeated();
                     registerKill();
-                    spawnActionAnim(t, PAL, screenShakeRef);
+                    spawnActionAnim(t, PAL, screenShakeRef, 0, HEAD_X, HEAD_Y);
                     const ecx = t.x + t.width / 2;
                     const label = isFireArrow ? 'Fire Arrow!' : 'Arrow!';
                     spawnFloatingText(label, ecx, t.y - t.height * ((CONFIG.ENTITY_SCALE || 1) - 1) - 10, isFireArrow ? '#ff6020' : '#cc8844');
@@ -345,7 +345,7 @@ export function updateArcher(dt, W, H, PAL) {
                         obj.acted = true;
                         incrementEnemiesDefeated();
                         registerKill();
-                        spawnActionAnim(obj, PAL, screenShakeRef);
+                        spawnActionAnim(obj, PAL, screenShakeRef, 0, HEAD_X, HEAD_Y);
                         const ecx = obj.x + obj.width / 2;
                         spawnFloatingText('Rain!', ecx, obj.y - obj.height * ((CONFIG.ENTITY_SCALE || 1) - 1) - 10, '#cc8844');
                         addResource('coins', 1);
@@ -488,7 +488,7 @@ export function applyCleave(obj, PAL) {
                 other.acted = true;
                 incrementEnemiesDefeated();
                 registerKill();
-                spawnActionAnim(other, PAL, screenShakeRef);
+                spawnActionAnim(other, PAL, screenShakeRef, 0, HEAD_X, HEAD_Y);
                 const ocx = other.x + other.width / 2;
                 const label = inFront ? 'Sweep!' : 'Cleave!';
                 spawnFloatingText(label, ocx, other.y - other.height * ((CONFIG.ENTITY_SCALE || 1) - 1) - 10, '#ff8040');
