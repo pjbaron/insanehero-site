@@ -15,10 +15,14 @@ let prevLoyaltyState = 'neutral'; // 'happy', 'neutral', 'angry', 'skull'
 let loyaltyTransitionText = null;  // { text, color, timer, duration, flash }
 let loyaltyTransitionFlash = 0;    // screen flash timer for rebellion
 
+// Track loyalty changes for pulse/glow effect
+let loyaltyPulse = { timer: 0, direction: 0 };  // direction: 1 = increase (green), -1 = decrease (red)
+
 // --- Getters ---
 export function getLoyalty() { return loyalty; }
 export function getLoyaltyTransition() { return loyaltyTransitionText; }
 export function getLoyaltyFlash() { return loyaltyTransitionFlash; }
+export function getLoyaltyPulse() { return loyaltyPulse; }
 
 function getLoyaltyState(val) {
     if (val >= CONFIG.LOYALTY_HIGH_THRESHOLD) return 'happy';
@@ -35,6 +39,13 @@ export function setLoyalty(v) {
 export function adjustLoyalty(delta) {
     const oldVal = loyalty;
     loyalty = Math.max(0, Math.min(CONFIG.LOYALTY_MAX, loyalty + delta));
+
+    // Trigger pulse effect on any change
+    if (Math.abs(delta) > 0.01) {
+        loyaltyPulse.timer = 0.5;  // 500ms pulse
+        loyaltyPulse.direction = delta > 0 ? 1 : -1;
+    }
+
     checkLoyaltyTransition(oldVal, loyalty);
 }
 
@@ -86,6 +97,10 @@ export function updateLoyalty(dt, W, H) {
     // Update flash timer
     if (loyaltyTransitionFlash > 0) {
         loyaltyTransitionFlash = Math.max(0, loyaltyTransitionFlash - dt);
+    }
+    // Update pulse timer
+    if (loyaltyPulse.timer > 0) {
+        loyaltyPulse.timer = Math.max(0, loyaltyPulse.timer - dt);
     }
 
     // Food drain: -1 food every 30s
@@ -171,4 +186,5 @@ export function resetLoyalty() {
     prevLoyaltyState = 'neutral';
     loyaltyTransitionText = null;
     loyaltyTransitionFlash = 0;
+    loyaltyPulse = { timer: 0, direction: 0 };
 }

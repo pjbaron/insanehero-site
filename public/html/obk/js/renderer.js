@@ -2,7 +2,7 @@
 
 import CONFIG, { HEAD_X, HEAD_Y, HEAD_RADIUS, RIVAL_HEAD_X_FRACTION, RIVAL_HEAD_Y_FRACTION, BEAM_WIDTH } from './config.js';
 import { getResources, getWallHP, getMaxWallHP, getWallTier, hasUpgrade, getOwnedUpgrades, canAfford, getEnemiesDefeated, getResourcePulse, getWallDamagePulse, getTotalResourcesGathered, getHordesSurvived, getScore, getCurrentDay, getDayPulse } from './resources.js';
-import { getLoyalty, getLoyaltyTransition, getLoyaltyFlash } from './loyalty.js';
+import { getLoyalty, getLoyaltyTransition, getLoyaltyFlash, getLoyaltyPulse } from './loyalty.js';
 import { getClouds, getHillsFar, getHillsMid, getScrollOffset, getDayTimer, getWeatherType, getRaindrops, getCurrentSeason, getPlayerProgress, getRevolutionCount, getScrollAngle, normalizeAngle, pixelsToRadians, isVisible } from './world.js';
 import { getWorldObjects, getBoulders } from './entities.js';
 import { getParticles, getFloatingTexts, getAnimations } from './particles.js';
@@ -18,8 +18,8 @@ import {
     getBattleCryActive,
 } from './combat.js';
 import {
-    isShopOpen, getShopSlide, getShopCountdown, getShopOptions, getShopSelectedIndex,
-    getShopBuyFlash, getShopIconPop, getShopIconPopKey, getShopNoneAffordable,
+    isShopOpen, getShopSelectedIndex,
+    getShopBuyFlash, getShopIconPop, getShopIconPopKey,
     getTabletState, getUpgradeItems,
 } from './upgrades.js';
 import { loadAnnals, getTitleExpression, getDailyModifier, getPrestigeTier, getOvernightEntry } from './annals.js';
@@ -64,6 +64,20 @@ function drawText(text, x, y, size, color, align, shadow) {
     }
     ctx.fillStyle = color || PAL.uiText;
     ctx.fillText(text, x, y);
+}
+
+function drawStar(cx, cy, size) {
+    ctx.beginPath();
+    for (let i = 0; i < 5; i++) {
+        const angle = (i * 4 * Math.PI / 5) - Math.PI / 2;
+        const r = i % 2 === 0 ? size : size * 0.4;
+        const x = cx + Math.cos(angle) * r;
+        const y = cy + Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
 }
 
 // --- Word wrap utility ---
@@ -2012,9 +2026,9 @@ function drawSapling(obj) {
 }
 
 // --- Loyalty face (large, expressive) ---
-function drawLoyaltyFace(rightEdge, gameTime, overrideY) {
+function drawLoyaltyFace(rightEdge, gameTime, overrideY, sizeOverride) {
     const loyalty = getLoyalty();
-    const s = CONFIG.LOYALTY_FACE_SIZE;
+    const s = sizeOverride ?? CONFIG.LOYALTY_FACE_SIZE;
     const fx = rightEdge - s - CONFIG.LOYALTY_FACE_MARGIN;
     const fy = overrideY !== undefined ? overrideY : CONFIG.LOYALTY_FACE_MARGIN;
     const cx = fx + s / 2;
@@ -2027,20 +2041,38 @@ function drawLoyaltyFace(rightEdge, gameTime, overrideY) {
     else if (loyalty >= 10) { faceColor = '#d04040'; mouthType = 'angry'; }
     else { faceColor = '#802020'; mouthType = 'skull'; }
 
-    // Pulsing glow for extreme states
-    if (mouthType === 'happy') {
-        ctx.shadowColor = '#40ff40';
-        ctx.shadowBlur = 6 + Math.sin(gameTime * 3) * 3;
-    } else if (mouthType === 'skull') {
-        ctx.shadowColor = '#ff0000';
-        ctx.shadowBlur = 8 + Math.sin(gameTime * 6) * 4;
+    // Loyalty change pulse effect
+    const pulse = getLoyaltyPulse();
+    let pulseScale = 1;
+    if (pulse.timer > 0) {
+        const pulseProgress = 1 - (pulse.timer / 0.5);
+        pulseScale = 1 + Math.sin(pulse.timer * 20) * 0.08 * (1 - pulseProgress);
+        ctx.shadowColor = pulse.direction > 0 ? '#40ff40' : '#ff4040';
+        ctx.shadowBlur = 15 * (1 - pulseProgress);
+    } else {
+        // Pulsing glow for extreme states
+        if (mouthType === 'happy') {
+            ctx.shadowColor = '#40ff40';
+            ctx.shadowBlur = 6 + Math.sin(gameTime * 3) * 3;
+        } else if (mouthType === 'skull') {
+            ctx.shadowColor = '#ff0000';
+            ctx.shadowBlur = 8 + Math.sin(gameTime * 6) * 4;
+        }
     }
 
+    // Apply pulse scale
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(pulseScale, pulseScale);
+    ctx.translate(-cx, -cy);
+
     drawThickCircle(cx, cy, r, faceColor, PAL.outline, 3);
+
+    ctx.restore();
     ctx.shadowBlur = 0;
 
-    // Loyalty number below face
-    drawText(Math.floor(loyalty) + '', cx, fy + s + 12, 11, faceColor, 'center');
+    // Loyalty number below face (25% larger)
+    drawText(Math.floor(loyalty) + '', cx, fy + s + 12, 14, faceColor, 'center');
 
     const eyeW = Math.round(s * 0.15);
     const eyeH = Math.round(s * 0.18);
@@ -2155,14 +2187,27 @@ function drawActiveUpgrades(baseY, overrideStartX) {
     const owned = Object.keys(getOwnedUpgrades());
     if (owned.length === 0) return;
     const iconS = 14;
-    const y = baseY;
-    const totalW = owned.length * (iconS + 4) + 8;
+    const spacing = 4;
     const startX = overrideStartX !== undefined ? overrideStartX : 12;
+    const maxW = ctx.canvas.width - startX * 2 - 8; // Leave margin on both sides
+    const iconsPerRow = Math.floor(maxW / (iconS + spacing));
+    const rows = Math.ceil(owned.length / iconsPerRow);
+
+    const rowW = Math.min(owned.length, iconsPerRow) * (iconS + spacing) + 8;
+    const rowH = iconS + 6;
+    const totalH = rows * rowH;
+
+    // Background for all rows
     ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.fillRect(startX - 4, y - 2, totalW, iconS + 6);
+    ctx.fillRect(startX - 4, baseY - 2, rowW, totalH);
+
     for (let i = 0; i < owned.length; i++) {
         const key = owned[i];
-        const ix = startX + i * (iconS + 4);
+        const row = Math.floor(i / iconsPerRow);
+        const col = i % iconsPerRow;
+        const ix = startX + col * (iconS + spacing);
+        const iy = baseY + row * rowH;
+
         const upg = CONFIG.UPGRADES[key];
         if (!upg) continue;
         let color;
@@ -2170,15 +2215,15 @@ function drawActiveUpgrades(baseY, overrideStartX) {
         else if (upg.cat === 'weapon') color = PAL.swordBlade;
         else color = PAL.leaf;
         ctx.fillStyle = color;
-        ctx.fillRect(ix, y, iconS, iconS);
+        ctx.fillRect(ix, iy, iconS, iconS);
         ctx.strokeStyle = PAL.outline;
         ctx.lineWidth = 1;
-        ctx.strokeRect(ix, y, iconS, iconS);
+        ctx.strokeRect(ix, iy, iconS, iconS);
         ctx.fillStyle = PAL.outline;
         ctx.font = 'bold 9px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(upg.name[0], ix + iconS / 2, y + iconS / 2);
+        ctx.fillText(upg.name[0], ix + iconS / 2, iy + iconS / 2);
     }
 }
 
@@ -2319,11 +2364,11 @@ function drawHUD(W, H, gameTime) {
 
     // Loyalty face: centered horizontally, embedded just below ground surface
     const loyGroundY = H - H * CONFIG.GROUND_RATIO;
-    const loyS = CONFIG.LOYALTY_FACE_SIZE;
+    const loyS = CONFIG.LOYALTY_FACE_SIZE * 1.25;
     // cx = W/2: rightEdge = W/2 + loyS/2 + LOYALTY_FACE_MARGIN
     const loyRightEdge = W / 2 + loyS / 2 + CONFIG.LOYALTY_FACE_MARGIN;
-    // face top at groundY + 24: face sits further below the ground surface
-    drawLoyaltyFace(loyRightEdge, gameTime, loyGroundY + 24);
+    // face top at groundY + 56: face sits further below the ground surface
+    drawLoyaltyFace(loyRightEdge, gameTime, loyGroundY + 56, loyS);
 
     // Active upgrades strip below wall bar
     drawActiveUpgrades(barY + barH + 4, hudLeft + 10);
@@ -2507,147 +2552,6 @@ function drawButton(W, H, gameTime) {
     }
 }
 
-// --- Shop resource icon (small inline) ---
-function drawShopResIcon(res, x, y, s) {
-    switch (res) {
-        case 'wood':  drawWoodIcon(x, y, s); break;
-        case 'stone': drawStoneIcon(x, y, s); break;
-        case 'food':  drawFoodIcon(x, y, s); break;
-        case 'coins': drawCoinIcon(x, y, s); break;
-    }
-}
-
-// --- Shop panel ---
-function drawShop(W, H, gameTime) {
-    if (!isShopOpen() && getShopSlide() <= 0) return;
-
-    const shopSlide = getShopSlide();
-    const shopCountdown = getShopCountdown();
-    const shopOptions = getShopOptions();
-    const shopSelectedIndex = getShopSelectedIndex();
-    const resources = getResources();
-    const noneAffordable = getShopNoneAffordable();
-
-    const panelW = Math.min(280, W * 0.7);
-    const panelH = H * 0.7;
-    const targetX = W - panelW - 10;
-    const panelX = W + (targetX - W) * shopSlide;
-    const panelY = (H - panelH) / 2;
-
-    // Dimmed background
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(0, 0, W, H);
-
-    // Panel background
-    ctx.fillStyle = PAL.shopBg;
-    ctx.fillRect(panelX - 3, panelY - 3, panelW + 6, panelH + 6);
-    ctx.strokeStyle = PAL.shopBorder;
-    ctx.lineWidth = 3;
-    ctx.strokeRect(panelX - 3, panelY - 3, panelW + 6, panelH + 6);
-    ctx.fillStyle = '#222244';
-    ctx.fillRect(panelX, panelY, panelW, panelH);
-
-    drawText('UPGRADE SHOP', panelX + panelW / 2, panelY + 10, 18, PAL.coinGold, 'center');
-
-    drawText('TAP to select, TAP again to buy', panelX + panelW / 2, panelY + 36, 10, '#aaaaaa', 'center');
-
-    // --- "Nothing in your budget" message ---
-    if (noneAffordable) {
-        const msgY = panelY + 60;
-        ctx.fillStyle = 'rgba(80,40,40,0.5)';
-        ctx.fillRect(panelX + 10, msgY, panelW - 20, 18);
-        const blink = Math.sin(gameTime * 4) > 0;
-        drawText(blink ? 'Nothing in your budget... keep gathering!' : 'Nothing in your budget...', panelX + panelW / 2, msgY + 3, 9, '#ff8888', 'center', false);
-    }
-
-    const optStartY = panelY + (noneAffordable ? 82 : 62);
-    const optH = Math.max(90, Math.min(110, (panelH - (noneAffordable ? 150 : 130)) / Math.max(1, shopOptions.length)));
-
-    for (let i = 0; i < shopOptions.length; i++) {
-        const key = shopOptions[i];
-        const upg = CONFIG.UPGRADES[key];
-        const oy = optStartY + i * optH;
-        const affordable = canAfford(upg.cost);
-        const selected = shopSelectedIndex === i;
-
-        // Option background
-        if (selected) {
-            ctx.fillStyle = affordable ? 'rgba(100,200,100,0.3)' : 'rgba(200,100,100,0.3)';
-        } else if (!affordable) {
-            ctx.fillStyle = 'rgba(30,30,45,0.9)'; // dimmed for unaffordable
-        } else {
-            ctx.fillStyle = 'rgba(40,40,60,0.8)';
-        }
-        ctx.fillRect(panelX + 8, oy, panelW - 16, optH - 6);
-        ctx.strokeStyle = selected ? '#ffe040' : '#444466';
-        ctx.lineWidth = selected ? 2 : 1;
-        ctx.strokeRect(panelX + 8, oy, panelW - 16, optH - 6);
-
-        // Category color bar
-        let catColor;
-        if (upg.cat === 'wall') catColor = PAL.stone;
-        else if (upg.cat === 'weapon') catColor = PAL.swordBlade;
-        else catColor = PAL.leaf;
-        ctx.fillStyle = catColor;
-        ctx.fillRect(panelX + 10, oy + 2, 4, optH - 10);
-
-        // Dimming overlay for unaffordable
-        const nameAlpha = affordable ? 1 : 0.5;
-        ctx.globalAlpha = nameAlpha;
-
-        const nameColor = affordable ? PAL.uiText : '#808080';
-        drawText(upg.name, panelX + 20, oy + 4, 13, nameColor, 'left', false);
-        // Wrap description to fit panel width
-        const descMaxW = panelW - 44;
-        const descLines = wrapText(upg.desc, descMaxW, 10, false);
-        for (let li = 0; li < descLines.length; li++) {
-            ctx.font = '10px monospace';
-            ctx.fillStyle = '#aaaacc';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'top';
-            ctx.fillText(descLines[li], panelX + 20, oy + 20 + li * 12);
-        }
-
-        // Cost with colored resource icons (below description)
-        let costX = panelX + 20;
-        const costY = oy + 20 + descLines.length * 12 + 4;
-        const iconS = 10;
-        for (const [res, amt] of Object.entries(upg.cost)) {
-            const have = resources[res] || 0;
-            const enough = have >= amt;
-            const col = enough ? '#cccccc' : '#ff4040';
-            drawText(String(amt), costX, costY, 10, col, 'left', false);
-            const numW = ctx.measureText(String(amt)).width + 3;
-            drawShopResIcon(res, costX + numW, costY, iconS);
-            costX += numW + iconS + 8;
-        }
-
-        ctx.globalAlpha = 1;
-
-        if (selected && affordable) {
-            drawText('[TAP TO BUY]', panelX + panelW / 2, oy + optH - 18, 10, '#ffe040', 'center', false);
-        } else if (selected && !affordable) {
-            drawText('[NOT ENOUGH]', panelX + panelW / 2, oy + optH - 18, 10, '#ff4040', 'center', false);
-        }
-    }
-
-    // --- Close button at bottom of panel ---
-    const closeBtnW = panelW - 40;
-    const closeBtnH = 64;
-    const closeBtnX = panelX + 20;
-    const closeBtnY = panelY + panelH - closeBtnH - 12;
-    // Button shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(closeBtnX + 2, closeBtnY + 2, closeBtnW, closeBtnH);
-    // Button body
-    ctx.fillStyle = '#882222';
-    ctx.fillRect(closeBtnX, closeBtnY, closeBtnW, closeBtnH);
-    ctx.strokeStyle = '#cc4444';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(closeBtnX, closeBtnY, closeBtnW, closeBtnH);
-    drawText('CLOSE SHOP', closeBtnX + closeBtnW / 2, closeBtnY + closeBtnH / 2 - 12, 22, '#ffcccc', 'center', false);
-}
-
 // --- Upgrade chain depth: count self + all transitive successors ---
 const _chainDepthCache = {};
 function getChainDepth(key) {
@@ -2677,12 +2581,20 @@ function drawShopTablets(W, H) {
     const tabH        = 110;
     const gap         = 10;
     const total       = items.length;
-    const startX      = W / 2 - (total * (tabW + gap)) / 2 + tabW / 2;
-    const riseAmt     = 260;  // rise high enough to clear the HUD area
+
+    // Calculate how many tablets fit per row
+    const maxRowWidth = W - 40; // Leave margin on sides
+    const tabsPerRow = Math.max(1, Math.floor(maxRowWidth / (tabW + gap)));
+    const rows = Math.ceil(total / tabsPerRow);
+    const riseAmt = 260 + (rows - 1) * (tabH + gap); // Adjust rise for multiple rows
 
     items.forEach((item, i) => {
-        const tx           = startX + i * (tabW + gap);
-        const ty           = baseY - tabH / 2 - riseAmt * ease;
+        const row = Math.floor(i / tabsPerRow);
+        const col = i % tabsPerRow;
+        const tabsInRow = Math.min(tabsPerRow, total - row * tabsPerRow);
+        const rowStartX = W / 2 - (tabsInRow * (tabW + gap)) / 2 + tabW / 2;
+        const tx = rowStartX + col * (tabW + gap);
+        const ty = baseY - tabH / 2 - riseAmt * ease + row * (tabH + gap);
         const canAffordItem = canAfford(item.cost);
         const isSelected   = selectedIdx === i;
 
@@ -3516,38 +3428,38 @@ function drawTitle(W, H, titlePulse) {
 
     const cx = W / 2;
     const cy = H * 0.35;
-    ctx.fillStyle = '#1a1a2e';
-    ctx.fillRect(cx - 30, cy - 80, 60, 120);
-    ctx.fillRect(cx - 45, cy - 40, 90, 80);
-    ctx.fillRect(cx - 70, cy - 50, 30, 90);
-    ctx.fillRect(cx + 40, cy - 50, 30, 90);
-    for (let i = 0; i < 5; i++) {
-        ctx.fillRect(cx - 50 + i * 25, cy - 55, 10, 12);
-    }
-    ctx.fillStyle = '#cc3030';
-    ctx.fillRect(cx - 5, cy - 110, 2, 35);
-    const flagWave = Math.sin(titlePulse * 3) * 3;
-    ctx.beginPath();
-    ctx.moveTo(cx - 3, cy - 110);
-    ctx.lineTo(cx + 18, cy - 105 + flagWave);
-    ctx.lineTo(cx - 3, cy - 95);
-    ctx.closePath();
-    ctx.fill();
+    // ctx.fillStyle = '#1a1a2e';
+    // ctx.fillRect(cx - 30, cy - 80, 60, 120);
+    // ctx.fillRect(cx - 45, cy - 40, 90, 80);
+    // ctx.fillRect(cx - 70, cy - 50, 30, 90);
+    // ctx.fillRect(cx + 40, cy - 50, 30, 90);
+    // for (let i = 0; i < 5; i++) {
+    //     ctx.fillRect(cx - 50 + i * 25, cy - 55, 10, 12);
+    // }
+    // ctx.fillStyle = '#cc3030';
+    // ctx.fillRect(cx - 5, cy - 110, 2, 35);
+    // const flagWave = Math.sin(titlePulse * 3) * 3;
+    // ctx.beginPath();
+    // ctx.moveTo(cx - 3, cy - 110);
+    // ctx.lineTo(cx + 18, cy - 105 + flagWave);
+    // ctx.lineTo(cx - 3, cy - 95);
+    // ctx.closePath();
+    // ctx.fill();
 
     const pulse = 1 + Math.sin(titlePulse * 2) * 0.03;
     ctx.save();
     ctx.translate(cx, H * 0.55);
     ctx.scale(pulse, pulse);
-    drawText('ONE BUTTON', 0, -30, 36, PAL.coinGold, 'center');
-    drawText('KINGDOM', 0, 10, 42, PAL.uiText, 'center');
+    drawText('ONE BUTTON', 0, -30, 50, PAL.coinGold, 'center');
+    drawText('KINGDOM', 0, 10, 56, PAL.uiText, 'center');
     ctx.restore();
 
     const tapAlpha = 0.5 + Math.sin(titlePulse * 3) * 0.5;
     ctx.globalAlpha = tapAlpha;
-    drawText('TAP TO RULE', cx, H * 0.75, 22, PAL.buttonFace, 'center');
+    drawText('TAP TO RULE', cx, H * 0.75, 32, PAL.buttonFace, 'center');
     ctx.globalAlpha = 1;
 
-    drawText('Click / Tap / Spacebar', cx, H * 0.82, 14, '#aaaaaa', 'center');
+    drawText('Tap / Spacebar', cx, H * 0.80, 14, '#aaaaaa', 'center');
 
     // Session gap expression
     const annalsData  = loadAnnals();
@@ -3563,11 +3475,63 @@ function drawTitle(W, H, titlePulse) {
     ctx.fillStyle = '#9a8a50';
     ctx.fillText('Chronicle: ' + mod.name, W / 2, HEAD_Y + HEAD_RADIUS + 50);
 
-    // Prestige option
-    if (getPrestigeTier() > 0) {
-        ctx.font      = 'bold 15px serif';
-        ctx.fillStyle = '#c06000';
-        ctx.fillText('[PRESTIGE MODE AVAILABLE]', W / 2, H - 60);
+    // Prestige display - always show to inform players
+    const prestigeTier = getPrestigeTier();
+    const prestigeY = H - 70;
+    const prestigeGlow = 0.5 + Math.sin(titlePulse * 4) * 0.5;
+
+    if (prestigeTier > 0) {
+        // Unlocked prestige - full decorative display
+        ctx.fillStyle = 'rgba(40, 20, 10, 0.6)';
+        ctx.fillRect(W / 2 - 160, prestigeY - 25, 320, 42);
+        ctx.strokeStyle = '#d08020';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(W / 2 - 160, prestigeY - 25, 320, 42);
+
+        ctx.strokeStyle = `rgba(255, 200, 100, ${prestigeGlow * 0.4})`;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(W / 2 - 158, prestigeY - 23, 316, 38);
+
+        const starY = prestigeY - 4;
+        for (let i = 0; i < 3; i++) {
+            const starX = W / 2 - 130 + i * 10;
+            const starSize = 3 + Math.sin(titlePulse * 5 + i) * 1;
+            ctx.fillStyle = '#ffcc40';
+            drawStar(starX, starY, starSize);
+        }
+        for (let i = 0; i < 3; i++) {
+            const starX = W / 2 + 110 + i * 10;
+            const starSize = 3 + Math.sin(titlePulse * 5 + i + Math.PI) * 1;
+            ctx.fillStyle = '#ffcc40';
+            drawStar(starX, starY, starSize);
+        }
+
+        ctx.save();
+        ctx.shadowColor = '#ff8800';
+        ctx.shadowBlur = 15 * prestigeGlow;
+        ctx.font = 'bold 18px serif';
+        ctx.fillStyle = '#ffaa20';
+        ctx.fillText('PRESTIGE MODE', W / 2, prestigeY - 10);
+        ctx.restore();
+
+        ctx.font = 'italic 12px serif';
+        ctx.fillStyle = '#d0b070';
+        ctx.fillText('Begin anew with greater challenges', W / 2, prestigeY + 6);
+    } else {
+        // Locked prestige - subtle teaser
+        ctx.fillStyle = 'rgba(20, 20, 25, 0.5)';
+        ctx.fillRect(W / 2 - 140, prestigeY - 22, 280, 36);
+        ctx.strokeStyle = '#505050';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(W / 2 - 140, prestigeY - 22, 280, 36);
+
+        ctx.font = 'bold 16px serif';
+        ctx.fillStyle = '#a0a0a0';
+        ctx.fillText('PRESTIGE MODE', W / 2, prestigeY - 14);
+
+        ctx.font = 'italic 11px serif';
+        ctx.fillStyle = '#909090';
+        ctx.fillText('Win a run to unlock greater challenges', W / 2, prestigeY + 2);
     }
 }
 

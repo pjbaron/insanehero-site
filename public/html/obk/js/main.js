@@ -5,7 +5,7 @@ import { initInput, updateHold } from './input.js';
 import { initRenderer, draw } from './renderer.js';
 import { updateWorld, updateTitleClouds, resetWorld } from './world.js';
 import { resetEntities, prePopulate, spawnForDay, getWorldObjects, createScorchMark } from './entities.js';
-import { resetResources, getMerchantsScared, updateResourcePulses, getResources, getWallHP, triggerDayPulse, getDayJustIncremented, setDayJustIncremented } from './resources.js';
+import { resetResources, getMerchantsScared, updateResourcePulses, getResources, getWallHP, triggerDayPulse, getDayJustIncremented, setDayJustIncremented, getCurrentDay } from './resources.js';
 import * as story from './story.js';
 import { hasBranchChoice, triggerBranchChoice, resolveBranchChoice, updateBranchChoice } from './story.js';
 import * as annals from './annals.js';
@@ -166,7 +166,7 @@ function update(dt) {
             gameState.annalsSaved = true;
             annals.saveRun({
                 win:       false,
-                days:      getResources().currentDay,
+                days:      getCurrentDay(),
                 feats:     gameState.earnedFeats ?? [],
                 chronicle: gameState.dailyModifier?.name ?? '',
                 prestige:  gameState.prestige ?? 0,
@@ -207,10 +207,15 @@ function update(dt) {
     }
     prevShopOpen = shopOpen;
 
-    // World scrolling + clouds (handles shopOpen internally)
-    updateWorld(dt, gameTime, shopOpen, W, gameState);
+    // Pause world during head creation
+    const isCreating = head.getState().isCreating;
 
-    if (!shopOpen) {
+    // World scrolling + clouds (handles shopOpen internally, paused during creation)
+    if (!isCreating) {
+        updateWorld(dt, gameTime, shopOpen, W, gameState);
+    }
+
+    if (!shopOpen && !isCreating) {
         // War hammer animation + hold detection
         updateWarHammer(dt, W, H, PAL);
 
@@ -272,34 +277,54 @@ function update(dt) {
         triggerDayPulse();
     }
 
-    // Day 1 crash -- fires once per session, from high off-screen
-    if (resources.currentDay === 1 && !head.getState().crashPlayed && !head.getState().isCrashing) {
-        head.triggerCrash(-H * 0.85);
+    // Day 1 creation - magical appearance
+    const currentDay = getCurrentDay();
+    if (currentDay === 1 && !head.getState().creationPlayed && !head.getState().isCreating) {
+        head.triggerCreation();
     }
 
-    // Screen shake + story beat + impact burst when crash lands
-    if (head.getAndClearCrashJustCompleted()) {
-        crashShakeFired = true;
-        setScreenShake(0.8);
-        story.triggerBeat(1, gameState);  // "THE HEAD HAS RETURNED."
-        // Impact particle burst around the head mouth
+    // Magical particles during creation
+    if (head.getState().isCreating && Math.random() < 0.3) {
         const hx = W / 2;
-        const hy = 160 + 60;  // near head bottom / mouth
-        for (let i = 0; i < 24; i++) {
+        const hy = 160;
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 80 + Math.random() * 40;
+        spawnParticle({
+            x: hx + Math.cos(angle) * dist,
+            y: hy + Math.sin(angle) * dist,
+            vx: -Math.cos(angle) * 50,
+            vy: -Math.sin(angle) * 50,
+            life: 0.8, maxLife: 0.8,
+            color: ['#9060ff', '#b080ff', '#7040dd', '#c090ff'][Math.floor(Math.random() * 4)],
+            size: 2 + Math.random() * 4,
+        });
+    }
+
+    // Screen shake + story beat + magical burst when creation completes
+    if (head.getAndClearCreationJustCompleted()) {
+        crashShakeFired = true;
+        setScreenShake(0.6);
+        story.triggerBeat(1, gameState);  // "THE HEAD HAS RETURNED."
+        // Magical particle burst radiating outward
+        const hx = W / 2;
+        const hy = 160;
+        for (let i = 0; i < 40; i++) {
+            const angle = (i / 40) * Math.PI * 2;
+            const speed = 150 + Math.random() * 100;
             spawnParticle({
-                x: hx + (Math.random() - 0.5) * 100,
-                y: hy + Math.random() * 20,
-                vx: (Math.random() - 0.5) * 300,
-                vy: -120 - Math.random() * 180,
-                life: 0.9, maxLife: 0.9,
-                color: i % 3 === 0 ? '#ffe040' : i % 3 === 1 ? '#c0a020' : '#fff0a0',
+                x: hx,
+                y: hy,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                life: 1.2, maxLife: 1.2,
+                color: i % 4 === 0 ? '#9060ff' : i % 4 === 1 ? '#b080ff' : i % 4 === 2 ? '#fff0ff' : '#7040dd',
                 size: 3 + Math.random() * 5,
             });
         }
-        spawnFloatingText('THE HEAD ARRIVES!', W / 2, H * 0.28, '#ffe040');
+        spawnFloatingText('THE HEAD IS SUMMONED!', W / 2, H * 0.28, '#b080ff');
     }
-    // Fallback: also fire screen shake via old flag if somehow crashJustCompleted was missed
-    if (!crashShakeFired && head.getState().crashPlayed) {
+    // Fallback: also fire screen shake via old flag
+    if (!crashShakeFired && head.getState().creationPlayed) {
         crashShakeFired = true;
     }
 
@@ -308,7 +333,7 @@ function update(dt) {
 
     // Branch choice update + world pause
     updateBranchChoice(dt, gameState);
-    if (gameState.activeBranchChoice) {
+    if (gameState.activeBranchChoice || head.getState().isCreating) {
         gameState.worldPaused = true;
     } else {
         gameState.worldPaused = false;
@@ -331,12 +356,13 @@ function update(dt) {
     // Day increment handling
     if (getDayJustIncremented()) {
         setDayJustIncremented(false);
-        spawnForDay(resources.currentDay);
-        story.triggerBeat(resources.currentDay, gameState);
-        if (hasBranchChoice(resources.currentDay)) {
-            triggerBranchChoice(resources.currentDay, gameState);
+        const day = getCurrentDay();
+        spawnForDay(day);
+        story.triggerBeat(day, gameState);
+        if (hasBranchChoice(day)) {
+            triggerBranchChoice(day, gameState);
         }
-        console.log('Day ' + resources.currentDay + ' began');
+        console.log('Day ' + day + ' began');
     }
 
     // Story beat tick
@@ -354,7 +380,7 @@ function update(dt) {
         gameState.annalsSaved = true;
         annals.saveRun({
             win:       gameState.win,
-            days:      resources.currentDay,
+            days:      getCurrentDay(),
             feats:     gameState.earnedFeats ?? [],
             chronicle: gameState.dailyModifier?.name ?? '',
             prestige:  gameState.prestige ?? 0,

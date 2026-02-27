@@ -27,6 +27,13 @@ const state = {
   shopTargetY: HEAD_Y,
   shopDescended: false,
   ascendJustCompleted: false,
+  // Creation animation
+  isCreating: false,
+  creationProgress: 0,
+  creationDuration: 1200,  // ms - magical appearance
+  creationPlayed: false,
+  creationJustCompleted: false,
+  creationScale: 0,
 };
 
 export function getState() { return state; }
@@ -57,6 +64,22 @@ export function getAscendJustCompleted() {
 export function update(dt, gameState) {
   state.time += dt;
   state.bobOffset = Math.sin(state.time * BOB_FREQ) * BOB_AMP;
+
+  // Creation animation - magical scaling appearance
+  if (state.isCreating) {
+    state.creationProgress = Math.min(1, state.creationProgress + dt * 1000 / state.creationDuration);
+    // Ease out: start fast, slow down (1 - (1-t)^3)
+    const t = state.creationProgress;
+    const eased = 1 - Math.pow(1 - t, 3);
+    state.creationScale = eased;
+    if (state.creationProgress >= 1) {
+      state.isCreating = false;
+      state.creationPlayed = true;
+      state.creationJustCompleted = true;
+      state.creationScale = 1;
+    }
+    return;
+  }
 
   // Crash animation
   if (state.isCrashing) {
@@ -150,6 +173,11 @@ export function resetHead() {
   state.shopTargetY = HEAD_Y;
   state.shopDescended = false;
   state.ascendJustCompleted = false;
+  state.isCreating = false;
+  state.creationProgress = 0;
+  state.creationPlayed = false;
+  state.creationJustCompleted = false;
+  state.creationScale = 0;
 }
 
 export function triggerCrash(startY) {
@@ -168,6 +196,21 @@ export function getAndClearCrashJustCompleted() {
   return v;
 }
 
+export function triggerCreation() {
+  if (!state.creationPlayed) {
+    state.isCreating = true;
+    state.creationProgress = 0;
+    state.creationScale = 0;
+    state.creationJustCompleted = false;
+  }
+}
+
+export function getAndClearCreationJustCompleted() {
+  const v = state.creationJustCompleted;
+  state.creationJustCompleted = false;
+  return v;
+}
+
 
 export function draw(ctx) {
   const cx = HEAD_X;
@@ -175,6 +218,16 @@ export function draw(ctx) {
   const r  = HEAD_RADIUS;
 
   ctx.save();
+
+  // Apply scaling during creation animation
+  if (state.isCreating) {
+    ctx.translate(cx, cy);
+    ctx.scale(state.creationScale, state.creationScale);
+    ctx.translate(-cx, -cy);
+    // Add magical glow during creation
+    ctx.shadowColor = 'rgba(150, 100, 255, 0.8)';
+    ctx.shadowBlur = 30 * state.creationProgress;
+  }
 
   // Face body (stone ellipse)
   ctx.beginPath();
@@ -196,8 +249,8 @@ export function draw(ctx) {
     _drawCracks(ctx, cx, cy, r);
   }
 
-  // Beam below head (suppressed during shop animation)
-  if (!state.isDescending && !state.isAscending && !state.shopDescended) {
+  // Beam below head (suppressed during shop and creation animations)
+  if (!state.isDescending && !state.isAscending && !state.shopDescended && !state.isCreating) {
     _drawBeam(ctx, cx, cy, r, state.expression === HEAD_EXPR_DESPERATE ? 'rgba(200,40,20,0.35)' : null);
   }
 

@@ -20,7 +20,7 @@ export const FEATS = [
 
 // 14 Daily Chronicle modifiers (rotate by calendar day)
 export const DAILY_MODIFIERS = [
-  { name: 'The Long Day',       config_override: { DAY_DURATIONS_MULT: 1.2 } },
+  { name: 'The Fresh Start',    config_override: {} },
   { name: 'The Short Day',      config_override: { DAY_DURATIONS_MULT: 0.85 } },
   { name: 'The Generous Earth', config_override: { RESOURCE_YIELD_MULT: 1.15 } },
   { name: 'The Barren Soil',    config_override: { RESOURCE_YIELD_MULT: 0.8 } },
@@ -92,7 +92,7 @@ export function getDailyModifier() {
 }
 
 export function getTitleExpression(lastPlayed) {
-  if (!lastPlayed) return { text: 'IT IS TIME.', expr: 'IDLE' };
+  if (!lastPlayed) return { text: 'IT IS TIME TO RULE.', expr: 'IDLE' };
   const gapMs = Date.now() - lastPlayed;
   if (gapMs < 3600000)   return { text: 'BACK ALREADY.', expr: 'GRIN' };
   if (gapMs < 86400000)  return { text: 'THE HEAD IS THINKING.', expr: 'IDLE' };
