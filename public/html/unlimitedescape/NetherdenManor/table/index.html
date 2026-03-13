@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Unlimited Escape -- Netherden Manor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #0d0d1a;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ---- HUD ---- */
+    #hud {
+      position: fixed; top: 0; left: 0; right: 0; height: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      background: rgba(0,0,0,0.7);
+      border-bottom: 1px solid #2a2a3a;
+      z-index: 10;
+      color: #aaa;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .hud-left { display: flex; align-items: center; gap: 8px; }
+
+    #status-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #ff4444;
+      transition: background 0.4s;
+      flex-shrink: 0;
+    }
+    #status-dot.connected {
+      background: #44ff88;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.35; }
+    }
+
+    #selected-label {
+      font-size: 15px;
+      color: #eee;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    #server-url { color: #555; font-size: 11px; text-align: right; }
+
+    #fs-btn {
+      background: none; border: 1px solid #333;
+      color: #666; font-family: inherit; font-size: 11px;
+      padding: 4px 10px; cursor: pointer; border-radius: 3px;
+      letter-spacing: 1px; transition: color 0.2s, border-color 0.2s;
+    }
+    #fs-btn:hover { color: #ccc; border-color: #666; }
+
+    /* ---- Floor plan wrapper ---- */
+    #fp-wrap {
+      position: fixed;
+      top: 48px; left: 0; right: 0; bottom: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+
+    #floorplan {
+      width: 100%; height: 100%;
+      max-width: 100%; max-height: 100%;
+      touch-action: none;
+    }
+
+    /* ---- Room overlay styles ---- */
+    .room {
+      cursor: pointer;
+    }
+    .room rect {
+      fill: rgba(200, 160, 60, 0.0);
+      stroke: rgba(160, 120, 40, 0.25);
+      stroke-width: 1.5;
+      transition: fill 0.3s, stroke 0.25s, filter 0.3s;
+    }
+    .room:hover rect {
+      fill: rgba(255, 200, 80, 0.18);
+      stroke: rgba(255, 210, 100, 0.65);
+    }
+    .room.active rect {
+      fill: rgba(255, 200, 80, 0.28);
+      stroke: rgba(255, 220, 100, 0.9);
+      stroke-width: 2.5;
+      filter: drop-shadow(0 0 10px rgba(255, 200, 80, 0.5));
+    }
+    .room.flash rect {
+      fill: rgba(255, 240, 200, 0.6) !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hud">
+    <div class="hud-left">
+      <div id="status-dot"></div>
+      <span id="status-text">Connecting...</span>
+    </div>
+    <div id="selected-label">-- SELECT A ROOM --</div>
+    <button id="fs-btn">FULLSCREEN</button>
+    <div id="server-url"></div>
+  </div>
+
+  <div id="fp-wrap">
+    <svg id="floorplan" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"
+         preserveAspectRatio="xMidYMid meet">
+
+      <!-- Floor plan background image -->
+      <image href="Floor%20Plan%20Netherden%20Manor%20008.jpg"
+             x="0" y="0" width="1920" height="1080"/>
+
+      <!-- ===== PRINCIPAL FLOOR (top-left) ===== -->
+
+      <g class="room" data-id="dining-room" data-name="Dining Room">
+        <rect x="123" y="190" width="210" height="152" rx="3"/>
+      </g>
+
+      <g class="room" data-id="reception-hall" data-name="Reception Hall">
+        <rect x="333" y="190" width="287" height="155" rx="3"/>
+      </g>
+
+      <g class="room" data-id="parlor" data-name="Parlor">
+        <rect x="620" y="190" width="210" height="152" rx="3"/>
+      </g>
+
+      <g class="room" data-id="library" data-name="Library">
+        <rect x="123" y="342" width="160" height="210" rx="3"/>
+      </g>
+
+      <g class="room" data-id="kitchen" data-name="Kitchen">
+        <rect x="670" y="342" width="160" height="210" rx="3"/>
+      </g>
+
+      <!-- ===== FIRST FLOOR (bottom-left) ===== -->
+
+      <g class="room" data-id="bed-w" data-name="Bedroom West">
+        <rect x="123" y="642" width="210" height="152" rx="3"/>
+      </g>
+
+      <g class="room" data-id="hall" data-name="Hall">
+        <rect x="333" y="642" width="287" height="155" rx="3"/>
+      </g>
+
+      <g class="room" data-id="bed-e" data-name="Bedroom East">
+        <rect x="620" y="642" width="210" height="152" rx="3"/>
+      </g>
+
+      <g class="room" data-id="chamber-1" data-name="Chamber 1">
+        <rect x="123" y="794" width="160" height="210" rx="3"/>
+      </g>
+
+      <g class="room" data-id="chamber-2" data-name="Chamber 2">
+        <rect x="670" y="794" width="160" height="210" rx="3"/>
+      </g>
+
+      <!-- ===== SECOND FLOOR (top-right) ===== -->
+
+      <g class="room" data-id="attic-w" data-name="Attic West">
+        <rect x="1085" y="190" width="210" height="152" rx="3"/>
+      </g>
+
+      <g class="room" data-id="attic" data-name="Attic">
+        <rect x="1295" y="190" width="287" height="155" rx="3"/>
+      </g>
+
+      <g class="room" data-id="attic-e" data-name="Attic East">
+        <rect x="1582" y="190" width="210" height="152" rx="3"/>
+      </g>
+
+      <g class="room" data-id="bal-w" data-name="Balcony West">
+        <rect x="1085" y="342" width="160" height="210" rx="3"/>
+      </g>
+
+      <g class="room" data-id="bal-e" data-name="Balcony East">
+        <rect x="1632" y="342" width="160" height="210" rx="3"/>
+      </g>
+
+      <!-- ===== WIND MILL (bottom-right) ===== -->
+
+      <g class="room" data-id="wind-mill" data-name="Wind Mill">
+        <rect x="1355" y="642" width="165" height="207" rx="3"/>
+      </g>
+
+    </svg>
+  </div>
+
+  <script>
+    // ---------------------------------------------------------------------------
+    // Config -- override with ?server=ws://192.168.x.x:8765 in the URL
+    // ---------------------------------------------------------------------------
+    const params    = new URLSearchParams(window.location.search);
+    const serverUrl = params.get('server') || `ws://${location.hostname}:8765`;
+
+    document.getElementById('server-url').textContent = serverUrl;
+
+    // ---------------------------------------------------------------------------
+    // WebSocket
+    // ---------------------------------------------------------------------------
+    let ws            = null;
+    let reconnTimer   = null;
+    let activeRoomId  = null;
+
+    const statusDot     = document.getElementById('status-dot');
+    const statusText    = document.getElementById('status-text');
+    const selectedLabel = document.getElementById('selected-label');
+
+    function connect() {
+      clearTimeout(reconnTimer);
+      ws = new WebSocket(serverUrl);
+
+      ws.addEventListener('open', () => {
+        statusDot.classList.add('connected');
+        statusText.textContent = 'Connected';
+        ws.send(JSON.stringify({ type: 'register', role: 'table', id: 'table-ui' }));
+      });
+
+      ws.addEventListener('close', () => {
+        statusDot.classList.remove('connected');
+        statusText.textContent = 'Reconnecting...';
+        reconnTimer = setTimeout(connect, 3000);
+      });
+
+      ws.addEventListener('error', () => {
+        statusText.textContent = 'Error';
+      });
+
+      ws.addEventListener('message', (e) => {
+        let msg;
+        try { msg = JSON.parse(e.data); } catch { return; }
+        onServerMessage(msg);
+      });
+    }
+
+    function sendToServer(obj) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(obj));
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Incoming messages from server
+    // ---------------------------------------------------------------------------
+    function onServerMessage(msg) {
+      if (msg.type === 'event' && msg.event === 'room_change' && msg.from !== 'table') {
+        highlightRoom(msg.payload && msg.payload.roomId, false);
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Room selection
+    // ---------------------------------------------------------------------------
+    function highlightRoom(roomId, broadcast) {
+      document.querySelectorAll('.room.active').forEach(el => el.classList.remove('active'));
+
+      activeRoomId = roomId || null;
+
+      if (!roomId) {
+        selectedLabel.textContent = '-- SELECT A ROOM --';
+        return;
+      }
+
+      const el = document.querySelector(`.room[data-id="${roomId}"]`);
+      if (!el) return;
+
+      // Flash then settle
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 120);
+      setTimeout(() => el.classList.add('active'), 120);
+
+      selectedLabel.textContent = el.dataset.name.toUpperCase();
+
+      if (broadcast) {
+        sendToServer({
+          type:    'event',
+          event:   'room_selected',
+          payload: { roomId }
+        });
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Attach tap/click handlers to every room
+    // ---------------------------------------------------------------------------
+    document.querySelectorAll('.room').forEach(room => {
+      function onTap(e) {
+        e.preventDefault();
+        highlightRoom(room.dataset.id, true);
+      }
+      room.addEventListener('click',    onTap);
+      room.addEventListener('touchend', onTap, { passive: false });
+    });
+
+    // ---------------------------------------------------------------------------
+    // Fullscreen
+    // ---------------------------------------------------------------------------
+    const fsBtn = document.getElementById('fs-btn');
+
+    fsBtn.addEventListener('click', () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      fsBtn.textContent = document.fullscreenElement ? 'EXIT FS' : 'FULLSCREEN';
+    });
+
+    // ---------------------------------------------------------------------------
+    // Go
+    // ---------------------------------------------------------------------------
+    connect();
+  </script>
+</body>
+</html>
