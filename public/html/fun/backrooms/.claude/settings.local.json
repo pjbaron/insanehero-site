@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(mkdir *)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const h=fs.readFileSync\\('index.html','utf8'\\); console.log\\(h.includes\\('type=\\\\\"module\\\\\"'\\) && h.includes\\('three.min.js'\\) ? 'index.html OK' : 'FAIL'\\);\")",
+      "Bash(node --input-type=module)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const s=fs.readFileSync\\('src/scene.js','utf8'\\); console.log\\(s.includes\\('createScene'\\) && s.includes\\('PerspectiveCamera'\\) && s.includes\\('Fog'\\) ? 'scene.js structure OK' : 'FAIL'\\);\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const s=fs.readFileSync\\('src/lighting.js','utf8'\\); ['createLighting','createRoomLight','removeRoomLight','createCeilingLightGeometry'].forEach\\(fn => console.log\\(s.includes\\(fn\\) ? fn+' OK' : 'FAIL: '+fn\\)\\);\")",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; python \"F:\\\\experiments\\\\ClaudeOnClaude\\\\TaskRunner\\\\run_tasks\\\\run_tasks.py\" \"C:\\\\wamp64\\\\www\\\\host_level\\\\Backrooms_Wang\\\\tasks\\\\tasks_003_world.json\" 1)",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; python \"F:\\\\experiments\\\\ClaudeOnClaude\\\\TaskRunner\\\\run_tasks\\\\run_tasks.py\" \"C:\\\\wamp64\\\\www\\\\host_level\\\\Backrooms_Wang\\\\tasks\\\\tasks_003_world.json\" 2)",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; python \"F:\\\\experiments\\\\ClaudeOnClaude\\\\TaskRunner\\\\run_tasks\\\\run_tasks.py\" \"C:\\\\wamp64\\\\www\\\\host_level\\\\Backrooms_Wang\\\\tasks\\\\tasks_004_player.json\" task_000 2>&1)",
+      "PowerShell($env:PYTHONIOENCODING=\"utf-8\"; python \"F:\\\\experiments\\\\ClaudeOnClaude\\\\TaskRunner\\\\run_tasks\\\\run_tasks.py\" \"C:\\\\wamp64\\\\www\\\\host_level\\\\Backrooms_Wang\\\\tasks\\\\tasks_004_player.json\" 0 2>&1)"
+    ]
+  }
+}
