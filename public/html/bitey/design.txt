@@ -1,0 +1,211 @@
+simple game idea, possible poki target initially.
+
+"A bit bitey"
+
+2d side-view horizontal scrolling platformer.Jun 14You said: You're a tiny humanoid dropped into the world.You're a tiny humanoid dropped into the world. A few seconds later a zombie is dropped in also. The zombie immediately starts trying to reach you. It can't jump but it can climb, and if blocked it will start to beat on the obstacle until it breaks. A few seconds later another zombie drops in. The rate of zombies is a log curve increasing to a peak level. It only pauses when a certain (huge) number of live zombies is reached. The world contains a number of weapons, as you get forced along the world by the building zombie pressure the weapons get better. There are incentives to not go too far (maybe mass drops of zombies for every screen you move, maybe a timing basis e.g. weapon drop timers, maybe the rate of incoming scales, or perhaps the game is measured as survival time X zombies killed and there's an 'end' to the world so you want to delay as long as possible).Jun 14Claude responded: The thing that makes or breaks this is one equation: your kill throughput vs the spawn rate.Analyzed core tension between weapon progression and survival constraintsAnalyzed core tension between weapon progression and survival constraintsThe thing that makes or breaks this is one equation: your kill throughput vs the spawn rate. Distance is the shared lever — moving right buys more DPS (better weapons) but raises the spawn rate. So the player is continuously choosing how hard to push, and the world auto-balances around wherever they decide to stand. Everything else is in service of keeping them on the edge of that curve.
+For it to be a game and not a solved position, both ends have to be lethal. Distance 0 (starting gear, lowest spawn) must still eventually overwhelm you, or camping the spawn point is dominant and nobody moves. The end wall (best gear, max spawn) must also overwhelm you, or someone rushes the end and holds forever. The playable region is the band in between where the two curves nearly touch — and you can't size that band on paper. I'd build the spawn log-curve and two or three weapon DPS tiers first and just watch where they cross before committing to anything else.
+The one fork that reshapes the whole design is whether weapons are spatial or temporal:
+
+Spatial: weapons live in the world, better rightward. Movement is progression, the corridor is a difficulty gradient you climb by advancing, and the finite world becomes a spendable resource — every screen is runway gone. Greed pulls you forward into danger for the better gun.
+Temporal: weapons drop on a clock wherever you stand. Survival is progression, movement is purely tactical repositioning, and the world is just space to retreat into (space = time = score). Your power curve races the zombie log curve head-on.
+
+You're describing a hybrid, which is fine, but one has to be primary or the two pulls fight. I'd make weapons spatial and reserve drop-timers for ammo/consumables/powerups, so weapon acquisition stays tied to the greed-and-runway decision rather than a passive clock.
+On your incentive options, which stack and which conflict:
+
+Spawn-rate-scales-with-distance and a finite world both stack cleanly with spatial weapons — they're the brakes on the rightward pull. More gear, but more spawn and less runway: three costs against one benefit. Clean push-your-luck.
+"Mass drops per screen moved" only feels fair if the drops seed ahead of you, not on top of you. Then it reads as "you can't outrun it, you can only choose your ground" instead of punishment for the thing the game is also forcing you to do. Kills the run-right-forever exploit without feeling arbitrary.
+
+Two flags. On scoring, time x kills is good multiplicative tension (running = low kills, reckless camping = low time), but watch for one factor swamping the other — if a chokepoint lets a strong weapon farm huge kill counts, kills dominate and the time trade stops mattering. The end wall bounding total time is what protects the product.
+On terrain, the zombie's three speeds — walk, climb, break — are your entire level vocabulary, because you can jump and they can't. Jumps create temporary separation, walls are temporary fortifications (break speed = how long they hold), and the player learns to read terrain as "how many seconds does this buy me." That's the skill expression, so tune those three speeds before any art goes in.
+For Poki specifically, the hard cap on live zombies doubles as your perf budget — the "huge number pause" is also what stops WebGL from dying, so set it by frame budget rather than purely by feel.You said: With timed weapon drops I think that can be combined with fixed positions for the drops too.With timed weapon drops I think that can be combined with fixed positions for the drops too. Adds a learnable curve. Also allows the design to push the player forwards or back to achieve that next weapon increment. You retreat a few screens to grab the 'big gun' and that power allows you to push back against the incoming horde and force them back further than where you were standing before... for a while. I didn't mention that the zombie climbing applies to each other, there's a scene in the movie world war Z where the zombies break into a walled city by stacking on top of each other to create a 'ladder' of zombies... like that. Platforms need to be supported in this world, and supports can be destroyed... going up is only a temporary reprieve.Jun 14Claude responded: The fixed-position-plus-timer drop is the strongest addition here, because it converts the macro shape from a one-way slide into a sawtooth.Synthesized mechanical interactions and flagged critical engineering decisionsSynthesized mechanical interactions and flagged critical engineering decisionsThe fixed-position-plus-timer drop is the strongest addition here, because it converts the macro shape from a one-way slide into a sawtooth. Monotonic retreat is emotionally all-decline and just ends at a wall; a cache you can fall back to and then push out past your old line gives the player periodic earned wins and gives you a clean tempo knob — the drop interval is the pulse period. The honest long-term shape is a sawtooth with a declining envelope: each push-back reclaims a little less as the spawn curve outpaces even the big guns, until the last push fails. That's a strong arc, a holding action against a rising tide, and time x kills rewards how well you ride it down rather than how long you delay the start.
+One detail on the drops: decide whether an uncollected weapon persists, despawns, or gets buried. I'd make it persist but accumulate zombies on the cache, so a late grab self-taxes — the longer you wait, the more you punch through to claim it. Keeps the timed arrival meaningful without a hard miss-window, and the cost scales on its own.
+The ladder is the load-bearing mechanic and also the one trap: don't simulate it as physical body-stacking. You know better than most what a tower of dynamic Box2D capsules does — jitter, solver blow-ups, and it's the worst-case perf scenario in WebGL exactly when entity count peaks. Model it as a formation state: when N zombies hold a wall base for T, a climb slot opens and they animate up a defined path. Reads as a WWZ stack, but underneath it's a triggered affordance — deterministic and cheap. The useful consequence is the ladder becomes a horde resource sink: forming and holding it commits M bodies that aren't attacking elsewhere, so height taxes the horde to overcome instead of being free to defeat. That's what stops "up is temporary" from collapsing into "up is useless."
+Ladder plus destructible supports gives verticality two defeat modes — climb over, or chew the supports and drop the floor — and both are just the vertical expression of your wall equation: high ground holds exactly as long as your DPS beats the ladder-formation/support-chew rate. Same core balance, rotated 90 degrees. Keep the collapse itself authored, not emergent: platform depends on supports[], supports have HP, lose them all and it drops or tilts. A dependency graph won't randomly explode the way a general joint-physics truss will, and it's far easier to read and tune.
+Net effect on the player: the jump stops being safety and becomes repositioning — you go up to relocate over the horde or get a firing angle, not to hide.
+One genuine fork I can't settle from your description: do zombies rain down near you (you're always surrounded, movement is about clearing a bubble), or advance from one side (a real front line)? "Drops" reads as surround, but "push them back past where I was standing" reads as a line — and cache placement plays out very differently between the two. Worth pinning before you position a single drop.You said: my mental image is a 'rising tide' so zombies should always drop in to the left of you (unless you're at the map left boundary and then they'll fall directly o…my mental image is a 'rising tide' so zombies should always drop in to the left of you (unless you're at the map left boundary and then they'll fall directly on you to prevent a possible cheat safety zone). If we go with the mass drops as a penalty/cost for running away (might not be required, timed weapons make this tactic weak and results in you having to clear through the Z to reach the good weapons while you're still using inferior ones) those should drop to the left of the visible area.Jun 14Claude responded: Agreed the explicit mass-drop penalty is redundant — running right is already taxed three ways without it.Validated tide mechanics and interrogated spawn-zone positioning ambiguityValidated tide mechanics and interrogated spawn-zone positioning ambiguityAgreed the explicit mass-drop penalty is redundant — running right is already taxed three ways without it. You outrun the weapon timers and stay stuck on inferior gear (your point), you spend finite rightward runway toward a lethal wall, and you kill almost nothing, which guts the kill side of time x kills. A player who sprints to the end arrives early, under-armed, with a low multiplier, and dies fast. Punishing running through opportunity cost is cleaner than an artificial drop and never reads as arbitrary.
+Where I'd keep the mass-drop in your back pocket is the opposite case: if a sprint ever opens a long dead stretch behind you — empty cleared space, tension deflated — a drop into that gap (or a brief tide-rate spike) re-pressurizes it. That's tension maintenance, not punishment, and you only build it if playtesting shows the dead-air problem. Don't pre-solve it.
+The fixed-position timed caches hand you a free rhythm lever once tide direction is set. A cache that lands ahead of your drift is a forward pull — safe-ish, moves you the way you're already going. A cache that lands behind your current position is an upstream grab — you punch back leftward into refilled ground to claim it, then the new gun lets you shove the front past where you stood. Same mechanic, opposite tension, and you author which one by where the cache sits relative to where the player will actually be at drop time. Mixing the two is most of your pacing.
+Both walls being lethal brackets the whole thing cleanly: the left wall buries you (overwhelmed at the tide source), the right wall is out-of-world. The game is the rightward transit between two deaths, and the declining sawtooth is just how far left you can keep clawing the front before the envelope collapses you into one wall or the other.
+The one thing that decides whether your "running is weak" logic is load-bearing or only backup: is the spawn zone at an absolute position — a real tide front you can pull away from by moving right — or does it track the player, a cloud that follows and can't be outrun? "Rising tide" and "push them back past where I stood" both imply an absolute front. But "drops to the left of you" reads player-relative, and if it follows you, running can't outrun it at all — the weapon opportunity-cost stops being the thing holding the line and the disincentive becomes automatic instead. In the absolute model your master knob is tide-rise-rate vs walk speed: faster than a walk, or strolling right is a dull dominant strategy; slower than a sprint, so you can still buy a costly temporary gap. Worth pinning which, because cache placement and that whole tuning band hang off it.
+
+
+You said: the zombies max speed on open ground should be about 80% of the player speed, you can outrun them briefly but they'll never be far behind. All Z should drop in the same start area to give that sense of implacable forces advancing, and the 'liquid' feel as they fill up holes and build ramps but keep on coming. To push to the left will always be difficult, but that's where the weapon satisfaction can really shine - a grenade launcher after a machine gun is a serious upgrade for densely packed regions. I'm debating ammo limits. Also should all weapons remain available after collection so the player has a tool kit and can decide which tool to use for the current job. Explosives might have danger for yourself, or damage obstacles which are slowing down the advance...
+
+
+The 80%/single-origin lock has a sharp consequence worth making explicit: footwork can now only ever buy you seconds, never ground. At 20% relative closing speed, any pause to fight or any bit of terrain erases the gap, so the only way to push the front left is firepower. That's exactly why the grenade-launcher-after-machine-gun moment will land — reclaiming ground is gated entirely behind DPS/AoE, so a weapon that clears a dense pack literally moves the world. Mobility is pure repositioning; the gun is the only thing that pushes the tide.
+
+Toolkit and ammo answer each other, so I'd treat them as one decision. Persistent toolkit is fine, but only if you stratify it: one baseline weapon always available with effectively unlimited ammo so you're never helpless, and the powerful tools as finite bursts rather than a stockpile you manage. The trap with counted ammo in a frantic game is hoarding — players sit on six grenades, never feel safe spending them, and die with a full inventory. You sidestep that by tuning charges to be emptied in one good engagement: a grenade launcher with eight rounds you'll burn through the next dense pack, then back to baseline until the next cache. The decision becomes "is this the pack worth spending on, or is a bigger one coming at the next ladder" — anticipation, which fits the timed-tide rhythm — instead of an accounting chore. I'd avoid a persistent ammo economy for a pick-up-and-play target; burst-charges or a duration timer both read faster.
+
+The explosives-damage-obstacles idea is the best thing in this message, and it quietly fixes the power-creep worry. If the grenade launcher also wrecks the walls and supports buying you time, it stops being a strict upgrade and becomes situational — fire into a pack near your own chokepoint and you've just opened the tide. So the machine gun stays the right tool near your fortifications, explosives become the high-risk room-clearer in the open, and you can deliberately blast a support to drop a platform or rubble onto a packed column as a skill kill. The two weapons become different jobs rather than a power ladder. One requirement: the obstacle has to visibly take blast damage so the player reads "I broke my own wall," or it lands as a random betrayal.
+
+Self-damage I'd be cautious with. In a chaotic horde game you can't always control spacing, and straight HP loss from your own blast usually reads as unfair. Knockback-on-self — a point-blank grenade shoves you right, maybe off a ledge — teaches the spacing lesson without the feels-bad, and is situationally dangerous in its own right. True self-damage is fine if you want a hardcore tone; it's a tone call, not a balance one.
+
+The meta-point: this has accreted a lot over the last few turns — tide, ladders, destructible supports, positioned timed caches, a multi-weapon toolkit, ammo, explosive collateral. Rich, but it's four or five tuning problems stacked, and Poki lives or dies on the first ninety seconds being fun. I'd name the irreducible core — tide at 80%, one baseline gun, one power cache, a couple of breakable walls — prove that's fun, and prototype-gate everything else as a layer you add only if the floor holds. You know this, but the design's been growing fast enough that it's worth saying before it hardens into a spec.
+
+================================================================================
+DESIGN REVISION (game-design skill) - 2026-06-24 - Poki/mobile fun pass
+================================================================================
+
+SUBSTRATE: the crowd density field (bodies packed per x along the floor).
+Every system reads/writes it. No private state allowed off it.
+
+KEY NEW EDGE: SCORE READS DENSITY.
+  - Each kill scores base x combo. Combo builds when kills come fast; fast kills
+    only happen against a PACKED crowd. So the optimal play (let them pile, then
+    mow) is also the most satisfying thing to watch. Kiting single-file = ~1x.
+  - Grenade multi-kills grant a burst bonus + big floating "K KILL" popup.
+
+MECHANICS AS OPERATIONS ON DENSITY:
+  - Auto-fire piercing bullets: a packed column dies in rows (reads density).
+  - Knockback (small on bullets, huge on grenades): shoves the front line LEFT =
+    reclaim ground. The core fantasy made physical; sculpts the pile.
+  - Walls dam flow -> density rises behind them; breaking releases it.
+
+CONTROLS (mobile-first, one-thumb friendly; keyboard still works on desktop):
+  - AUTO-FIRE always on, auto-aims at the nearest zombie (tide is from the left).
+  - On-screen buttons: LEFT / RIGHT (move), JUMP, SPECIAL (grenade, only when
+    charges held). Big touch zones. Keyboard: A/D move, Space jump, K special.
+  - Removes manual-aim and weapon-swap cognitive load: positioning IS the skill.
+
+IMMEDIATE SATISFACTION (juice, the make-or-break for Poki first 90s):
+  - Hit flash (white), blood spray, gib burst on death, knockback recoil.
+  - Screen shake on grenades + taking damage. Floating "+N" and combo meter.
+  - Screen-clearing grenade boom with shockwave ring. Procedural WebAudio sfx.
+  - Characterful silhouettes (eyes), parallax background, ground detail.
+
+ADVERSARIAL PATCH: kiting exploit fixed by an interaction (density->score), not a
+restriction. Multiplier intentionally left uncapped-ish to leave skill headroom.
+
+================================================================================
+ITERATION 2 - 2026-06-24 - "still feels flat" feedback pass
+================================================================================
+FIX 1 (input drop): jump/boom were silently dropped. The fixed-timestep loop
+cleared edge-triggered presses (input.endFrame) EVERY render frame, including
+frames where the accumulator ran zero sim steps (timing jitter; worse at 120/144
+Hz). A press registered on a 0-step frame was discarded before any update could
+read it. Fix: only endFrame() after at least one fixed step ran. Added a 0.12s
+jump buffer + raised jump velocity 760->820 for a more responsive hop.
+
+FIX 2 (wall trap): the tall wall (H=220) trapped the player - pushed into it by
+the tide, too tall to jump, and auto-aim faces LEFT (the tide) so you can never
+shoot the wall blocking your rightward escape. Now both walls are jumpable
+(H=100/140 < jump height ~168): the tide still bunches/stacks on them (chaos) but
+they can never dead-end the player. Bullets break a wall when it's on your left
+(between you and the tide); grenades break it from any side.
+
+FIX 3 (boring queue -> chaotic wave): each zombie now rolls its own speed
+(0.52..0.95x player, median ~0.86). Faster "runners" catch slower shamblers,
+stall behind them, and CLIMB over (existing stack mechanic, now triggered on open
+ground, not just walls) - producing a cresting wave front. Runners are tinted hot
+orange, shamblers dull green, so the churn reads at a glance. Measured: 26 peak
+open-ground climbers, continuous churn when crowded.
+
+================================================================================
+ITERATION 3 - 2026-06-24 - scattered drops, variety, terrain, pacing
+================================================================================
+POWER-UP CRATES (was single recurring cache): new powerups.js PowerUpManager.
+  - Drops on a clock (first at 9s, every 11s) rotating through 6 fixed positions
+    spread across the world, so you are pushed/pulled around, never camped.
+  - A new crate appears on schedule WHETHER OR NOT prior ones were collected;
+    uncollected crates never block the next.
+  - Every crate self-despawns after 60s (POWERUP_LIFETIME); HUD blinks the last 8s.
+  - VARIETY (weighted): grenades (finite charges) + three timed MAIN-WEAPON buffs
+    - RAPID (2.6x fire rate), TRIPLE (3-barrel spread), HEAVY (2.4x dmg/2.6x knock)
+    - plus a MEDKIT. Buffs last 12s; HUD shows active-buff chips. Off-screen crates
+    get an edge arrow + distance so scattered drops are findable.
+
+PACING (felt unpressured too long): nerfed baseline 9->7 shots/s and gave the
+  spawn curve a non-zero floor (22% of peak immediately) so pressure now arrives
+  by ~13s instead of a dull warm-up. Runner speed cap 0.95->0.90 so footwork buys
+  a few seconds again (kiting was impossible when runners matched player speed).
+
+WORLD: 4000 -> 9000 wide (long retreat runway). MAX_ZOMBIES 220 -> 260.
+
+TERRAIN (world.js): added pillars + platforms.
+  - Platforms are elevated slabs the player hops onto (and between - a little
+    aerial route); zombies can't jump so they stack on the pillars to reach you.
+  - Each platform references its support pillar(s). Zombies clawing a pillar (or a
+    grenade) can destroy it; a platform with no supports left FALLS and crushes any
+    zombie underneath on landing (a "drop the floor on them" skill kill). Two-pillar
+    spans need both gone. So high ground is only a temporary reprieve, as intended.
+
+================================================================================
+ITERATION 4 - 2026-06-24 - terrain reachability, stacked structures, LOS, walls
+================================================================================
+DECISION (run through game-design skill): player bullets no longer damage walls
+at all - only grenades (a separate, finite, deliberate control) break walls; the
+tide chews them on its own clock. Rationale: wall HP is shared state gating the
+crowd-density substrate. Auto-fire writing to it was an INVOLUNTARY erase of the
+player's own fortification and a free substitute for the costed grenade (the
+"interconvertible resources" flattening). Removing that edge restores volition.
+PLUS the gun now HOLDS FIRE with no line of sight (targets nearest VISIBLE
+zombie), making walls genuine two-way cover and terrain a firing-angle decision
+that interacts with stacking (climb over -> re-enter LOS -> get shot). The two
+changes are orthogonal and combine.
+
+TERRAIN:
+  - Reachability: Structure 2's two-pillar deck sat at 166px while a ground jump
+    reaches 168px (2px margin - felt unreachable). Added a low STEP wall before
+    it: ground -> step(92px) -> deck, reaching 260px. Comfortable bound-up.
+  - Stacked structures: world supports now generalised (grounded flag + supports[]
+    + cascading _collapseFrom). Pillars can rest ON platforms (addWall restsOn),
+    so structures stack: added a TWO-TIER tower (pillar -> lower deck -> pillar ->
+    upper deck). Knock out the ground pillar and the whole stack collapses and
+    crushes anything beneath (crush generalised to any falling obstacle).
+
+IMPLEMENTATION: world.js (segmentIntersectsAabb for LOS, restsOn, _collapseFrom,
+generalised falling); weapons.js (bullets stop at walls, deal no damage);
+game.js (_nearestZombie(requireLOS), _blocked, fire only at visible target).
+
+================================================================================
+ITERATION 5 - 2026-06-24 - supplies, crate placement, squelch, napalm
+================================================================================
+HEALTH: removed the medkit crate. Health now AIR-DROPS under a parachute every
+26s, drifting down slowly (55px/s) on screen; catch it mid-air (jump / cliff-dive
+off a structure) or off the ground (grabbable 8s after landing). Restores 50% of
+full health. HUD shows "SUPPLY INBOUND" + an edge arrow.
+
+CRATE PLACEMENT: crates now drop at offsets RELATIVE to the player (cycling a
+pattern of screen-fractions), capped at ~1.6 screens into enemy ground (left) and
+~1.4 ahead (right) - never buried deep in the horde, always reachable.
+
+CRUSH SQUELCH: a platform landing on a pack now unleashes a juicy goo spray
+(fx.squelch, scaled by count), shake scaled to the kill count, a big "SQUELCH! xN"
+popup, and a wet gut-thud (audio.squelch). Mid-air contact is lighter pulp.
+
+NAPALM (new buff, replaces the medkit crate slot): auto-lobs small grenades at
+8/sec with per-shot speed/lob variance, so ~5 are aloft at once and blasts land
+staggered - a rolling wall of flame. Each is smaller/weaker than a manual grenade
+(r78/dmg34 vs r120/dmg60) but still one-shots most zombies; arcs over walls (no
+LOS needed). Grenades are now parametrised (size/radius/damage/knock per round).
+
+================================================================================
+ITERATION 6 - 2026-06-24 - polish: placement, ledges, climbing, HUD, HP feedback
+================================================================================
+- Crates no longer spawn inside walls: _avoidWalls() nudges a ground crate to the
+  nearest clear x (skipping elevated platforms).
+- Parachute supplies now land on LEDGES, not the floor: _surfaceUnder() rests a
+  supply on the highest platform/wall its span overlaps; if that ledge later falls
+  or is destroyed, the supply detaches (restOn) and resumes its descent.
+- Zombie climbing: a zombie may only climb onto one that is itself SUPPORTED
+  (o.onGround - set by the solver only for a body resting vertically on another).
+  This stops the "flying" diagonal line of climbers-on-climbers while still
+  building the real bottom-up pyramid (verified visually: a supported mound).
+- Crate/supply edge arrows are stacked vertically per side so distance labels no
+  longer overlap.
+- HP bar: flashes red on damage (from player.hitFlash) and pulses green with a
+  glow on a heal (player.healFlash); bar fill clamped to [0,1].
+
+================================================================================
+ITERATION 7 - 2026-06-24 - endless escalation + entry stacking
+================================================================================
+- Spawn rate no longer plateaus: after the initial log ramp to SPAWN_PEAK_RATE it
+  keeps creeping up forever at SPAWN_CREEP_PER_SEC (+0.01/s -> ~+0.6/sec each
+  minute). Equilibrium is now only temporary; a careful player is eventually
+  outpaced and overrun (e.g. ~7/s at 1min, 10 at 5min, 13 at 10min, 19 at 20min).
+  The early/mid "hold the line" game is essentially unchanged; it just tightens.
+- Spawn-area congestion: if the entry (x=ZOMBIE_SPAWN_X) is already occupied, a new
+  zombie spawns ON TOP of the pile there (rises out above) instead of overlapping
+  inside another body - a growing wall of dead at the entry as the tide thickens.
+- Crate left-edge floor (prev fix): crates never spawn within half a screen of the
+  map's left edge (the zombie-entry zone), only relevant near that edge.
