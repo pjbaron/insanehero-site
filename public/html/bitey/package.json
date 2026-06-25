@@ -1,7 +1,0 @@
-{
-  "name": "a-bit-bitey",
-  "version": "0.1.0",
-  "description": "2D side-view horde-survival prototype - core loop feel test",
-  "type": "module",
-  "private": true
-}
