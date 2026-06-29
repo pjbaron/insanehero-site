@@ -1,8 +1,0 @@
-node_modules/*
-*.orig
-
-.idea/*
-*.log
-
-.settings/*
-.project
