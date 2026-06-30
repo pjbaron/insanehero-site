@@ -1,0 +1,14 @@
+{
+  "name": "zombaby-bouncer",
+  "version": "1.0.0",
+  "description": "Zombaby Bouncer - HTML5 ragdoll physics game (Poki)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "build:test": "node build.js --testing"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

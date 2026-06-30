@@ -21,33 +21,35 @@
       return im;
     },
     load(onProgress) {
-      let total = IMAGES.length + SOUNDS.length + 1, done = 0;
+      // Loading completion is gated on IMAGES + the font only. Audio is kicked off in
+      // parallel but NOT awaited: waiting on `canplaythrough` is flaky (some browsers
+      // never fire it until a user gesture) and the music is multi-MB, so blocking the
+      // loading screen on it gave a long, unreliable wait. The clips keep buffering and
+      // play() resolves once ready; the game starts the instant the art is in.
+      let total = IMAGES.length + 1, done = 0;
       const tick = () => { done++; if (onProgress) onProgress(done, total); };
       return new Promise((resolve, reject) => {
+        let pending = total;
+        const settle = () => { if (--pending <= 0) resolve(); };
         IMAGES.forEach((n) => {
           const im = new Image();
-          im.onload = tick; im.onerror = () => reject(new Error("failed image " + n));
+          im.onload = () => { tick(); settle(); };
+          im.onerror = () => reject(new Error("failed image " + n));
           im.src = "assets/grfx/" + n + ".png";
           imgs[n] = im;
         });
+        // font
+        const ff = new FontFace("Hobo", "url(assets/fonts/hobo.woff2) format('woff2'), url(assets/fonts/hobo.ttf) format('truetype')");
+        ff.load().then((f) => { document.fonts.add(f); tick(); settle(); })
+          .catch(() => { console.warn("font failed"); tick(); settle(); });
+        // audio: fire-and-forget, buffers in the background.
         SOUNDS.forEach((n) => {
           const a = new Audio();
           a.preload = "auto";
-          a.oncanplaythrough = function h() { a.removeEventListener("canplaythrough", h); tick(); };
-          a.addEventListener("canplaythrough", a.oncanplaythrough);
-          // some browsers won't fire canplaythrough until interaction; resolve on loadeddata too
-          a.addEventListener("loadeddata", () => { });
-          a.onerror = () => { console.warn("audio missing", n); tick(); };
+          a.onerror = () => console.warn("audio missing", n);
           a.src = "assets/audio/" + n + ".ogg";
           snds[n] = a;
         });
-        // font
-        const ff = new FontFace("Hobo", "url(assets/fonts/hobo.woff2) format('woff2'), url(assets/fonts/hobo.ttf) format('truetype')");
-        ff.load().then((f) => { document.fonts.add(f); tick(); }).catch(() => { console.warn("font failed"); tick(); });
-
-        // safety: don't hang forever on audio
-        const iv = setInterval(() => { if (done >= total) { clearInterval(iv); resolve(); } }, 50);
-        setTimeout(() => { clearInterval(iv); resolve(); }, 12000);
       });
     },
     sound(name) { return snds[name]; },
@@ -60,10 +62,11 @@
 
   // simple sfx player (clones so sounds overlap)
   const Sound = {
-    muted: false,
+    muted: false,        // user mute toggle (persisted)
+    adMuted: false,      // forced mute for the duration of a Poki ad break
     musicChannel: null,
     play(name) {
-      if (Sound.muted) return;
+      if (Sound.muted || Sound.adMuted) return;
       const a = snds[name];
       if (!a) return;
       const now = performance.now();
@@ -79,16 +82,39 @@
       if (!a) return;
       if (Sound.musicChannel) { Sound.musicChannel.pause(); }
       a.loop = !!loop; a.currentTime = 0; a.volume = 0.6;
-      a.play().catch(() => { });
       Sound.musicChannel = a;
+      Sound._sync();   // starts playing unless muted / ad-muted
     },
     stopMusic() { if (Sound.musicChannel) { Sound.musicChannel.pause(); Sound.musicChannel = null; } },
     setMuted(m) {
       Sound.muted = m;
-      if (Sound.musicChannel) { if (m) Sound.musicChannel.pause(); else Sound.musicChannel.play().catch(() => { }); }
+      Store.set("zb_muted", m ? "1" : "0");
+      Sound._sync();
+    },
+    // Poki requires game audio muted during ad playback; this is independent of the
+    // user's own mute toggle so it never clobbers their preference.
+    setAdMuted(m) {
+      Sound.adMuted = m;
+      Sound._sync();
+    },
+    _sync() {
+      if (!Sound.musicChannel) return;
+      if (Sound.muted || Sound.adMuted) Sound.musicChannel.pause();
+      else Sound.musicChannel.play().catch(() => { });
     },
   };
 
+  // Incognito-safe persistence: Poki games must work in incognito, where any
+  // localStorage access can throw. Every call is wrapped so failure is a no-op.
+  const Store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } },
+  };
+
+  // Restore the persisted mute preference (default: unmuted).
+  Sound.muted = Store.get("zb_muted") === "1";
+
   global.Assets = Assets;
   global.Sound = Sound;
+  global.Store = Store;
 })(window);

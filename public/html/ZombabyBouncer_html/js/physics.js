@@ -4,6 +4,13 @@
   const pl = global.planck;
   const Vec2 = pl.Vec2;
 
+  // Design height is locked at 480; the design WIDTH flexes with the window aspect
+  // ratio so the canvas is filled edge-to-edge (no letterbox). main.js owns View and
+  // updates it on every resize; screen-space drawing reads View.w / View.h live.
+  const View = global.View || (global.View = { w: 640, h: 480, scale: 1, dpr: 1 });
+  // Fixed DESIGN reference (the original game was authored at 640x480). World/level
+  // generation and the gameplay triggers tuned to it stay on these constants; only
+  // SCREEN-SPACE drawing (camera framing, background, HUD) reads the live View.
   const GW = 640, GH = 480;
   const PS = 30;                       // physics scale (px per metre)
   const TS = 1 / 30, VIT = 15, PIT = 15;
@@ -14,9 +21,13 @@
   const frontWheelSize = 16, backWheelSize = 24, wheelOffsetX = 32;
   const frontWheelHigh = pramWheelHigh + (backWheelSize - frontWheelSize) / 2;
 
-  // persistent across restarts (matches AS3 static vars)
+  // persistent across restarts (matches AS3 static vars). The best distance also
+  // persists across reloads via incognito-safe storage (Store wraps localStorage).
   let signPositions = [];
-  let recordDistance = 0;
+  let recordDistance = (() => {
+    const v = global.Store ? parseFloat(global.Store.get("zb_record")) : NaN;
+    return isFinite(v) ? v : 0;
+  })();
 
   function img(n) { return Assets.img(n); }
 
@@ -54,10 +65,10 @@
 
       // snap camera to follow target so first frame looks right
       const p = this.baby.getPosition();
-      this.camX = GW * 0.33 - p.x * PS;
-      this.camY = GH * 0.5 - p.y * PS;
+      this.camX = View.w * 0.33 - p.x * PS;
+      this.camY = View.h * 0.5 - p.y * PS;
 
-      this.instrX = GW;            // instructions text slides in
+      this.instrT = 0;             // instructions fade-in timer (frames)
       Sound.play("giggle3");
     }
 
@@ -246,7 +257,7 @@
 
         // camera follows baby
         const p = this.baby.getPosition();
-        const cx = GW * 0.33 - p.x * PS, cy = GH * 0.5 - p.y * PS;
+        const cx = View.w * 0.33 - p.x * PS, cy = View.h * 0.5 - p.y * PS;
         this.camX += (cx - this.camX) / 8;
         this.camY += (cy - this.camY) / 8;
         if (this.camX < -48200) {
@@ -260,13 +271,13 @@
           }
         }
 
-        // controls
+        // controls (keyboard OR on-screen touch buttons, via Input action helpers)
         const vel = this.pram.getLinearVelocity();
-        if ((Input.isKeyDown(65) || Input.isKeyDown(37)) && vel.x > 4) {
+        if (Input.brake() && vel.x > 4) {
           this.rearWheel.applyLinearImpulse(Vec2(-24, 0), Vec2(0, 0), true);
           if ((this.runTime & 3) === 0) this._dust(this.frontWheel, 8, 0.25);
         }
-        if (this.camX < 48000 && (Input.isKeyDown(68) || Input.isKeyDown(39))) {
+        if (this.camX < 48000 && Input.faster()) {
           this.frontWheel.applyLinearImpulse(Vec2(16, 0), Vec2(0, 0), true);
           if ((this.runTime & 3) === 0) this._dust(this.rearWheel, -4, -0.25);
         }
@@ -283,8 +294,8 @@
           }
         }
 
-        // instructions slide-in then nothing
-        if (this.instrX > 135) this.instrX += (135 - this.instrX) / 8;
+        // instructions fade in over the first ~1s, then linger
+        if (this.instrT < 240) this.instrT++;
 
         if (this.camX <= -48000) this._maybeWinSetup();
       } else {
@@ -322,7 +333,10 @@
     _finishScore() {
       const p = this.baby.getPosition();
       const dist = p.x + (this.endState === "won" ? this.timeBonus : 0);
-      if (dist > recordDistance) { recordDistance = dist; this.isRecord = true; }
+      if (dist > recordDistance) {
+        recordDistance = dist; this.isRecord = true;
+        if (global.Store) global.Store.set("zb_record", String(Math.round(dist)));
+      }
       this.finalDistance = dist;
     }
 
@@ -346,7 +360,7 @@
     draw(ctx) {
       ctx.save();
       ctx.fillStyle = "#8CB5FF";
-      ctx.fillRect(0, 0, GW, GH);
+      ctx.fillRect(0, 0, View.w, View.h);
       ctx.translate(this.camX, this.camY);
 
       // scenery (back)
@@ -445,44 +459,67 @@
       // on the end screen, draw only the focused panel (no HUD clutter behind it)
       if (this.endState && this.waitForReset) { this._drawEndScreen(ctx); return; }
 
+      const W = View.w, H = View.h;
       const p = this.baby.getPosition();
       const v = this.baby.getLinearVelocity();
       ctx.textBaseline = "top";
 
-      // instructions (right aligned, yellow)
-      ctx.font = "24px Hobo, sans-serif";
-      ctx.fillStyle = "#ffff00";
-      ctx.textAlign = "right";
-      ctx.fillText("'A' = brakes  'D' = faster", this.instrX + 360, 4);
-      ctx.fillText("Keep the Zombaby in the pram!", this.instrX + 360, 34);
+      // All readouts are stacked along the TOP (the bottom corners are reserved for
+      // the on-screen touch buttons, and bottom-centre for the control hint) so
+      // nothing overlaps in either portrait or landscape. Fonts scale with the
+      // dynamic design width so they fit a narrow phone in portrait.
+      const infFont = Math.min(38, W * 0.085);
+      const small = Math.min(24, Math.max(14, W * 0.05));
+      const row1 = 6, row2 = row1 + infFont + 4, row3 = row2 + small + 2;
 
-      ctx.textAlign = "left";
-      ctx.font = "40px Hobo, sans-serif";
+      // Infection: top-centre, the focal readout.
+      ctx.font = infFont.toFixed(0) + "px Hobo, sans-serif";
       ctx.fillStyle = "#ff0000";
+      ctx.textAlign = "center";
       const inf = Math.min(this.infectionSpread, 100).toFixed(0);
-      ctx.textAlign = "center";
-      ctx.fillText("Infection: " + inf + "%", GW / 2, 70);
+      ctx.fillText("Infection: " + inf + "%", W / 2, row1);
 
-      ctx.textAlign = "left";
-      ctx.font = "25px Hobo, sans-serif";
+      // Distance / Record (row 2), Speed (row 3). The left column is indented past
+      // the top-left mute button so it never overlaps it; Record is right-aligned.
+      const leftX = 52;
+      ctx.font = small.toFixed(0) + "px Hobo, sans-serif";
       ctx.fillStyle = "#ffffff";
-      ctx.fillText("Speed: " + Math.max(v.x, 0).toFixed(1), 20, GH - 50);
+      ctx.textAlign = "left";
+      ctx.fillText("Distance: " + p.x.toFixed(0), leftX, row2);
+      ctx.fillText("Speed: " + Math.max(v.x, 0).toFixed(1), leftX, row3);
       ctx.textAlign = "right";
-      ctx.fillText("Record: " + recordDistance.toFixed(0), GW - 20, GH - 50);
-      ctx.textAlign = "center";
-      ctx.fillText("Distance: " + p.x.toFixed(0), GW / 2, GH - 50);
+      ctx.fillText("Record: " + recordDistance.toFixed(0), W - 16, row2);
+
+      // Control hint, fading in at the start of a run. On touch it sits just ABOVE the
+      // on-screen buttons (main.js publishes their top as BTN_TOP_Y); on desktop it
+      // goes along the bottom. Either way it never overlaps the buttons.
+      const a = Math.min(this.instrT / 60, 1) * (this.instrT < 220 ? 1 : Math.max(0, (240 - this.instrT) / 20));
+      if (a > 0.01) {
+        ctx.globalAlpha = a;
+        ctx.fillStyle = "#ffff00";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "alphabetic";
+        ctx.font = small.toFixed(0) + "px Hobo, sans-serif";
+        const hint = global.IS_TOUCH ? "BRAKE / GO - keep the Zombaby in the pram!"
+                                     : "'A' = brake   'D' = faster - keep the Zombaby in the pram!";
+        const hintY = (global.IS_TOUCH && global.BTN_TOP_Y) ? global.BTN_TOP_Y - 10 : H - 16;
+        ctx.fillText(hint, W / 2, hintY);
+        ctx.globalAlpha = 1;
+        ctx.textBaseline = "top";
+      }
     }
 
     _drawEndScreen(ctx) {
       const won = this.endState === "won";
-      const cx = GW / 2;
+      const W = View.w, H = View.h;
+      const cx = W / 2;
 
       // dim the play field
       ctx.fillStyle = "rgba(0,0,0,0.45)";
-      ctx.fillRect(0, 0, GW, GH);
+      ctx.fillRect(0, 0, W, H);
 
-      // centred panel
-      const pw = 460, ph = 300, px = cx - pw / 2, py = 90;
+      // centred panel (clamped so it fits a narrow portrait screen)
+      const pw = Math.min(460, W - 32), ph = 300, px = cx - pw / 2, py = (H - ph) / 2;
       ctx.fillStyle = "rgba(18,20,30,0.88)";
       ctx.strokeStyle = won ? "#00e000" : "#ff3030";
       ctx.lineWidth = 4;
@@ -511,7 +548,8 @@
       // call to action, gently pulsing
       const pulse = 0.6 + 0.4 * Math.abs(Math.sin(performance.now() * 0.004));
       ctx.globalAlpha = pulse;
-      line("Click or press R to play again", py + ph - 34, 26, "#ffe14d", "#5a4a00");
+      line(global.IS_TOUCH ? "Tap to play again" : "Click or press R to play again",
+        py + ph - 34, 26, "#ffe14d", "#5a4a00");
       ctx.globalAlpha = 1;
       ctx.textBaseline = "top";
     }
