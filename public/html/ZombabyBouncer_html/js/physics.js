@@ -538,10 +538,17 @@
       ctx.fill(); ctx.stroke();
 
       ctx.textAlign = "center";
+      // Each line shrinks to fit inside the panel so long values (e.g. a 4-digit
+      // distance, or the desktop "Click or press R..." prompt) never overrun the edges
+      // on a narrow portrait panel.
+      const maxW = pw - 36;
       const line = (text, y, size, fill, stroke) => {
-        ctx.font = size + "px Hobo, sans-serif";
+        let fs = size;
+        ctx.font = fs + "px Hobo, sans-serif";
+        const tw = ctx.measureText(text).width;
+        if (tw > maxW) { fs = size * maxW / tw; ctx.font = fs + "px Hobo, sans-serif"; }
         ctx.textBaseline = "middle";
-        if (stroke) { ctx.lineWidth = Math.max(3, size / 10); ctx.strokeStyle = stroke; ctx.strokeText(text, cx, y); }
+        if (stroke) { ctx.lineWidth = Math.max(3, fs / 10); ctx.strokeStyle = stroke; ctx.strokeText(text, cx, y); }
         ctx.fillStyle = fill; ctx.fillText(text, cx, y);
       };
 

@@ -106,27 +106,42 @@
   // ----- Title / mute ---------------------------------------------------------
   function drawTitle() {
     const W = View.w, H = View.h;
-    // Cover-fit the title art (preserve aspect, fill the canvas).
     const bg = Assets.img("ui_titlescreen");
-    const s = Math.max(W / bg.naturalWidth, H / bg.naturalHeight);
-    const bw = bg.naturalWidth * s, bh = bg.naturalHeight * s;
-    ctx.drawImage(bg, (W - bw) / 2, (H - bh) / 2, bw, bh);
+    const portrait = W < H;
+    // Sky-coloured backdrop behind the scene (matches the title art's sky).
+    ctx.fillStyle = "#8CB5FF";
+    ctx.fillRect(0, 0, W, H);
+    let bw, bh, bx, by;
+    if (portrait) {
+      // Fit the whole scene to the WIDTH and sit it at the bottom, so the baby/pram
+      // are fully visible (cover-fit crops them off the narrow sides) with sky above.
+      const s = W / bg.naturalWidth;
+      bw = W; bh = bg.naturalHeight * s; bx = 0; by = H - bh;
+    } else {
+      // Cover the whole canvas on wide screens.
+      const s = Math.max(W / bg.naturalWidth, H / bg.naturalHeight);
+      bw = bg.naturalWidth * s; bh = bg.naturalHeight * s; bx = (W - bw) / 2; by = (H - bh) / 2;
+    }
+    ctx.drawImage(bg, bx, by, bw, bh);
 
+    // Logo near the top.
     const t = Assets.img("ui_title");
     const ts = Math.min(1, (W * 0.8) / t.naturalWidth);
     ctx.drawImage(t, W / 2 - t.naturalWidth * ts / 2, 28, t.naturalWidth * ts, t.naturalHeight * ts);
 
+    // PLAY prompt: in the open sky above the scene in portrait; mid-screen in landscape.
+    const playY = portrait ? Math.min(by - 46, H * 0.5) : H * 0.62;
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";
     ctx.font = "48px Hobo, sans-serif";
     ctx.fillStyle = "#ffff00";
-    ctx.fillText("PLAY", W / 2, H * 0.62);
+    ctx.fillText("PLAY", W / 2, playY);
     ctx.font = "22px Hobo, sans-serif";
     const cta = touchMode ? "tap to start" : "click to start";
     ctx.lineWidth = 4; ctx.strokeStyle = "#7a1500";
-    ctx.strokeText(cta, W / 2, H * 0.62 + 40);
+    ctx.strokeText(cta, W / 2, playY + 40);
     ctx.fillStyle = "#ffffff";
-    ctx.fillText(cta, W / 2, H * 0.62 + 40);
+    ctx.fillText(cta, W / 2, playY + 40);
   }
 
   // mute button (top-left). Sized in design units; hit-tested in design space.
