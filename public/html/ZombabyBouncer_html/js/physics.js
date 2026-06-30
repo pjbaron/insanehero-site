@@ -67,6 +67,9 @@
       const p = this.baby.getPosition();
       this.camX = View.w * 0.33 - p.x * PS;
       this.camY = View.h * 0.5 - p.y * PS;
+      // Don't show the empty space left of the first hill segment (wide screens only).
+      const leftLimit = -this.groundPts[0].x;
+      if (this.camX > leftLimit) this.camX = leftLimit;
 
       this.instrT = 0;             // instructions fade-in timer (frames)
       Sound.play("giggle3");
@@ -255,11 +258,17 @@
           }
         }
 
-        // camera follows baby
+        // camera follows baby. In portrait the view is tighter, so follow more
+        // closely (less lag) to keep the pram from drifting to the screen edge.
         const p = this.baby.getPosition();
+        const lag = View.w < View.h ? 4 : 8;
         const cx = View.w * 0.33 - p.x * PS, cy = View.h * 0.5 - p.y * PS;
-        this.camX += (cx - this.camX) / 8;
-        this.camY += (cy - this.camY) / 8;
+        this.camX += (cx - this.camX) / lag;
+        this.camY += (cy - this.camY) / lag;
+        // Don't show the empty space left of the first hill segment (wide screens only;
+        // inactive once the pram has rolled right, where camX is far negative).
+        const leftLimit = -this.groundPts[0].x;
+        if (this.camX > leftLimit) this.camX = leftLimit;
         if (this.camX < -48200) {
           if (this.infectionSpread >= 99 - this.infectionSpeed) this.infectionSpeed = 0;
           if (this.camX < -50000 + GW) {

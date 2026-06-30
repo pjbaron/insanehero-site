@@ -6,6 +6,12 @@
   // Design height is LOCKED at 480; the design WIDTH flexes to the window aspect so
   // the canvas is filled edge-to-edge (Poki requires full-screen cover, no bars).
   const DESIGN_H = 480;
+  // Visible world width in design units = View.h * aspect. On narrow (portrait)
+  // screens that collapses to a slim slice and over-zooms the pram, so we guarantee
+  // at least this much world width is shown - the design height grows to reach it,
+  // which zooms back and reveals more sky/soil instead of magnifying the pram. Wide
+  // (landscape/desktop) screens already exceed it, so their framing is unchanged.
+  const MIN_VIEW_W = 380;
   const View = global.View || (global.View = { w: 640, h: DESIGN_H, scale: 1, dpr: 1 });
 
   let canvas, ctx, game = null, state = "loading";
@@ -78,10 +84,15 @@
     canvas.height = Math.floor(cssH * dpr);
     canvas.style.width = cssW + "px";
     canvas.style.height = cssH + "px";
-    const scale = cssH / DESIGN_H;        // lock height, fill width
-    View.w = cssW / scale;
-    View.h = DESIGN_H;
+    // Lock height (fill width) for wide screens; for tall/portrait screens grow the
+    // design height so at least MIN_VIEW_W of world is visible (zoom back).
+    const aspect = cssW / cssH;
+    let H = DESIGN_H;
+    if (H * aspect < MIN_VIEW_W) H = MIN_VIEW_W / aspect;
+    const scale = cssH / H;
     View.scale = scale;
+    View.w = cssW / scale;                // == H * aspect
+    View.h = H;
     View.dpr = dpr;
     layoutButtons();
   }
