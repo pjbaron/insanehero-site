@@ -13,7 +13,10 @@ export class BoardManager {
             appState.boards.push({
                 name: name,
                 background: "",
-                lists: []
+                lists: [],
+                // Land the new board in whatever folder is currently open so it
+                // shows up in the bottom row the user is looking at.
+                folder: appState.settings.openFolder || null
             });
             UIManager.renderBoardTabs();
             UIManager.renderBoardsGrid();
@@ -23,6 +26,9 @@ export class BoardManager {
     // Switch to a different board
     static switchBoard(index) {
         appState.currentBoardIndex = index;
+        // Keep the active board's folder open so its tab stays visible
+        const board = appState.boards[index];
+        appState.settings.openFolder = board && board.folder ? board.folder : null;
         UIManager.renderBoard();
         UIManager.renderBoardTabs();
         
@@ -275,6 +281,11 @@ export class BoardManager {
         // Update folderOrder
         const idx = appState.settings.folderOrder.indexOf(oldName);
         if (idx !== -1) appState.settings.folderOrder[idx] = trimmed;
+
+        // Keep the open folder pointing at the renamed folder
+        if (appState.settings.openFolder === oldName) {
+            appState.settings.openFolder = trimmed;
+        }
 
         // Update expandedFolders
         if (appState.settings.expandedFolders) {

@@ -45,8 +45,93 @@
     background: rgba(0, 0, 0, 0.1);
     padding: 10px 20px;
     display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Top row: folders. Bottom row: boards of the open folder (or ungrouped). */
+.folder-row,
+.board-row {
+    display: flex;
     gap: 10px;
     overflow-x: auto;
+    align-items: center;
+}
+
+.board-row {
+    min-height: 38px;
+}
+
+/* Faint divider so the two rows read as separate zones */
+.board-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    padding-top: 8px;
+}
+
+.empty-folder-msg {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    font-style: italic;
+    padding: 8px 4px;
+    white-space: nowrap;
+}
+
+/* Dragging feedback for reorderable tabs */
+.board-tab.dragging,
+.folder-tab.dragging {
+    opacity: 0.4;
+}
+
+/* Folder highlighted as a drop target while dragging a board onto it */
+.folder-tab.folder-drop-target {
+    outline: 2px dashed rgba(255, 255, 255, 0.85);
+    outline-offset: 1px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Unassigned pseudo-tab: a drop target for un-filing, styled apart from real folders */
+.unassigned-tab {
+    border: 1px dashed rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.unassigned-tab.expanded {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.unassigned-tab .folder-tab-label {
+    padding: 8px 12px;
+}
+
+.unassigned-tab .folder-tab-label:hover {
+    border-radius: 4px;
+}
+
+/* + Add a folder pseudo-tab on the folder row */
+.add-folder-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 13px;
+}
+
+.add-folder-btn:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.board-tab,
+.folder-tab {
+    flex-shrink: 0;
+}
+
+.board-tab[draggable="true"],
+.folder-tab[draggable="true"] {
+    cursor: grab;
 }
 
 .board-tab {

@@ -296,10 +296,14 @@ function init() {
     // Set current board index from settings
     if (appState.boards.length > 0) {
         appState.currentBoardIndex = Math.min(
-            appState.settings.lastOpenBoard || 0, 
+            appState.settings.lastOpenBoard || 0,
             appState.boards.length - 1
         );
     }
+
+    // Open the folder holding the active board so its tab is visible on load
+    const activeBoard = appState.boards[appState.currentBoardIndex];
+    appState.settings.openFolder = activeBoard && activeBoard.folder ? activeBoard.folder : null;
     
     // Setup auto-save
     appState.autoSave = StorageManager.setupAutoSave(appState);
