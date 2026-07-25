@@ -3,6 +3,7 @@ import { CardManager } from './card-manager.js';
 import { UIManager } from './ui-manager.js';
 import { StorageManager } from './storage-manager.js';
 import { BoardRenderer } from './board-renderer.js';
+import { SortManager } from './sort-manager.js';
 
 // Application state
 export const appState = {
@@ -712,6 +713,11 @@ window.copyListToBoard = (...args) => {
 };
 
 window.toggleListSettings = BoardManager.toggleListSettings;
+
+// Alphabetical sorting (A-Z) for lists, boards, and folders
+window.sortListCards = (listIndex) => SortManager.sortListCards(listIndex);
+window.sortBoardLists = (boardIndex) => SortManager.sortBoardLists(boardIndex);
+window.sortFolderBoards = (folderName) => SortManager.sortFolderBoards(folderName);
 
 window.setListBackgroundColor = (...args) => {
     BoardManager.setListBackgroundColor(...args);

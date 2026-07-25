@@ -135,17 +135,12 @@
 }
 
 .board-tab {
+    display: flex;
+    align-items: center;
+    gap: 2px;
     background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    padding: 8px 16px;
     border-radius: 4px;
-    cursor: pointer;
-    min-width: 80px;
-    max-width: 150px;
-    text-align: center;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    max-width: 180px;
 }
 
 .board-tab.active {
@@ -154,6 +149,43 @@
 
 .board-tab:hover {
     background: rgba(255, 255, 255, 0.3);
+}
+
+.board-tab-label {
+    background: none;
+    border: none;
+    color: white;
+    padding: 8px 8px 8px 16px;
+    cursor: pointer;
+    min-width: 64px;
+    max-width: 150px;
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    flex: 1;
+}
+
+/* A-Z sort button inside a board tab -- small outlined pill so it reads as a
+   button distinct from the board name */
+.board-tab-sort-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.85);
+    margin-right: 6px;
+    padding: 2px 5px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.board-tab-sort-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: white;
 }
 
 .add-board-btn {
@@ -214,6 +246,28 @@
     font-size: 11px;
     opacity: 0.7;
     margin-left: 2px;
+}
+
+/* A-Z sort button inside a folder tab -- small outlined pill so it reads as a
+   button distinct from the folder name */
+.folder-tab-sort-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0 4px;
+    padding: 2px 5px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    border-radius: 4px;
+}
+
+.folder-tab-sort-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: white;
 }
 
 .folder-tab-menu-btn {

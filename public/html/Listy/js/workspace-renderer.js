@@ -49,6 +49,17 @@ export class WorkspaceRenderer {
 
             header.appendChild(clickArea);
 
+            // Sort button: alphabetise this folder's boards
+            const sortBtn = document.createElement('button');
+            sortBtn.className = 'folder-section-sort-btn';
+            sortBtn.textContent = 'A-Z';
+            sortBtn.title = 'Sort boards in this folder A-Z';
+            sortBtn.onclick = (e) => {
+                e.stopPropagation();
+                window.sortFolderBoards(folderName);
+            };
+            header.appendChild(sortBtn);
+
             // Menu button
             const menuDiv = document.createElement('div');
             menuDiv.className = 'folder-section-menu';

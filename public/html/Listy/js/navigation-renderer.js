@@ -119,6 +119,15 @@ export class NavigationRenderer {
                     triggerAutoSave();
                 };
 
+                const sortBtn = document.createElement('button');
+                sortBtn.className = 'folder-tab-sort-btn';
+                sortBtn.textContent = 'A-Z';
+                sortBtn.title = 'Sort boards in this folder A-Z';
+                sortBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    window.sortFolderBoards(folderName);
+                };
+
                 const menuBtn = document.createElement('button');
                 menuBtn.className = 'folder-tab-menu-btn';
                 menuBtn.textContent = '...';
@@ -129,6 +138,7 @@ export class NavigationRenderer {
                 };
 
                 folderTab.appendChild(folderLabel);
+                folderTab.appendChild(sortBtn);
                 folderTab.appendChild(menuBtn);
 
                 folderTab.addEventListener('dragstart', (e) => {
@@ -194,12 +204,27 @@ export class NavigationRenderer {
         const visible = openFolder ? (folders[openFolder] || []) : ungrouped;
 
         visible.forEach(({ board, index }) => {
-            const tab = document.createElement('button');
+            const tab = document.createElement('div');
             tab.className = `board-tab ${index === appState.currentBoardIndex ? 'active' : ''}`;
-            tab.textContent = board.name;
             tab.draggable = true;
             tab.dataset.index = index;
-            tab.onclick = () => window.switchBoard(index);
+
+            const label = document.createElement('button');
+            label.className = 'board-tab-label';
+            label.textContent = board.name;
+            label.onclick = () => window.switchBoard(index);
+
+            const sortBtn = document.createElement('button');
+            sortBtn.className = 'board-tab-sort-btn';
+            sortBtn.textContent = 'A-Z';
+            sortBtn.title = "Sort this board's lists A-Z";
+            sortBtn.onclick = (e) => {
+                e.stopPropagation();
+                window.sortBoardLists(index);
+            };
+
+            tab.appendChild(label);
+            tab.appendChild(sortBtn);
 
             tab.addEventListener('dragstart', (e) => {
                 dragKind = 'board';

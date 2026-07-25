@@ -69,6 +69,7 @@ export class BoardRenderer {
         listDiv.innerHTML = `
             <div class="list-header draggable-header" ${list.backgroundColor ? `style="background-color: ${list.backgroundColor};"` : ''}>
                 <input type="text" value="${list.name}" onchange="updateListName(${listIndex}, this.value)" onblur="this.blur()">
+                <button class="az-btn" onclick="event.stopPropagation(); sortListCards(${listIndex})" title="Sort cards A-Z">A-Z</button>
                 <div class="list-settings">
                     <button class="list-settings-btn" onclick="toggleListSettings(${listIndex})" title="List settings">⋯</button>
                     <div class="list-settings-menu hidden" id="listSettings-${listIndex}">

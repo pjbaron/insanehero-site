@@ -194,6 +194,24 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* A-Z sort button in a workspace folder section header */
+.folder-section-sort-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.folder-section-sort-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+}
+
 .folder-section-menu {
     position: relative;
     margin-left: auto;
